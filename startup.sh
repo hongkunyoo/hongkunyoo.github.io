@@ -1,1 +1,1 @@
-JEKYLL_ENV=production jekyll serve --port 9091
+sudo JEKYLL_ENV=production bundle exec jekyll serve

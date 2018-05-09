@@ -11,8 +11,7 @@ algorithms](http://anand.typepad.com/datawocky/2008/03/more-data-usual.html))을
 번역한 글입니다. 해당 글은 원 저자에게 허락을 맡고 게시하였습니다.*
 
 저는 스탠포드에서 [데이터 마이닝](http://web.stanford.edu/class/cs345a/) 수업을 가르칩니다. 수업에서
-학생들에게 간단하지 않는 데이터 마이닝 프로젝트를 진행하도록 시킵니다. 많은 학생들은 [넷플릭스
-챌린지](http://www.netflixprize.com/) (넷플릭스가 개발한 영화 추천 알고리즘 보다 더 좋은 알고리즘을
+학생들에게 간단하지 않는 데이터 마이닝 프로젝트를 진행하도록 시킵니다. 많은 학생들은 [넷플릭스챌린지](http://www.netflixprize.com/) (넷플릭스가 개발한 영화 추천 알고리즘 보다 더 좋은 알고리즘을
 만드는 자가 승리하는 대회)에 도전해 보기도 합니다.
 
 그 대회가 진행되는 원리는 다음과 같습니다. 넷플릭스에서 도전자에게 대량의 데이터를 제공해 줍니다. 그
@@ -65,11 +64,9 @@ Larry와 Sergey가 제시한 두개의 큰 혁신이 검색 분야를 다음 단
   **Update**: 여러 의견들 감사합니다. 어떤 분들은 흥미로운 사안을 제기하셨습니다. 조만간 해당 사안에
   대해서 다시 포스팅하겠습니다.
 
-  **Update 2**: 해당 사안에 대한 [후속
-  포스팅](http://anand.typepad.com/datawocky/2008/04/data-versus-alg.html)을 하였습니다.
+  **Update 2**: 해당 사안에 대한 [후속  포스팅](http://anand.typepad.com/datawocky/2008/04/data-versus-alg.html)을 하였습니다.
 
-  **Update 3**: 똑같은 관점에서 [또 다른
-  예시](http://anand.typepad.com/datawocky/2008/04/more-data-beats.html)가 있습니다: 구글의 이익을
+  **Update 3**: 똑같은 관점에서 [또 다른  예시](http://anand.typepad.com/datawocky/2008/04/more-data-beats.html)가 있습니다: 구글의 이익을
   예측하는데에 comSore의 분석보다 많은 데이터와 간단한 수학을 이용하는 것이 더 정확하였습니다.
 
   --------------
