@@ -473,7 +473,9 @@ margin on the iframe, cause it breaks stuff. */
     position: relative;
     display: table;
     width: 100%;
-    height: 100%;
+    /* height: 100%; */
+    height: 40%;
+    min-height: 200px;
     margin-bottom: 5rem;
     text-align: center;
     background: #222 no-repeat center center;
@@ -525,7 +527,7 @@ margin on the iframe, cause it breaks stuff. */
 
 /* Put a semi-opaque radial gradient behind the icon to make it more visible
    on photos which happen to have a light background. */
-.home-template .main-header:after {
+.home-template_bak .main-header_bak:after {
     display: block;
     content: " ";
     width: 150px;
@@ -562,7 +564,8 @@ margin on the iframe, cause it breaks stuff. */
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     display: block;
-    height: 38px;
+    /* height: 38px; */
+    height: 15vh;
     padding: 1px 0 5px 0;
     width: auto;
 }
@@ -625,10 +628,12 @@ margin on the iframe, cause it breaks stuff. */
     right: 0;
     height: 70px;
     border: none;
+    /*
     background: -moz-linear-gradient(top, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.2)), color-stop(100%,rgba(0,0,0,0)));
     background: -webkit-linear-gradient(top, rgba(0,0,0,0.2) 0%,rgba(0,0,0,0) 100%);
     background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%,rgba(0,0,0,0) 100%);
+    */
 }
 .no-cover .main-nav.overlay,
 .no-cover .back-button,

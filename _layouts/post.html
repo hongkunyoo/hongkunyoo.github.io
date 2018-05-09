@@ -2,13 +2,16 @@
 layout: default
 disqus: false
 archive: false
+cover: /assets/images/blog_bg3.png
 post_class: post-template
 ---
 
-<header class="main-header post-head {% if page.cover %}" style="background-image: url({{ page.cover }}) {%else%}no-cover{% endif %}">
-    <nav class="main-nav {% if page.cover %} overlay {% endif %} clearfix">
+<header class="main-header {% if layout.cover %}" style="background-image: url({{ layout.cover }}) {%else%}no-cover{% endif %}">
+    <nav class="main-nav {% if layout.cover %} overlay {% endif %} clearfix">
         <a class="back-button icon-arrow-left" href="{{ site.baseurl }}">Home</a>
+        <!--
         <a class="subscribe-button icon-feed" href="{{ site.baseurl }}feed.xml">Subscribe</a>
+        -->
     </nav>
 </header>
 
@@ -72,7 +75,7 @@ post_class: post-template
                     <h4> {{ site.author }} </h4>
                     <!-- Author Bio -->
                     <p>
-                        Here goes the author description. You might want to place some links too in here
+                        술 좋아하면 술고래, 커피 좋아하면 커피고래~
                     </p>
                 </section>
             {% endif %}
@@ -90,3 +93,4 @@ post_class: post-template
     </article>
 
 </main>
+
