@@ -3,13 +3,13 @@ layout: default
 title: Home
 cover: /assets/images/blog_bg3.png
 logo: /assets/images/coffee_whale_only_bg.png
-#about: 'about.html'
+about: '/about/index.html'
 ---
 
 <header class="main-header {% if page.cover %}" style="background-image: url({{ page.cover }}) {%else%}no-cover{% endif %}">
     <nav class="main-nav overlay clearfix">
             {% if page.logo %}
-                <a class="blog-logo" href="{{ site.baseurl }}">
+                <a class="blog-logo" href>
                     <img src="{{ page.logo }}" alt="Blog Logo" />
                 </a>
             {% endif %}
@@ -22,7 +22,9 @@ logo: /assets/images/coffee_whale_only_bg.png
             <h1 class="page-title">{{ site.name }}</h1>
             <h2 class="page-description">
                 {% if site.description %} {{ site.description }}. {% endif %}
-                {% if page.about %} <a href='{{ site.baseurl }}{{ page.about }}'> About me </a> {% endif %}
+                <!--
+                {% if page.about %} <a href='{{ page.baseurl }}{{ page.about }}'> About me </a> {% endif %}
+                -->
             </h2>
         </div>
     </div>

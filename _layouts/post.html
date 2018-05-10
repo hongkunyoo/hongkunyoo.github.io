@@ -3,13 +3,18 @@ layout: default
 disqus: false
 archive: false
 cover: /assets/images/blog_bg3.png
+logo: /assets/images/coffee_whale_only_bg.png
 post_class: post-template
 ---
 
 <header class="main-header {% if layout.cover %}" style="background-image: url({{ layout.cover }}) {%else%}no-cover{% endif %}">
     <nav class="main-nav {% if layout.cover %} overlay {% endif %} clearfix">
-        <a class="back-button icon-arrow-left" href="/">Home</a>
+        <a class="blog-logo" href="/">
+            <img src="{{ layout.logo }}" alt="Blog Logo" />
+        </a>
+
         <!--
+        <a class="back-button icon-arrow-left" href="/">Home</a>
         <a class="subscribe-button icon-feed" href="{{ site.baseurl }}feed.xml">Subscribe</a>
         -->
     </nav>
@@ -67,12 +72,14 @@ post_class: post-template
             <!-- If we want to display author's name and bio -->
             {% if site.author %}
                 <figure class="author-image">
-                    <a class="img" href="{{ site.baseurl }}" style="background-image: url(/assets/images/profile.png)">
+                    <a class="img" href="/about/index.html" style="background-image: url(/assets/images/profile.png)">
                     <span class="hidden">{{site.author}}'s Picture</span></a>
                 </figure>
                 <section class="author">
                     <!-- Author Name -->
+                    <a href='/about/index.html' style='text-decoration: none;'>
                     <h4> {{ site.author }} </h4>
+                    </a>
                     <!-- Author Bio -->
                     <p>
                         술 좋아하면 술고래, 커피 좋아하면 커피고래~
