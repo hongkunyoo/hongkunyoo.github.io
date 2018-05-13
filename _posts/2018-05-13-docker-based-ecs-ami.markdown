@@ -32,8 +32,9 @@ AWS cloud instance이든 local machine이든 NVIDIA 드라이버를 설치하고
 ```bash
 sudo docker run --privileged -v /var/lib/nvidia-docker/volumes/nvidia_driver/latest:/usr/local/nvidia nvidia/cuda:9.0-cudnn7-devel nvidia-smi
 ```
-도커에서 default로 nvidia 드라이버를 사용할 수 있게 조금 수정하도록 하겠습니다.
+여기서는 도커에서 default로 nvidia 드라이버를 사용할 수 있게 조금 수정하도록 하겠습니다.
 ```bash
+# 매번 마운트를 하지 않아도 되어서 편하겠죠?
 docker run nvidia/cuda:9.0-cudnn7-devel nvidia-smi
 ```
 
