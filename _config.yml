@@ -11,7 +11,7 @@ port: 80
 paginate: 15
 baseurl: /
 domain_name: 'https://hongkunyoo.github.io'
-google_analytics: 'UA-XXXXXXXX-X'
+google_analytics: 'UA-63572991-1'
 plugins: [jekyll-paginate]
 
 # Details for the RSS feed generator
