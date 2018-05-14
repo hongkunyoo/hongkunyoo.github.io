@@ -1,11 +1,18 @@
 ---
 layout: post
-title:  "딥러닝 학습을 위한 AWS ECS용 GPU AMI 만들기"
-date:   2018-05-13 20:41:00
-categories: deep-learning docker AWS ECS AMI
+title:  "AWS Batch를 이용한 분산 병렬 딥러닝 학습"
+date:   2018-05-12 21:41:00
+categories: deep-learning AWS Batch docker
 ---
 
-AWS ECS용 GPU instance AMI를 만들어 AWS 컨테이너 서비스에서 (ECS, Batch) 딥러닝 학습을 해 봅시다.
+AWS Batch 서비스를 이용하여 쉽고 빠르게 분산 병렬 딥러닝 학습 환경을 구축해 봅시다.
+
+제가 대학원을 다닐 당시에는 RNN에 attention mechanism을 적용한 벤지오 교수님의 모델이 인기가 있었고 저도 attention을 이용하여 text classification 모델을 공부하였습니다. 연구실에는 GPU 서버, 일반 서버 다 합쳐서 약 7대 정도의 서버가 있었고 눈치껏 사용하지 않는 서버를 사용하였습니다. 그때도 여러 서버에서 조금 더 쉽게 딥러닝 학습 분산하여 빠른 시간내에 결과를 얻을 수 없을까 고민하였었고 제 나름대로 간단한 솔루션을 만들어 사용하였습니다.
+
+- git & github: 딥러닝 모델 소스코드와 hyper parameter list를 만들어 github에 private repository에 push합니다.
+- ansible: ansible을 이용하여
+- slack API
+
 
 [예전의 포스트]({% post_url 2017-01-22-tensorflow-install-guide %})에서는 tensorflow를 host에 직접 설치하는 방법에 대해서 알아 봤습니다.
 이번 포스트에서는 docker container에서 GPU 자원에 접근할 수 있도록 설정하여 도커 안에서 딥러닝 학습을 할 수 있도록 서버를 세팅하고
