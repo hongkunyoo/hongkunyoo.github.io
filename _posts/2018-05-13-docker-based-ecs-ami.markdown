@@ -43,7 +43,7 @@ docker run nvidia/cuda:9.0-cudnn7-devel nvidia-smi
 ###### 가장 먼저 AWS에서 제공하는 Deep learning용 AMI를 생성합니다.
 [Deep Learning AMI CUDA 9 Amazon Linux Version](https://aws.amazon.com/marketplace/pp/B077GF11NF) 기본적으로 NVIDIA driver, CUDA 9가 설치되어 있어 편하게 사용할 수 있습니다.
 ![](/assets/images/docker_ami/docker_ami_01.png)
-Instance type은 가장 값싼 p2.xlarge로 선택하겠습니다. port는 22번만 열려 있으면 됩니다.
+AMI를 생성할 때, 도커 컨테이너에서 GPU 연결이 잘되는 것만 확인하면 되기 때문에 Instance type은 가장 값싼 p2.xlarge로 선택하겠습니다. port는 22번만 열려 있으면 됩니다.
 
 만약, scratch부터 시작하고 싶으시면 저의 [예전의 포스트]({% post_url 2017-01-22-tensorflow-install-guide %})를 참고하시기 바랍니다. (좀 오래 전 포스트라 지금과는 많이 다를 수 있습니다.)
 instance 생성이 완료 되었으면 해당 ssh로 접속하여 이제 필요한 패키지들을 설치해 보겠습니다.
@@ -126,4 +126,4 @@ sudo rm -rf /var/lib/ecs/data/ecs_agent_data.json
 
 ----------------------------------------------------
 
-다음 포스트에서는 해당 AMI를 이용하여 AWS Batch에서 어떻게 분산 병렬 모델 학습을 쉽게 할 수 있을지 알아보도록 하겠습니다. 크게 세가지로 나눠 보자면 첫번째, AWS Batch가 어떤 서비스인지 개념적으로 살표 보겠습니다. 두번째, 어떻게 하면 AWS Batch를 이용하여 쉽게 분산 병렬 처리를 할 수 있는지 간단한 코드와 함께 확인해 보겠습니다. 마지막으로, 각 서버에서 생기는 학습된 모델 weight들을 (tensorflow checkpoint, keras h5 file 등) 어떻게 통합적으로 관리할 수 있을지 알아보겠습니다.
+다음 포스트에서는 해당 AMI를 이용하여 AWS Batch에서 어떻게 분산 병렬 모델 학습을 쉽게 할 수 있을지 알아보도록 하겠습니다. 크게 세가지로 나눠 보자면 첫번째, AWS Batch가 어떤 서비스인지 개념적으로 살펴 보겠습니다. 두번째, 어떻게 하면 AWS Batch를 이용하여 쉽게 분산 병렬 처리를 할 수 있는지 간단한 코드와 함께 확인해 보겠습니다. 마지막으로, 각 서버에서 생기는 학습된 모델 weight들을 (tensorflow checkpoint, keras h5 file 등) 어떻게 통합적으로 관리할 수 있을지 알아보겠습니다.
