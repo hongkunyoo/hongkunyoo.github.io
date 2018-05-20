@@ -86,7 +86,7 @@ $$\theta$$
 \\(H\_0: \mu\_{A} = \mu\_{B}\\)
 
 
-{% highlight python %}
+```python
 def log_likelihood(x, y, theta0, theta1, stdev):
     # Get the likelihood of y given the least squares model described
     # by theta0, theta1 and the standard deviation of the error term.
@@ -97,4 +97,4 @@ def log_likelihood(x, y, theta0, theta1, stdev):
         lk = stats.norm(mu, stdev).pdf(y[i])
         res = lk if i == 0 else lk * res
     return Decimal(res).ln()
-{% endhighlight %}
+```

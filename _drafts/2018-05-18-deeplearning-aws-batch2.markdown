@@ -5,27 +5,265 @@ date:   2018-05-18 16:21:00
 categories: deep-learning AWS Batch docker
 ---
 
-AWS Batch 서비스를 이용하여 쉽고 빠르게 분산 병렬 딥러닝 학습 환경을 구축해 봅시다.
+지난번 포스트에서 AWS Batch가 어떤 서비스인지에 대해 알아봤습니다. 이번에는 실제 코드와 함께 어떻게 분산 병렬 학습을 할 수 있을지에 대해 알아봅시다.
 
-제가 대학원을 다닐 당시에는 RNN에 attention mechanism을 적용한 벤지오 교수님의 모델이 인기가 있었고 저도 attention을 이용하여 text classification 모델을 공부하였습니다.
-연구실에는 GPU 서버, 일반 서버 다 합쳐서 약 7대 정도의 서버가 있었고 눈치껏 사용하지 않는 서버를 사용하였습니다. 그때도 여러 서버에서 조금 더 쉽게 딥러닝 학습 분산하여
-빠른 시간내에 결과를 얻을 수 없을까 고민하였었고 제 나름대로 간단한 솔루션을 만들어 사용하였습니다.
+먼저 hyper parameter를 이용하여 모델을 만드는 간단한 코드부터 시작하겠습니다.
+```python
+from __future__ import print_function
 
-- miniconda: requirements.txt 파일을 만들어서 각 서버의 user path에 각자 필요한 패키지들을 설치하였습니다.
-- git & github: 딥러닝 모델 소스코드와 hyper parameter list를 만들어 github에 private repository에 push합니다.
-- ansible: ansible을 이용하여 각각 지정된 host로 명령어를 날렸습니다. git pull & run python 등
-- slack API: 각 서버에서 학습이 끝나면 학습 평가 결과와 함께 어느 서버의 어떤 모델이 끝이 났는가 알려줍니다. 그러면 실제 해당 서버로 들어가서 자세한 log 기록들을 살펴보며 개선점을 찾아나갔습니다.
+import keras
+from keras.datasets import mnist
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
+from keras.optimizers import RMSprop
+from keras.callbacks import ModelCheckpoint
 
-그 당시의 방법도 그리 나쁘지는 않았습니다. 사용하는 서버가 10대 이하였기 때문에 ssh 설정만 미리 편하게 해놓으면 간단한 명령어는 물론 직접 접속하여 확인하는 것이 그리 어려운 일은 아니였습니다.
-```bash
-ssh host1 'cat $HOME/logs/2015-01-12-03.log'  # 로그 기록 확인
-ssh host1                        # 직접 접속하여 확인
+NUM_CLASSES = 10
+
+def build_model(paramset):
+    # Hyper parameter setting
+    batch_size = paramset['batch_size']
+    epochs = paramset['epochs']
+    hidden_nodes = paramset['hidden_nodes']
+    dropout_rate = paramset['dropout_rate']
+    activate_fn = paramset['activate_fn']
+    optimizer = paramset['optimizer']
+    model_path = paramset['model_path']
+
+    # building model
+    model = Sequential()
+    model.add(Dense(512, activation='relu', input_shape=(784,)))
+    for hidden_node in hidden_nodes:
+        model.add(Dropout(dropout_rate))
+        model.add(Dense(hidden_node, activation=activate_fn))
+    model.add(Dropout(0.2))
+    model.add(Dense(NUM_CLASSES, activation='softmax'))
+
+    model.summary()
+    model.compile(loss='categorical_crossentropy',
+                  optimizer=optimizer,
+                  metrics=['accuracy'])
+    return model
+
+
+paramset = {}
+paramset['batch_size'] = 128
+paramset['epochs'] = 20
+paramset['hidden_nodes'] = [10, 20, 30]
+paramset['dropout_rate'] = 0.5
+paramset['activate_fn'] = 'relu'
+paramset['optimizer'] = 'rmsprop'
+model_path = 'model.h5'
+
+model = build_model(paramset)
+train(model, paramset, model_path)
 ```
-하지만 서버가 10대 이상을 넘어가게 된다면 얘기가 달라지기 시작합니다. 새로운 패키지를 하나 설치하려고 하더라도 굉장한 시간과 막노동이 필요로하게 됩니다.
-그렇다면 어떻게 하면 좋을까요? 저는 AWS Batch 서비스를 이용한 방법을 소개하려고 합니다. 제가 대학원 시절에 이런 것들을 알았었더라면 (혹은 서비스가 나왔었더라면)
-조금 더 편하게, 빠르게 결과를 낼 수 있었을텐데, 아쉽습니다. (사실 설령, 서비스가 이미 나왔었고 방법을 알고 있었다 하더라도 가격 때문에 쉽게 사용하진 못했을 것 같기도 합니다ㅋㅋ)
 
-그럼 먼저 AWS Batch가 어떤 서비스인지에 대해서 알아보겠습니다.
+이제 paramset을 이용하여 다양한 모델을 만들 수 있게 되었습니다. 그럼 다음으로 S3에서 hyper parameter들을 가져올 수 있게 만들어 보겠습니다.
+
+```yaml
+# hyperparam_list.yml
+- batch_size: 128
+  epochs: 20
+  hidden_nodes: [10, 20, 30]
+  dropout_rate: 0.2
+  activate_fn: relu
+  optimizer: rmsprop
+
+- batch_size: 128
+  epochs: 20
+  hidden_nodes: [30, 50, 70]
+  dropout_rate: 0.7
+  activate_fn: tanh
+  optimizer: rmsprop
+```
+
+
+```python
+import boto3
+import yaml
+import os
+
+BUCKET_NAME = 'my_bucket'
+KEY = 'hyperparam_list.yml'
+
+s3 = boto3.resource('s3')
+s3.Bucket(BUCKET_NAME).download_file(KEY, 'hyperparam_list.yml')
+index = int(os.environ['AWS_BATCH_JOB_ARRAY_INDEX'])
+with open(KEY) as f:
+    hyperparam_list = yaml.load(f)
+    paramset = hyperparam_list[index]
+    print(paramset)
+    model = build_model(paramset)
+    model_path = 'model_%s.h5' % index
+    train(model, paramset, model_path)
+```
+이제 해당 코드를 병렬로 수행하면서 index값만 다르게만 여러 hyper parameter 중 하나의 param set을 가지고 와서 학습해 볼 수 있게 되었습니다.
+그렇다면 indexing하는 `index` 변수는 어디서 가지고 오면 될까요? 바로 지난번 포스트에서 설명한 AWS Batch 환경에서 제공해주는 `AWS_BATCH_JOB_ARRAY_INDEX` 환경 변수를 활용하겠습니다.
+
+그럼 이제 해당 코드를 docker image로 묶어 보도록 하겠습니다.
+
+```python
+# 전체 코드: train_model.py
+from __future__ import print_function
+import boto3
+import yaml
+import os
+
+import keras
+from keras.datasets import mnist
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
+from keras.optimizers import RMSprop
+from keras.callbacks import ModelCheckpoint
+
+NUM_CLASSES = 10
+
+def build_model(paramset):
+    # Hyper parameter setting
+    batch_size = paramset['batch_size']
+    epochs = paramset['epochs']
+    hidden_nodes = paramset['hidden_nodes']
+    dropout_rate = paramset['dropout_rate']
+    activate_fn = paramset['activate_fn']
+    optimizer = paramset['optimizer']
+    model_path = paramset['model_path']
+
+    # building model
+    model = Sequential()
+    model.add(Dense(512, activation='relu', input_shape=(784,)))
+    for hidden_node in hidden_nodes:
+        model.add(Dropout(dropout_rate))
+        model.add(Dense(hidden_node, activation=activate_fn))
+    model.add(Dropout(0.2))
+    model.add(Dense(NUM_CLASSES, activation='softmax'))
+
+    model.summary()
+    model.compile(loss='categorical_crossentropy',
+                  optimizer=optimizer,
+                  metrics=['accuracy'])
+    return model
+
+
+def train(model, paramset, model_path):
+    epochs = paramset['epochs']
+    batch_size = paramset['batch_size']
+
+    # the data, split between train and test sets
+    (x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+    x_train = x_train.reshape(60000, 784)
+    x_test = x_test.reshape(10000, 784)
+    x_train = x_train.astype('float32')
+    x_test = x_test.astype('float32')
+    x_train /= 255
+    x_test /= 255
+
+    x_train = x_train[:10000]
+    y_train = y_train[:10000]
+
+    x_test = x_test[:10000]
+    y_test = y_test[:10000]
+
+    print(x_train.shape[0], 'train samples')
+    print(x_test.shape[0], 'test samples')
+
+    # convert class vectors to binary class matrices
+    y_train = keras.utils.to_categorical(y_train, NUM_CLASSES)
+    y_test = keras.utils.to_categorical(y_test, NUM_CLASSES)
+
+    chkpt = ModelCheckpoint(model_path, monitor='val_acc', \
+              verbose=1, save_best_only=True, mode='max')
+    history = model.fit(x_train, y_train,
+                        batch_size=batch_size,
+                        epochs=epochs,
+                        verbose=1,
+                        callbacks=[chkpt],
+                        validation_data=(x_test, y_test))
+    score = model.evaluate(x_test, y_test, verbose=0)
+    print(score)
+
+
+BUCKET_NAME = 'my_bucket'
+KEY = 'hyperparam_list.yml'
+
+s3 = boto3.resource('s3')
+s3.Bucket(BUCKET_NAME).download_file(KEY, 'hyperparam_list.yml')
+index = int(os.environ['AWS_BATCH_JOB_ARRAY_INDEX'])
+with open(KEY) as f:
+    hyperparam_list = yaml.load(f)
+    paramset = hyperparam_list[index]
+    print(paramset)
+    model = build_model(paramset)
+    model_path = 'model_%s.h5' % index
+    train(model, paramset, model_path)
+```
+
+```Dockerfile
+# keras Dockerfile을 그대로 가져와서 조금 수정하였습니다.
+ARG cuda_version=9.0
+ARG cudnn_version=7
+FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-devel
+
+# Install system packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      bzip2 \
+      g++ \
+      git \
+      graphviz \
+      libgl1-mesa-glx \
+      libhdf5-dev \
+      openmpi-bin \
+      wget && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install conda
+ENV CONDA_DIR /opt/conda
+ENV PATH $CONDA_DIR/bin:$PATH
+
+RUN wget --quiet --no-check-certificate https://repo.continuum.io/miniconda/Miniconda3-4.2.12-Linux-x86_64.sh && \
+    echo "c59b3dd3cad550ac7596e0d599b91e75d88826db132e4146030ef471bb434e9a *Miniconda3-4.2.12-Linux-x86_64.sh" | sha256sum -c - && \
+    /bin/bash /Miniconda3-4.2.12-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
+    rm Miniconda3-4.2.12-Linux-x86_64.sh && \
+    echo export PATH=$CONDA_DIR/bin:'$PATH' > /etc/profile.d/conda.sh
+
+ARG python_version=3.6
+
+RUN conda install -y python=${python_version} && \
+    pip install --upgrade pip && \
+    pip install \
+      sklearn_pandas \
+      tensorflow-gpu && \
+    pip install https://cntk.ai/PythonWheel/GPU/cntk-2.1-cp36-cp36m-linux_x86_64.whl && \
+    conda install \
+      bcolz \
+      h5py \
+      matplotlib \
+      mkl \
+      nose \
+      notebook \
+      Pillow \
+      pandas \
+      pygpu \
+      pyyaml \
+      scikit-learn \
+      six \
+      boto3 \
+      theano && \
+    git clone git://github.com/keras-team/keras.git /src && pip install -e /src[tests] && \
+    pip install git+git://github.com/keras-team/keras.git && \
+    conda clean -yt
+
+ENV PYTHONPATH='/src/:$PYTHONPATH'
+
+ADD train_model.py .
+CMD python train_model.py
+```
+
+해당 이미지를 ECR에 upload까지 하면 모든 준비가 완료되었습니다. AWS Batch 서비스를 사용해 보도록 합시다.
+
+
+
 
 
 #### What is AWS Batch?
