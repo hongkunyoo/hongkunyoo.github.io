@@ -5,7 +5,7 @@ date:   2018-05-20 16:21:00
 categories: deep-learning AWS Batch docker
 ---
 
-지난번 포스트에서 AWS Batch가 어떤 서비스인지에 대해 알아봤습니다. 이번에는 실제 코드와 함께 어떻게 분산 병렬 학습을 할 수 있을지에 대해 알아봅시다.
+[지난 포스트]({% post_url 2018-05-18-deeplearning-aws-batch1 %})에서 AWS Batch가 어떤 서비스인지에 대해 알아봤습니다. 이번에는 실제 코드와 함께 어떻게 분산 병렬 학습을 할 수 있을지에 대해 알아봅시다.
 
 #### Build model
 먼저 hyper parameter를 이용하여 모델을 만드는 간단한 코드부터 시작하겠습니다.

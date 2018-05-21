@@ -78,4 +78,4 @@ Job Queue는 Job Definition과 Compute Environment를 연결해 주는 통로라
 
 ---
 
-지금까지 AWS Batch 서비스에 대해서 알아봤습니다. 이제 어떻게 AWS Batch 서비스를 이용하여 효율적으로 분산 병렬 처리할 수 있을지 코드와 함께 살펴 보겠습니다.
+지금까지 AWS Batch 서비스에 대해서 알아봤습니다. 이제 어떻게 AWS Batch 서비스를 이용하여 효율적으로 분산 병렬 처리할 수 있을지 코드와 함께 살펴 보겠습니다. [다음 포스트로 바로가기]({% post_url 2018-05-20-deeplearning-aws-batch2 %})
