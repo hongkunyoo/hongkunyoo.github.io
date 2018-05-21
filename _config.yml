@@ -8,11 +8,14 @@ highlighter: rouge
 logo: /assets/images/coffee_whale_only_bg.png
 host: 0.0.0.0
 port: 80
-paginate: 15
+paginate: 10
 baseurl: /
 domain_name: 'https://hongkunyoo.github.io'
 google_analytics: 'UA-63572991-1'
-plugins: [jekyll-paginate]
+plugins:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-seo-tag
 
 # Details for the RSS feed generator
 url:            'blog url'

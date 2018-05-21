@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[Tensorflow] r0.12 ver 기준 설치 가이드 Best Practice"
+description: "Ubuntu에 tensorflow 설치 방법"
 date:   2017-01-22 21:10:00
 categories: machine-learning ml tensorflow
 ---
@@ -30,7 +31,7 @@ sudo apt-get install ubuntu-desktop
 sudo rm /etc/X11/xorg.conf
 sudo nvidia-uninstall
 ```
-그리고 나서 꼭 재부팅 시켜줍니다. 
+그리고 나서 꼭 재부팅 시켜줍니다.
 ```
 sudo shutdown -r now
 ```
@@ -76,12 +77,12 @@ https://developer.nvidia.com/cudnn
 
 Download > login > Download cuDNN v5.1 (August 10, 2016), for CUDA 8.0 > cuDNN v5.1 Library for Linux)
 
-`wget`으로 바로 받으시려면 
+`wget`으로 바로 받으시려면
 ```
 # CUDA v8.0 / cudnn v5.1
 wget https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v5.1/prod/8.0/cudnn-8.0-linux-x64-v5.1-tgz
 ```
-그리고 난 후 압축을 풀고 
+그리고 난 후 압축을 풀고
 ```
 tar -xvf cudnn-8.0-linux-x64-v5.1-tgz
 ```
@@ -95,7 +96,7 @@ sudo cp cuda/lib64/* /usr/local/cuda/lib64/.
 ```
 vi ~/.bashrc
 export CUDA_HOME=/usr/local/cuda
-export PATH=${CUDA_HOME}/bin:$PATH 
+export PATH=${CUDA_HOME}/bin:$PATH
 export LD_LIBRARY_PATH=${CUDA_HOME}/lib64
 ```
 다시 한번 재부팅을 해줍니다. `sudo shutdown -r now`

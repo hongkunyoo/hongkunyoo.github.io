@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[기계학습] Slack을 이용한 Training 완료 알람 시계 만들기"
+description: "slack을 이용하여 모델 학습 종료 알람을 받아봅시다"
 date:   2016-03-24 18:18:00
 categories: machine-learning ml slack
 ---
@@ -14,7 +15,7 @@ slack을 이용하여 모델학습이 끝난 이후에 알람을 받도록 해�
 
 슬랙은 참 간단하면서도 강력한 기능이 많은 것 같습니다. 많은 슬랙 기능 중에 [Incomming Web hooks](https://api.slack.com/incoming-webhooks) 을 이용하여 알람을 맞춰 보겠습니다.
 
-큰 그림은 다음과 같습니다. 
+큰 그림은 다음과 같습니다.
 
 1. 학습이 종료(혹은 exception)함에 따라 Web hook을 날려 준다.
 2. 핸드폰에서 알림을 받아 결과를 인지한다.
@@ -50,7 +51,7 @@ def alarm(msg):
     req = urllib2.Request(url)
     req.add_header('Content-Type', 'application/json')
     urllib2.urlopen(req, json.dumps(payload))
-	
+
 def train():
     # Load Dataset
     # Build Model
@@ -85,7 +86,7 @@ def train():
 
 ```
 
-이제 학습을 하다가 에러가 발생한 경우에도 알람을 받을 수 있게 되었습니다. 하지만 코드가 지저분해진 것 같습니다. 조금 더 예쁘게 바꿀 순 없을까요? 
+이제 학습을 하다가 에러가 발생한 경우에도 알람을 받을 수 있게 되었습니다. 하지만 코드가 지저분해진 것 같습니다. 조금 더 예쁘게 바꿀 순 없을까요?
 
 방법은 파이썬 decorator를 사용하는 것입니다. 저는 매번 decorator를 사용만 해봤지 직접 만들어 보긴 처음이였습니다. decorator를 사용해서 깔끔하게 고쳐 보겠습니다.
 
@@ -171,7 +172,7 @@ def other_train_model():
     ...
 ```
 
-이제 모듈 형태로 ```alarm```함수와 ```alarmable```함수만 미리 만들어 놓으면 
+이제 모듈 형태로 ```alarm```함수와 ```alarmable```함수만 미리 만들어 놓으면
 앞으로 시간이 많이 걸리는 함수 위에 ```@alarmable``` decorator만 달아 주면 어떤 함수든지 알아서 알람이 울리게 됩니다.
 
 개인적으로 기계학습 모델을 training할 때, 어떻게 하면 낭비되는 시간을 줄일 수 있을까 고민하면서 시작했지만 문제도 해결했고 슬랙 API와 파이썬 decorator에 대해서도 공부해 보는 시간이 되었습니다.

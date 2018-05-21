@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "딥러닝 학습을 위한 AWS ECS용 GPU AMI 만들기"
+description: "AWS ECS용 GPU instance AMI 만들기"
 date:   2018-05-13 20:41:00
 categories: deep-learning docker AWS ECS AMI
 ---
