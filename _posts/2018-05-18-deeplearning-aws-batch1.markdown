@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "AWS Batch를 이용한 분산 병렬 딥러닝 학습 #1"
-date:   2018-05-19 16:21:00
+date:   2018-05-18 16:21:00
 categories: deep-learning AWS Batch docker
 ---
 

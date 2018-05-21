@@ -1,12 +1,13 @@
 ---
 layout: post
 title:  "AWS Batch를 이용한 분산 병렬 딥러닝 학습 #2"
-date:   2018-05-18 16:21:00
+date:   2018-05-20 16:21:00
 categories: deep-learning AWS Batch docker
 ---
 
 지난번 포스트에서 AWS Batch가 어떤 서비스인지에 대해 알아봤습니다. 이번에는 실제 코드와 함께 어떻게 분산 병렬 학습을 할 수 있을지에 대해 알아봅시다.
 
+#### Build model
 먼저 hyper parameter를 이용하여 모델을 만드는 간단한 코드부터 시작하겠습니다.
 ```python
 from __future__ import print_function
@@ -59,10 +60,11 @@ model = build_model(paramset)
 train(model, paramset, model_path)
 ```
 
-이제 paramset을 이용하여 다양한 모델을 만들 수 있게 되었습니다. 그럼 다음으로 S3에서 hyper parameter들을 가져올 수 있게 만들어 보겠습니다.
+보시다시피 paramset을 `build_model` 함수에 넘겨주면 해당 파라미터값들에 따라 모델이 만들어지게 하였습니다. 그럼 다음으로 S3에서 순서에 맞게 hyper parameter들을 가져올 수 있게 만들어 보겠습니다.
 
+#### Fetch hyperparameter from S3
 ```yaml
-# hyperparam_list.yml
+# 다음과 같은 YAML형식으로 S3에 hyperparam_list.yml라는 이름으로 저장되어 있다고 생각해봅시다.
 - batch_size: 128
   epochs: 20
   hidden_nodes: [10, 20, 30]
@@ -78,7 +80,7 @@ train(model, paramset, model_path)
   optimizer: rmsprop
 ```
 
-
+아래의 코드는 `index`값에 따라 hyper parameter 리스트 중 하나의 paramset을 가지고 와서 모델을 만들고 학습 시키는 코드입니다.
 ```python
 import boto3
 import yaml
@@ -89,7 +91,7 @@ KEY = 'hyperparam_list.yml'
 
 s3 = boto3.resource('s3')
 s3.Bucket(BUCKET_NAME).download_file(KEY, 'hyperparam_list.yml')
-index = int(os.environ['AWS_BATCH_JOB_ARRAY_INDEX'])
+index = 1 # hyperparam_list.yml의 첫번째 paramset
 with open(KEY) as f:
     hyperparam_list = yaml.load(f)
     paramset = hyperparam_list[index]
@@ -98,11 +100,14 @@ with open(KEY) as f:
     model_path = 'model_%s.h5' % index
     train(model, paramset, model_path)
 ```
-이제 해당 코드를 병렬로 수행하면서 index값만 다르게만 여러 hyper parameter 중 하나의 param set을 가지고 와서 학습해 볼 수 있게 되었습니다.
-그렇다면 indexing하는 `index` 변수는 어디서 가지고 오면 될까요? 바로 지난번 포스트에서 설명한 AWS Batch 환경에서 제공해주는 `AWS_BATCH_JOB_ARRAY_INDEX` 환경 변수를 활용하겠습니다.
+
+그렇다면 hyperparameter list를 indexing하는 `index` 변수는 어디서 가지고 오면 될까요? 바로 지난번 포스트에서 설명한 AWS Batch 환경에서 제공해주는 `AWS_BATCH_JOB_ARRAY_INDEX` 환경 변수를 활용하면 모든 것이 완벽할 것 같습니다.
+`index = int(os.environ['AWS_BATCH_JOB_ARRAY_INDEX'])`
 
 그럼 이제 해당 코드를 docker image로 묶어 보도록 하겠습니다.
 
+#### 전체코드
+아래 코드는 위 설명에 대한 전체 코드를 train_model.py로 저장한 것입니다.
 ```python
 # 전체 코드: train_model.py
 from __future__ import print_function
@@ -199,6 +204,7 @@ with open(KEY) as f:
     train(model, paramset, model_path)
 ```
 
+#### Docker file
 ```Dockerfile
 # keras Dockerfile을 그대로 가져와서 조금 수정하였습니다.
 ARG cuda_version=9.0
@@ -260,60 +266,41 @@ ADD train_model.py .
 CMD python train_model.py
 ```
 
-해당 이미지를 ECR에 upload까지 하면 모든 준비가 완료되었습니다. AWS Batch 서비스를 사용해 보도록 합시다.
+```bash
+docker build . -t {account-id}.dkr.ecr.{region}.amazonaws.com/{name}:{tag}
+docker push {account-id}.dkr.ecr.{region}.amazonaws.com/{name}:{tag}
+```
+
+해당 이미지를 ECR에 upload까지 하면 모든 준비가 완료되었습니다. 이제 AWS Batch 서비스를 이용하여 분산 병렬 학습을 해봅시다.
 
 
+#### Using aws cli
 
+```bash
+aws batch register-job-definition --job-definition-name train_model_def --type=container --container-properties '{ "image": "{account-id}.dkr.ecr.{region}.amazonaws.com/{name}:{tag}", "vcpus": 4, "memory": 20000}'
+```
+먼저 Job definition을 등록하겠습니다. 이름은 `train_model_def`이라고 정하겠습니다. 여기서 중요한 점은 vcpus값을 학습 시키려는 EC2 instance의 vcpu 개수와 동일하게 설정하여 주시기 바랍니다. (저는 p2.xlarge type을 사용하여 vcpu 4를 입력하였습니다.) 그 이유는 현재 AWS Batch에는 명시적으로 GPU자원을 요청하는 기능이 없습니다. CPU와 Memory 자원만 명시적으로 요청하는 기능이 있습니다. 그렇기 때문에 한 host당 하나의 training 작업이 돌아가길 원하신다면 CPU 요청값을 이용하여 해결해야 합니다. 그렇지 않는다면 잘못하다가 두개의 job이 동시에 동일한 host에서 돌다가 GPU 자원이 모자라게 되어 프로그램이 죽을 수 있습니다.
 
+```bash
+aws batch submit-job --job-name train_model --job-queue {job_queue_name}  --job-definition train_model_def --array-properties '{"size": 2}'
+```
+이제 만든 Job definition을 실제로 돌려보도록 하겠습니다. 작업을 실행 시키기 위해서 다음과 같은 변수들에 값을 채워야 합니다.
+- job-name: job definition과 별도로 job의 이름을 지정해야 합니다. 저는 train_model이라 하겠습니다
+- job-queue: compute environment와 연결된 job queue 이름을 넣습니다.
+- job-definition: 실행하려는 작업 정의 이름을 넣습니다. `train_model_def`를 입력합니다.
+- array-properties: 몇개의 job을 돌릴지, job간의 dependency등을 정합니다. 저희는 테스트로 2개의 hyper parameter set을 만들었기 때문에 size를 2라고 적겠습니다. 결국 해당 property를 이용하여 한개의 image를 가지고 분산 병렬 처리를 할 수 있게 만들어 줍니다.
 
-#### What is AWS Batch?
-
-![](/assets/images/aws_batch/aws-batch.png)
-
-[AWS 공식 홈페이지](https://aws.amazon.com/batch/)에 가보면 '개발자, 과학자 및 엔지니어가 AWS에서 수많은 배치 컴퓨팅 작업을 효율적으로 실행할 수 있다'고 나와있습니다.
-배치 컴퓨팅 작업은 비단 AWS만의 특별한 개념이 아닙니다. 우리가 흔히 배치 작업이라고 한다면, _미리 정의된 작업_ 을 _어떤 컴퓨팅 환경_ 위에서 원하는 순서와 수량을 _스케줄링_ 할 수 있으며
-그 작업이 성공적으로 완료하였는지 _현황 확인_ 하는 것을 말합니다.
-
-AWS Batch에서도 각각 동일한 개념을 사용합니다.
-- Job Definition: 작업을 어떻게 실행할지 미리 정의를 합니다.
-- Job: 미리 정의한 작업이 실제로 어떻게 동작할지를 정하고 (scheduling) 작업 결과를 보여줍니다. (monitoring)
-- Job Queue: 실행할 작업을 잡 큐에 적재합니다. 각 Queue는 Compute Environment와 연결되어 있습니다.
-- Compute Environment: 실제 작업이 이루어지는 환경입니다. (내부적으로 ECS를 사용합니다.)
-
-![](/assets/images/aws_batch/aws_batch500.png)
-
-먼저 Job Definition부터 보겠습니다.
-
-##### Job Definition
-AWS Batch 위에서 어떤 작업을 실행할지 정의하는 곳입니다.
-많은 파라미터들이 있지만 몇가지 중요하게 생각하는 부분에 대해서 얘기하겠습니다.
-더 자세한 내용은 [Job Definition 도큐먼트](https://docs.aws.amazon.com/batch/latest/userguide/job_definition_parameters.html)를 참고 바랍니다.
-<!-- ![](/assets/images/aws_batch/jobdef.png) -->
-- Job definition name: 작업 정의 이름을 넣습니다. 저는 `train`이라고 적겠습니다.
-- Container image: 모델 학습을 하는 도커 이미지를 넣습니다.
-- vCPUs: 해당 작업을 실행하기 위해 어느 정도의 CPU가 필요한지 명시적으로 적습니다. 여기서 중요한 것은 한 서버당 한개의 training만을 돌리고 싶으시면 해당 서버의 CPU만큼 적으시면 됩니다.(e.g. p2.xlarge 타입 경우 vCPU 4)
-아직까지 GPU 자원을 명시적으로 요구하는 파라미터는 없는 것 같습니다.
-- Environment variables: container에 정보를 넘길 때 사용합니다. AWS Batch에서는 한개의 Job definition을 이용하여 여러개의 job을 병렬로 실행할 수 있는데 이때 `AWS_BATCH_JOB_ARRAY_INDEX` env variable을 이용하여 해당 작업이 몇번째 Job으로 실행되고 있는지 알 수 있습니다. 이 변수를 이용하면 hyper parameter 리스트를 S3와 같은 원격 스토리지에 저장해 놓고 각각의 Job에서 index 순에 맞게 모델 파라미터들을 들고와서 병렬로 학습을 수행할 수 있게 됩니다. [Array Job 참고](https://docs.aws.amazon.com/batch/latest/userguide/array_jobs.html)
-- Volumes & Mount points: 학습한 모델 파일 (checkpoint, h5 등)을 Host에서 접근할 수 있게 volume을 만듭니다. 이때 각각의 host에서 volume을 mount시키는 것이 아니라 `ssh volume`을 이용하여 원격 저장소에 바로 저장하려고 합니다. 참고 [docker ssh volume](https://github.com/vieux/docker-volume-sshfs)
-
-##### Compute Environment
-그 다음으로 작업이 실행될 환경을 생성해 봅시다. AWS Batch의 compute environment는 내부적으로 ECS를 사용합니다. 그래서 compute environment를 하나 생성하면 ECS cluster가 자동적으로 생성됩니다.
-도커 컨테이너에서 컴퓨터의 GPU 자원을 이용하려면 몇가지 수정이 필요합니다. 매번 instance를 만들어서 수정할 필요 없이 custom AMI를 생성하여 사용하시면 편리합니다. 저의 [예전 포스트]({% post_url 2018-05-13-docker-based-ecs-ami %})를 참고하여 custom AMI를 생성하시기 바랍니다.
-- Compute environment type: `Managed`
-- Compute environment name: 컴퓨트 환경의 이름을 적습니다. 저는 `deeplearning_cluster` 라고 적겠습니다.
-- Allowed instance types: 돈이 많이 없으므로 `p2.xlarge`를 선택하겠습니다.
-- Minimum vCPUs: 실행하지 않을 때에는 instance를 전부 내리기 위해 `0`을 넣겠습니다. 자주 사용한다면 어느정도 유지하는게 나을 것 같습니다.
-- Maximum vCPUs: 최대 5대가 넘지 않게 `20` (4 vCPU X 5 instance)이라고 설정하겠습니다.
-- Enable user-specified Ami ID: `checked`
-- AMI ID: 도커 컨테이너에서 Host의 GPU를 사용할 수 있게 수정한 AMI ID 입력
-
-##### Job Queue
-Job Queue는 Job Definition과 Compute Environment를 연결해 주는 통로라고 생각하시면 됩니다. 작업을 하나 정의하고 그것을 어떠한 컴퓨트 환경에서 실행 시키고 싶을 때, 해당하는 Job Queue의 대기열에 집어 넣으시면 됩니다.
-일반적으로도 배치 작업을 병렬로 돌리고 싶을 때, 여러개의 worker를 생성하여 하나의 queue를 바라보게 하고 실행 시키고 싶은 작업을 대기열에 넣으면 놀고 있는 worker 중에 하나가 작업을 처리하는 것과 동일하다고 보시면 됩니다. 한가지 특정이 있다면 AWS Batch Job Queue에는 priority 설정을 할 수 있어서 여러 Job queue에 연결된 컴퓨트 환경 중에 해당 Job queue에 연결된 작업을 먼저 컴퓨터 환경에서 처리할 수 있도록 해줍니다.
-
-##### Job
-마지막으로 Job에 대해서 설명 드리자면, Job은 Job Definition의 instantiate된 객체라고 생각하시면 편합니다. Job Definition을 실제로 실행할 때, 몇개의 Job을 어느 정도의 cpu와 memory를 사용하여 어떤 Job Queue에 넣을 지를 결정하여 생성된 객체입니다. 또한 Job은 현재 실행되고 있는 작업의 상태를 보여줍니다. (running, failed, succeeded 등) job id를 이용하여 running하고 있는 작업을 취소할 수도 있습니다.
+job submit을 할 때에도, CPU, memory 자원 요청을 할 수 있습니다. 저희는 Job definition을 등록할 때 이미 설정을 하여 생략합니다.
 
 ---
 
-지금까지 AWS Batch 서비스에 대해서 알아봤습니다. 이제 어떻게 AWS Batch 서비스를 이용하여 효율적으로 분산 병렬 처리할 수 있을지 코드와 함께 살펴 보겠습니다.
+지금까지 살펴본 과정을 정리하자면 다음과 같습니다.
+- AWS Batch에서 필요한 환경을 만들었습니다. (Job Queue, Compute environment, 지난 포스트)
+- S3에서 hyper parameter list를 다운 받아 하나의 paramset을 이용하여 모델을 구축하고 학습하는 코드를 만들었습니다.
+- 해당 코드를 도커 이미지로 만들어 저장하였습니다.
+- AWS Batch에서 해당 이미지로 작업 정의를 만들어 등록하였습니다.
+- 작업을 실행할 때, 몇개의 작업을 병렬로 실행할 것인가, 컨테이너 property들을 설정할 수 있습니다.
+
+이렇게 환경을 세팅하고 나면 대규모 모델 학습하는 일은 무척 편리해 집니다. 비즈니스의 중요도에 따라 빠르게 많은 모델을 학습 시켜야 한다면 더 많은 instance들을 compute environment에 붙이면 되고, 가격적인 면으로는 spot instance를 통해 최소의 비용으로 최대의 효율을 뽑을 수 있습니다.
+
+그럼 다음 포스트에서 각 host에서 학습한 모델 결과 파일 (checkpoint file, h5 등)을 어떻게 효율적으로 한곳에서 관리할 수 있을지에 대해서 알아보도록 하겠습니다.
