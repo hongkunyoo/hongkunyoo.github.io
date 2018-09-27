@@ -291,7 +291,7 @@ aws batch submit-job --job-name train_model --job-queue {job_queue_name}  --job-
 - job-definition: 실행하려는 작업 정의 이름을 넣습니다. `train_model_def`를 입력합니다.
 - array-properties: 몇개의 job을 돌릴지, job간의 dependency등을 정합니다. 저희는 테스트로 2개의 hyper parameter set을 만들었기 때문에 size를 2라고 적겠습니다. 결국 해당 property를 이용하여 한개의 image를 가지고 분산 병렬 처리를 할 수 있게 만들어 줍니다.
 
-job submit을 할 때에도, CPU, memory 자원 요청을 할 수 있습니다. 저희는 Job definition을 등록할 때 이미 설정을 하여 생략합니다.
+job submit을 할 때에도, CPU, memory 자원 요청을 할 수 있습니다. 저희는 Job definition을 등록할 때 이미 설정을 하여 생략합니다. 학습한 모델 파일을 (checkpoint file, h5 등) 직접 눈으로 보고 싶으시다면 작업 실행시 volume을 마운트 시키고 직접 host에 들어가서 해당 위치에서 확인하시기 바랍니다. volume 마운트 생략시 도커 컨테이너 내부에 만들어지게 됩니다. 이번 포스트에서는 volume 마운트를 생략하겠습니다.
 
 ---
 
