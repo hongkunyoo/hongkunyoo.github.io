@@ -1,6 +1,6 @@
 ---
 layout: default
-disqus: false
+disqus: true
 archive: false
 cover: /assets/images/blog_bg3.png
 logo: /assets/images/coffee_whale_only_bg.png
@@ -94,6 +94,7 @@ post_class: post-template
             {% if page.disqus %}
                 {% include disqus.html %}
             {% endif %}
+            {% include disqus.html %}
 
         </footer>
 
