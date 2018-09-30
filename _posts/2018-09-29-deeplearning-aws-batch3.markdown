@@ -2,7 +2,7 @@
 layout: post
 title:  "AWS Batch를 이용한 분산 병렬 딥러닝 학습 #3"
 description: "개별 host에서 학습한 모델 파일을 효율적으로 관리할 수 있는 방법에 대해 알아보겠습니다."
-date:   2018-05-19 16:21:00
+date:   2018-09-29 19:21:00
 categories: deep-learning AWS Batch docker
 ---
 개별 host에서 학습한 모델 파일을 통합적으로 관리할 수 있는 방법에 대해 알아보겠습니다.
@@ -17,6 +17,7 @@ categories: deep-learning AWS Batch docker
 #### 제안
 애초부터 원격 저장소를 학습 서버에 직접 마운트 시켜서 학습 결과가 생성되는 즉시 중앙 저장소로 모이게하는 건 어떨까요? 바로 NAS서버를 이용하여 각 서버에 Network File System으로 마운트하는 방법이 되겠습니다. 이를 통해 학습 서버에서는 기존과 마찬가지로 마치 로컬 디렉토리에 파일을 저장하는 것처럼 보이나 실제로는 원격 저장소로 모델 파일들일 모이게 됩니다. 방법도 그리 어렵지 않습니다.
 ![](/assets/images/volume_driver/efs.png)
+
 
 ---
 
@@ -51,17 +52,10 @@ performance에 관한 더 자세한 사항은 [AWS 공식 문서](https://docs.a
 	- Ubuntu: `sudo apt-get install -y nfs-common`
 4. /efs에 EFS를 마운트 시킵니다.
 아래의 명령어에서 `${REPLACE_HERE}` 부분을 EFS 서비스의 DNS name으로 바꿔서 실행하시기 바랍니다.
+
 `sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 ${REPLACE_HERE}:/ /efs`
-
-
-sshfs volume driver를 학습 환경으로 사용할 instance에 설치합니다. `docker plugin install vieux/sshfs`
-6. volume을 새롭게 생성합니다. 이때 sshfs volume driver를 이용하여 중앙 저장소의 /opt/host에 매핑 시켜줍니다.
-volume의 이름을 sshvolume이라고 짓습니다.
-`docker volume create -d vieux/sshfs -o sshcmd={user}@{host}:/opt/host sshvolume`
-7. 새롭게 job definition을 만들겠습니다. 기존과 설정이 동일하나 volume을 새롭게 연결해 보겠습니다. 이름은 미리 정한대로 sshvolume이라 하고 `source path`는 `/storage/`와 연결하겠습니다.<br/>
-> 자세한 설치 및 설정 방법은 [docker-volume-sshfs](https://github.com/vieux/docker-volume-sshfs)에 잘 나와있습니다.
-
-8. 모델 저장 방식을 제안한 대로 수정합니다. `train_model.py`
+5. 각 서버를 순회하면서 EFS를 mount해주면 학습 서버 세팅 완료!
+6. 이제 [지난 포스트]({% post_url 2018-05-20-deeplearning-aws-batch2 %}) 에서 만든 학습 스크립트 (`train_model.py`) 의 코드 중 모델을 저장하는 부분을 수정해 봅시다.
 ```python
 s3 = boto3.resource('s3')
 s3.Bucket(BUCKET_NAME).download_file(KEY, 'hyperparam_list.yml')
@@ -76,6 +70,13 @@ with open(KEY) as f:
     model_path = os.path.join(model_path, 'model.h5')
     ```
 
-9. (optional) 새로운 instance를 생성할 때마다 sshfs volume driver를 설치할 필요 없이 AMI로 만들어서 관리하면 편리합니다.
+8. (optional) 새로운 instance를 생성할 때마다 EFS를 mount할 필요 없이 AMI로 만들어서 관리하면 편리합니다.
 
-모든 것이 완료되었습니다. 이제 Job submit을 통해 제대로 저장이 되는지 확인
+AWS Batch 서비스를 이용하여 Job을 완료한 이후에 EFS storage에 원하는 결과물이 생성 되었는지 확인해 봅니다.
+`ls -al /storage/*`
+이제 한 곳에서 기계학습 결과물을 관리할 수 있게 되었습니다. 생성된 모델 파일을 예측 때 사용하는 방법도 어디서든 동일하게 로컬 파일 시스템을 접근 하듯이 모델에 접근할 수 있습니다.
+
+-----
+
+지금까지 3개의 포스트를 활용하여 AWS Batch를 이용하여 분산 병렬 학습하는 방법에 대해서 작성하였습니다.
+앞으로는 서버를 어떻게 사용해야하는지에 대한 세부적인 사항을 고민하지 말고 핵심 모델링에 좀 더 집중하여 원하는 모델을 더 빠르고 효율적으로 얻으시길 바랍니다.
