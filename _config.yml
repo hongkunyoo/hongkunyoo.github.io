@@ -6,6 +6,7 @@ repository: hongkunyoo/hongkunyoo.github.io
 meta_description: "Notes for thoughts and ideas"
 
 markdown: kramdown
+timezone: Asia/Seoul
 highlighter: rouge
 logo: /assets/images/coffee_whale_only_bg.png
 host: 0.0.0.0
