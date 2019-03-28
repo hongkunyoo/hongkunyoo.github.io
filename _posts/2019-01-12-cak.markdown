@@ -6,7 +6,7 @@ categories: kubernetes cka
 ---
 2018년 12월 19일 고대하던 CKA 자격증을 취득하였습니다. 자랑겸, 정보 공유겸 취득 후기 포스트를 작성합니다.
 
-제일 처음 자격증에 대한 정보를 알게된 건, [Kubernetes를 이용한 기계학습 cluster](/kubernetes/ml/k8s/docker/2019/01/10/k8s-ml-01.html)를 구축하는 일을 하는 중, 쿠버네티스 공식 자격증이 있다는 것을 알게 되었습니다. 해당 자격증은 Cloud Native Computing Foundation에서 만들고 Linux Foundation에서 주관하는 쿠버네티스 Admin 자격증입니다. 가장 특이한 점으로는 보통 시험과는 다르게 문제와 답이 있어서 정답을 맞추는 시험이 아니라 제한 시간내에 직접 쿠버네티스 cluster를 조작하여 결과를 내야하는 완전한 hands-on 시험이라는 것입니다. 또한 쿠버네티스 공식 홈페이지 (https://kubernetes.io)를 시험 시간 동안 접속할 수 있기 때문에 전혀 암기할 필요 없이 쿠버네티스를 완벽하게 다룰 수만 있다면 풀 수 있는 시험입니다. 아직 한국어가 지원되지 않아서 전부 영어로 감독관과 대화하고 문제를 읽어야 하지만 그렇게 어려운 단어들이 나오지 않기 때문에 크게 문제가 되진 않습니다.
+제일 처음 자격증에 대한 정보를 알게된 건, [Kubernetes를 이용한 기계학습 cluster](/kubernetes/ml/k8s/docker/machine-learning/2019/01/11/k8s-ml-01.html)를 구축하는 일을 하는 중, 쿠버네티스 공식 자격증이 있다는 것을 알게 되었습니다. 해당 자격증은 Cloud Native Computing Foundation에서 만들고 Linux Foundation에서 주관하는 쿠버네티스 Admin 자격증입니다. 가장 특이한 점으로는 보통 시험과는 다르게 문제와 답이 있어서 정답을 맞추는 시험이 아니라 제한 시간내에 직접 쿠버네티스 cluster를 조작하여 결과를 내야하는 완전한 hands-on 시험이라는 것입니다. 또한 쿠버네티스 공식 홈페이지 (https://kubernetes.io)를 시험 시간 동안 접속할 수 있기 때문에 전혀 암기할 필요 없이 쿠버네티스를 완벽하게 다룰 수만 있다면 풀 수 있는 시험입니다. 아직 한국어가 지원되지 않아서 전부 영어로 감독관과 대화하고 문제를 읽어야 하지만 그렇게 어려운 단어들이 나오지 않기 때문에 크게 문제가 되진 않습니다.
 https://www.cncf.io/certification/cka/
 
 #### 유용한 리소스 자료들
