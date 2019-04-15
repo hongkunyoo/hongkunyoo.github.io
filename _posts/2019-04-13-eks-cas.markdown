@@ -1,0 +1,174 @@
+---
+layout: post
+title:  "Amazon EKS에서 Cluster Autoscaler 설정하기"
+date:   2019-04-13 21:20:00
+categories: kubernetes eks cluster-autoscaler
+---
+오늘은 AWS에서 제공하는 Kubernetes managed 서비스인 EKS에서 요청량에 따라 자동으로 worker 노드들을 늘렸다가 줄여주는 Cluster Autoscaler를 설정하는 방법에 대해서 공유하고자 합니다.
+
+### Amazon EKS란?
+Amazon EKS를 간단히 설명드리자면, AWS에서 쿠버네티스 마스터 노드를 (control plane) 완전 관리형으로 제공해주는 서비스입니다. 기존에 EC2위에 직접 마스터 노드를 구축하여 사용하였을 때보다 아래와 같은 장점들이 있습니다.
+#### 1. 마스터 클러스터를 직접 구축할 필요가 없습니다.
+쿠버네티스 마스터 클러스터를 직접 구축하는게 그리 만만하지 않습니다. 
+* [ClusterConfiguration](https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta1#ClusterConfiguration)을 직접 설정해야 합니다.
+* Master Endpoint (ELB) 설정을 직접 해야 합니다.
+* Certificate key 설정을 해야 합니다.
+* etcd DB setup을 직접 해야 합니다.
+
+물론 [kops](https://github.com/kubernetes/kops)와 같은 툴을 이용하면 손쉽게 마스터 클러스터를 포함하여 전체 쿠버네티스 클러스터를 구축해 주지만 장애가 발생했을때는 결국 직접 장애의 원인을 파악해야 합니다.
+
+#### 2. 마스터 노드를 관리할 필요가 없습니다.
+직접 마스터 클러스터를 구축하게 되면 마스터가 죽지 않게 지속적으로 관리를 해줘야합니다.
+쿠버네티스의 사용량에 따라 적절히 Scale up/out을 해줘야하며 etcd DB의 사용량에 따라 디스크 관리도 해줘야 합니다.
+
+#### 3. 비용이 절감됩니다.
+아래는 직접 마스터 클러스터를 구축한 것과 EKS를 사용했을 때의 가격 비교표입니다.
+
+| Cluster Size | 직접 구축 (m5.large 기준) |  Amazon EKS     |
+|--------------|---------------------------|-----------------|
+|  3 nodes     |  시간당 0.354 USD         | 시간당 0.20 USD |
+|  5 nodes     |  시간당 0.590 USD         | 시간당 0.20 USD |
+|  7 nodes     |  시간당 0.826 USD         | 시간당 0.20 USD |
+
+
+마스터 클러스터를 직접 구축한다면 failure tolerance에 따라 가격이 비례하는 반면 EKS는 AWS에서 보장해주기 때문에 저렴한 가격에 마스터 노드의 availability를 보장해줍니다.
+
+이번 포스트에서는 [eksctl](https://eksctl.io/) 툴을 이용하여 EKS 클러스터를 구축할 예정입니다.
+eksctl을 이용한 클러스터 구축에 대한 자세한 내용은 [eksworkshop](https://eksworkshop.com/)를 참고해 주시기 바랍니다.
+
+---
+
+### Cluster Autoscaler란?
+쿠버네티스는 모든 메타 정보를 마스터 노드에 들어있는 DB에 저장하고 worker노드는 단순히 컨테이너를 실행하는 executor로 사용되기 때문에 직접 worker 노드를 추가하고 삭제하는 작업은 비교적 간단합니다. 하지만 그것까지도 대신해주는 친구가 있다면 얼마나 더 좋을까요?
+오늘 설명 드릴 Cluster autoscaler는 자동으로 쿠버네티스의 요청량에 따라 worker노드를 쿠버네티스에 추가해줍니다. 여기서 주의하셔야 할 점은 `사용량`이 아닌 `요청량`이라는 점입니다.
+예시와 함께 설명드리도록 하겠습니다.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mynginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    resources:
+      requests:
+        cpu: "0.3"
+        memory: "64Mi"
+```
+먼저 vCPU 1 / Memory 2Gi의 worker노드가 하나 있는 것을 가정해 봅시다.
+위와 같은 `Pod`를 쿠버네티스에 요청했을 때 실제로 mynginx `Pod`가 cpu를 `0.1` 사용하고 메모리를 `32Mi`만 사용한다고 하더라도 요청을 `0.3`/`64Mi`를 하였기 때문에 위와 같은 `Pod`를 4개 동시에 요청하였을 때 비록 총 사용량은 vCPU `0.4`, memory `128Mi` 이더라도 요청량은 vCPU `1.2`, memory `256Mi`로 CPU가 부족하게 되어 마지막 `Pod`는 Pending 상태로 남아있게됩니다. 제가 생각하기로는 `Pod`가 실제로 요청한 만큼의 자원을 사용하든 사용하지 않든 쿠버네티스 입장에서는 요청한 만큼의 자원은 보장해줘야 함으로 더 이상 `Pod`를 실행시키지 않고 worker가 추가되길 기다리지 않는가 생각합니다.
+
+---
+
+### 설정 방법
+이제 실제로 Cluster autoscaler를 어떻게 설정하는지에 대해 살펴보도록 하겠습니다.
+크게 3가지로 요약할 수 있습니다.
+- Auto Scaling Group 설정
+- Worker 노드 Role에 autoscaling 정책 부여
+- Cluster-autoscaler 설치
+
+#### 1. Auto Scaling Group 설정
+eksctl을 통하여 쿠버네티스 클러스터를 구축하면 `Autoscaling Groups`에서 eks-XXX라고 적혀진 `autoscaling group`을 확인하실 수 있습니다. 쿠버네티스 Cluster autoscaler도 다른 autoscaler들과 마찬가지로 `autoscaling group`을 이용하여 노드들을 추가 / 삭제합니다.
+쿠버네티스 cluster-autoscaler가 해당하는 `autoscaling group`을 찾을 수 있게 다음과 같은 tag들을 추가해 줍니다.
+
+![auto scaling group](/assets/images/eks_cas/asg.png)
+
+```python
+k8s.io/cluster-autoscaler/$cluster_name
+k8s.io/cluster-autoscaler/enabled  
+```
+`$cluster_name`은 eksctl을 이용하여 클러스터를 생성하였을 때의 이름을 넣으시면 됩니다.
+혹시 기억이 나지 않으신다면 aws web console에서 EKS 페이지로 가보시면 cluster 리스트를 보실 수 있는데 그 중에서 해당하는 이름을 넣으시면 됩니다.
+
+또한 Autoscaling Group의 Min / Max 값이 원하는 값으로 설정이 되어 있는지 확인해 보시기 바랍니다.
+`eksctl create cluster` 로 생성할 때 파라미터로 넘겨준 `--nodes-min`, `--nodes-max` 값입니다.
+
+#### 2. Worker 노드 Role에 autoscaling 정책 부여
+Cluster Autoscaler가 자유자재로 autoscaling group을 조작하기 위해서는 autoscaling 권한이 필요로 합니다. 하지만 아직까진 aws에서 공식적으로 `Pod`레벨에서의 IAM 권한 부여가 불가능한 것으로 알고 있습니다. worker 노드 자체에 autoscaling 권한을 부여하게 되면 다른 `Pod`에서도 autoscaling group을 조작할 수 있게 됩니다. 조금 더 세밀한 권한 체계를 원하신다면 [kube2iam](https://github.com/jtblin/kube2iam)이나 [kiam](https://github.com/uswitch/kiam)와 같은 오픈소스를 이용하시면 `Pod`레벨에서의 권한을 부여할 수 있게 됩니다[^1]. 이번 예제에서는 단순히 Node Role 자체에 autoscaling 정책을 추가하도록 하겠습니다.
+
+IAM 페이지의 Roles 영역에 가시면 eksctl-${cluster_name}-nodegroup-ng-XXX 라는 Role을 찾을 수 있는데 해당 Role에 아래와 같이 정책을 추가하시기 바랍니다.
+```json
+{ 
+   "Version": "2012-10-17", 
+   "Statement": [ 
+      { "Effect": "Allow", 
+        "Action": [ "autoscaling: *" ], 
+        "Resource": "*" }]
+}
+```
+조금 더 제한된 권한을 원하신다면
+
+```python
+Action: [
+    "autoscaling:DescribeAutoScalingGroups",
+    "autoscaling:DescribeAutoScalingInstances",
+    "autoscaling:DescribeTags",
+    "autoscaling:SetDesiredCapacity",
+    "autoscaling:TerminateInstanceInAutoScalingGroup",
+]  
+```
+
+더 자세한 내용은 [autoscaler/aws/README.md](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md#attach-iam-policy-to-nodegroup) 를 참고하시기 바랍니다.
+
+#### 3. Cluster-autoscaler 설치
+Cluster autoscaler 를 설치하기 전에 Autoscaler에게 각 노드들의 상태를 파악할 수 있는 RBAC 권한을 배포하는 `namespace`의 default `serviceaccount`에  부여해야 합니다. 이번 예제에는 무식하게 cluster-admin 권한을 부여하였습니다.
+
+```yaml
+cat <<EOF | kubectl create -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kube-system-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: kube-system
+EOF
+```
+
+---
+
+RBAC권한 부여가 완료되었으면 이제 마지막으로 Cluster autoscaler를 설치해 보겠습니다.
+저는 [helm](https://helm.sh/)을 통해서 cluster-autoscaler를 설치하겠습니다.
+
+##### helm 이란? 
+helm이란 쿠버네티스 package manager입니다. 해당 툴을 이용하여 필요한 모듈들을 쿠버네티스에 설치할 수 있습니다. `apt`, `yum`, `pip` 툴들과 비슷한 녀석이라고 생각하시면 됩니다.
+[helm 설치 방법 참고](https://helm.sh/docs/using_helm/#installing-helm)
+
+아래의 명령어를 실행하시면 바로 Cluster-autoscaler가 쿠버네티스에 설치가 됩니다.
+```python
+# $CLUSTER_NAME='eks cluster 이름'
+# $REGION='eks cluster가 생성된 리전'
+helm install stable/cluster-autoscaler --name autoscale --namespace kube-system --set autoDiscovery.clusterName=$CLUSTER_NAME,awsRegion=$REGION,sslCertPath=/etc/kubernetes/pki/ca.crt
+```
+설치가 완료되고 아래의 명령을 실행했을때
+`kubectl get pod -nkube-system`
+아래와 같이 `cluster-autoscaler`가 `Running` 상태로 나온다면 이상 없이 설치가 완료되었다고 보실 수 있습니다.
+
+```python
+NAME                                    READY   STATUS    RESTARTS   AGE
+autoscale-aws-cluster-autoscaler-64d6   1/1     Running   2          2s
+```
+---
+### Auto Scaling 테스트
+이제 정말로 요청량에 따라 자동으로 worker 노드가 추가되는지 확인해 보아야겠죠?
+무식하게 nginx `Pod`를 100개 만들어 보겠습니다.
+```python
+kubectl run mynginx --image nginx --replicas=100
+```
+
+이제 아래와 같이 노드 리스트를 가져오는 명령을 watch로 걸어놓고 자동으로 worker 노드들이 추가되는 모습을 확인하시면 됩니다.
+```python
+watch kubectl get node
+```
+
+---
+
+[^1]: 쿠버네티스를 Job runner로 사용하는 특성상, 저도 아직까진 해당 툴들을 사용해 보진 않았습니다. 추후에 사용해 보게 된다면 따로 블로깅해 보겠습니다.
+
