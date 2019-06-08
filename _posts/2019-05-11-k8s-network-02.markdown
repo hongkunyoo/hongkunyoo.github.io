@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "[번역] 쿠버네티스 네트워킹 이해하기#2"
+title:  "[번역] 쿠버네티스 네트워킹 이해하기#2: Services"
 date:   2019-05-11 00:00:00
 categories: k8s network
 ---
