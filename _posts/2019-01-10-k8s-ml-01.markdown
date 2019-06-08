@@ -70,3 +70,13 @@ categories: kubernetes ml k8s docker machine-learning
 
 지금까지 쿠버네티스를 이용하여 모델을 학습 시키면 어떤 장점들이 있는지 얘기해보았습니다. 꽤나 매력적인 플랫폼으로 느껴지지 않나요? 저는 쿠버네티스를 알게 된 후, 이전과 비교할 수 없을 만큼 편리하게 다량의 모델들을 여러 서버에서 효율적으로 학습할 수 있었습니다.
 그럼 다음 포스트에서는 실제로 어떻게 쿠버네티스를 사용하는지에 대해 설명하겠습니다.
+
+---
+
+#### Updated: 발표
+
+해당 내용으로 AWS Summit 2019 Seoul에서 발표를 하였습니다. 참고하시기 바랍니다.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/egv2TlfLL1Y" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+* 발표 자료: https://www.slideshare.net/awskorea/amazon-eks-lg-aws-summit-seoul-2019
