@@ -56,7 +56,7 @@ spec:
 
 NodePort 타입의 서비스는 기본적으로 ClusterIP 타입과 동일하지만 몇가지 기능들을 더 가지고 있습니다. NodePort 타입 서비스는 노드 네트워크의 IP를 통하여 접근을 할 수 있을 뿐만 아니라 ClusterIP로도 접근이 가능합니다. 이것이 가능한 이유는 매우 간단합니다. 쿠버네티스가 NodePort 타입의 서비스를 생성하면 kube-proxy가 각 노드의 `eth0` 네트워크 interface에 30000-32767 포트 사이의 임의의 포트를 할당합니다. (그렇기 때문에 이름이 NodePort 입니다.) 그리고 할당된 포트로 요청이 오게 되면 이것을 매핑된 ClusterIP로 전달합니다. 위의 예시 service를 생성하고 `kubectl get svc service-test`라고 입력하면 다음과 같이 Node에 Port가 할당된 것을 볼 수 있습니다.
 
-```python
+```bash
 $ kubectl get svc service-test
 NAME           CLUSTER-IP     EXTERNAL-IP   PORT(S)           AGE  
 service-test   10.3.241.152   <none>        80:32213/TCP      1m
@@ -92,7 +92,7 @@ spec:
 
 기존의 Service를 지우고 위와 같은 형식의 service를 GKE에 다시 생성하여 `kubectl get svc service-test` 명령을 내리게 되면 다음과 같이 외부 공인 IP가 생성된 것을 바로 확인할 수 있습니다. (35.184.97.156)
 
-```python
+```bash
 $ kubectl get svc service-test  
 NAME      CLUSTER-IP      EXTERNAL-IP     PORT(S)          AGE  
 openvpn   10.3.241.52     35.184.97.156   80:32213/TCP     5m

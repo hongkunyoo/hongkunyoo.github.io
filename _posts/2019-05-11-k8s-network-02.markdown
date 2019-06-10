@@ -43,18 +43,18 @@ spec:
 
 위의 deployment는 두개의 간단한 http 서버 포드를 생성하고 8080 포트를 통해 각 포드의 hostname을 리턴해줍니다. `kubectl apply`를 통해 deployment를 생성한 이후, 포드가 클러스터에 돌고 있는 것을 확인할 수 있습니다. 그리고 다음과 같은 명령으로 포드의 네트워크 주소를 알 수 있습니다.
 
-```python
+```bash
 $ kubectl apply -f test-deployment.yaml  
 deployment "service-test" created
 ```
 
-```python
+```bash
 $ kubectl get pods  
 service-test-6ffd9ddbbf-kf4j2    1/1    Running    0    15s  
 service-test-6ffd9ddbbf-qs2j6    1/1    Running    0    15s**
 ```
 
-```python
+```bash
 $ kubectl get pods --selector=app=service_test_pod -o jsonpath='{.items[*].status.podIP}'  
 10.0.1.2 10.0.2.2**
 ```
@@ -76,7 +76,7 @@ spec:
 ```
 
 클라이언트 포드를 하나를 실행하고 난 뒤 포드를 살펴 보면 `completed` 상태로 된 것을 확인할 수 있고 `kubectl logs`  명령을 통해 실제 결과값을 확인할 수 있습니다:
-```python
+```bash
 $ kubectl logs service-test-client1  
 HTTP/1.0 200 OK  
 <!-- blah -->
@@ -87,7 +87,7 @@ HTTP/1.0 200 OK
 
 [`Service`](https://kubernetes.io/docs/concepts/services-networking/service/) 란 쿠버네티스 리소스 타입 중 하나로 각 포드로 traffic을 포워딩해주는 프록시 역할을 합니다. 이때 `selector`라는 것을 이용하여 traffic 전달을 받을 포드들을 결정합니다. 이것은 포드가 생성될 때 label을 부여하여 선택할 수 있게 합니다. `service`를 하나 생성하게 되면 해당 서비스에 IP 주소가 부여된 것을 알 수 있고 80 포트를 통해 요청을 받는 것을 알 수 있습니다.
 
-```python
+```bash
 $ kubectl get service service-test**
 NAME           CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE  
 service-test   10.3.241.152   <none>        80/TCP    11s
@@ -95,7 +95,7 @@ service-test   10.3.241.152   <none>        80/TCP    11s
 
 `service`에 IP 주소로 직접 요청을 할 수도 있지만 DNS 이름을 이용하여 요청할 수 있으면 더 좋겠죠. 다행이 쿠버네티스에서는  이용하여 `service` 이름을 DNS 이름으로 사용할 수 있게 내부 클러스터 DNS를 제공해줍니다. 그럼 클라이언트 포드를 다음과 같이 조금 바꿔볼까요?
 
-```python
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -111,7 +111,7 @@ spec:
 
 해당 포드를 실행하고 output을 보면 `service`가 클라이언트의 요청을 현재 http 포드 중 하나로 전달해 준 것을 확인할 수 있습니다.
 
-```python
+```bash
 $ kubectl logs service-test-client2  
 HTTP/1.0 200 OK  
 <!-- blah -->
@@ -135,7 +135,7 @@ test service에 할당된 IP는 네트워크에 있는 주소인 것을 확인�
 [kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/)에서 --pod-cidr 값 확인
 [kube-apiserver](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/)에서 --service-cluster-ip-range 값 확인
 - GCP를 이용하였을 때
-```python
+```bash
 $ gcloud container clusters describe test | grep servicesIpv4Cidr
 ```
 - EKS를 이용하였을 때
@@ -146,7 +146,7 @@ $ gcloud container clusters describe test | grep servicesIpv4Cidr
 여기에 정의된 네트워크 주소 공간을 쿠버네티스에서는 `service` network라고 합니다. 모든 `service`는 이러한 주소를 할당 받게 되어 있습니다. `service`에는 여러 타입의 `service`가 존재하고 ClusterIP가 가장 기본이 되는 타입입니다. ClusterIP의 뜻은 클러스터 내의 모든 Pod가 해당 Cluster IP 주소로 접근을 할 수 있다는 뜻입니다. `kubectl describe service` 라는 명령을 통해 더 자세한 정보를 확인할 수 있습니다.
 
 `$ kubectl describe services service-test`
-```python
+```bash
 Name:                   service-test  
 Namespace:              default  
 Labels:                 <none>  

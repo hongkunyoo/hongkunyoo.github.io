@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "[번역] Linear Regression Bayesians vs Frequentists"
-date:   2017-06-19 21:41:00
+title:  "Linear Regression Bayesians vs Frequentists"
+date:   2019-06-19 00:00:00
 categories: bayesian linear regression
 ---
 

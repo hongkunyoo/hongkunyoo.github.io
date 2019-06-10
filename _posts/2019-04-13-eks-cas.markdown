@@ -75,7 +75,7 @@ eksctl을 통하여 쿠버네티스 클러스터를 구축하면 `Autoscaling Gr
 
 ![auto scaling group](/assets/images/eks_cas/asg.png)
 
-```python
+```bash
 k8s.io/cluster-autoscaler/$cluster_name
 k8s.io/cluster-autoscaler/enabled  
 ```
@@ -142,7 +142,7 @@ helm이란 쿠버네티스 package manager입니다. 해당 툴을 이용하여 
 [helm 설치 방법 참고](https://helm.sh/docs/using_helm/#installing-helm)
 
 아래의 명령어를 실행하시면 바로 Cluster-autoscaler가 쿠버네티스에 설치가 됩니다.
-```python
+```bash
 # $CLUSTER_NAME='eks cluster 이름'
 # $REGION='eks cluster가 생성된 리전'
 helm install stable/cluster-autoscaler --name autoscale --namespace kube-system --set autoDiscovery.clusterName=$CLUSTER_NAME,awsRegion=$REGION,sslCertPath=/etc/kubernetes/pki/ca.crt
@@ -151,7 +151,7 @@ helm install stable/cluster-autoscaler --name autoscale --namespace kube-system 
 `kubectl get pod -nkube-system`
 아래와 같이 `cluster-autoscaler`가 `Running` 상태로 나온다면 이상 없이 설치가 완료되었다고 보실 수 있습니다.
 
-```python
+```bash
 NAME                                    READY   STATUS    RESTARTS   AGE
 autoscale-aws-cluster-autoscaler-64d6   1/1     Running   2          2s
 ```
@@ -159,12 +159,12 @@ autoscale-aws-cluster-autoscaler-64d6   1/1     Running   2          2s
 ### Auto Scaling 테스트
 이제 정말로 요청량에 따라 자동으로 worker 노드가 추가되는지 확인해 보아야겠죠?
 무식하게 nginx `Pod`를 100개 만들어 보겠습니다.
-```python
+```bash
 kubectl run mynginx --image nginx --replicas=100
 ```
 
 이제 아래와 같이 노드 리스트를 가져오는 명령을 watch로 걸어놓고 자동으로 worker 노드들이 추가되는 모습을 확인하시면 됩니다.
-```python
+```bash
 watch kubectl get node
 ```
 

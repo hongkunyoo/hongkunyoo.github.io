@@ -44,7 +44,7 @@ AWS에서 제공하는 쿠버네티스 managed 서비스인 Amazon EKS를 쉽게
 ![](/assets/images/k8s_ml/heptio_cf.png)
 
 클러스터 생성이 완료되면 bastion 서버에 들어가서 다음과 같은 명령을 통하여 master에 들어있는 kube-config 파일을 bastion 서버로 옮깁니다. (bastion 서버에서 `kubectl` 명령을 날리기 위해)
-```python
+```bash
 mkdir ~/.kube
 scp -i PEM_KEY.pem ubuntu@$MASTER_IP:~/.kube/config ~/.kube/config
 ```
@@ -52,7 +52,7 @@ scp -i PEM_KEY.pem ubuntu@$MASTER_IP:~/.kube/config ~/.kube/config
 
 `kubectl get node`
 
-```python
+```bash
 NAME                                             STATUS     ROLES     AGE       VERSION
 ip-10-0-26-143.ap-northeast-2.compute.internal   Ready      master    1d      v1.12.1
 ip-10-0-14-9.ap-northeast-2.compute.internal     Ready      <none>    1d      v1.12.1
@@ -60,7 +60,7 @@ ip-10-0-3-193.ap-northeast-2.compute.internal    Ready      <none>    1d      v1
 
 ```
 모든 노드의 status가 Ready 상태로 나온다면 문제 없이 쿠버네티스 클러스터 생성이 완료되었다고 보실 수 있습니다. 혹시 NotReady가 뜬다면 조금 더 기다리시길 바랍니다. 충분한 시간이 지났는데도 NotReady 상태로 있다면
-```python
+```bash
 kubectl get pod -nkube-system
 ``` 
 이라는 명령어를 입력하여 나오는 결과 중에 이상있는 `Pod`는 없는지 확인 바랍니다.
@@ -165,30 +165,30 @@ spec:
 ```
 쿠버네티스의 `Job` 이라는 리소스 타입을 통해 어떤 이미지를 어떤 방식으로, 어느 정도의 리소스를 이용하여 실행할지 정하였습니다. 이제 해당 `YAML` 파일을 쿠버네티스에 넘겨서 실행하도록 하겠습니다.
 쿠버네티스에서는 사용자 인터페이스로 `kubectl` 이라는 커멘드 툴을 이용하여 클러스터를 컨트롤합니다. 다음 명령을 통해 실행해 보겠습니다. 
-```python
+```bash
 kubectl apply -f exp01-example.yaml
 ```
 방금 실행한 `Job`이 쿠버네티스에 잘 제출되었는지 다음 명령을 통해 확인하실 수 있습니다.
-```python
+```bash
 kubectl get job
 ```
-```python
-NAME                DESIRED   SUCCESSFUL   AGE
-exp01-example   1         0            3s
+```bash
+NAME              DESIRED   SUCCESSFUL   AGE
+exp01-example     1         0            3s
 ```
 쿠버네티스는 모든 container의 실행을 `Pod`라는 리소스를 통하여 실행 시킵니다. `Job`도 마찬가지로 `Pod`를 통하여 실제 작업을 진행하게 됩니다. 그렇기 때문에 `Pod` 정보를 이용하여 현재 잡의 상태를 파악합니다. 혹시 `Pod`에 대해 더 알아보고 싶으시다면 쿠버네티스 공식 홈페이지 [Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod/) 를 참고하시기 바랍니다. 그럼 현재 돌고 있는 `Pod`를 확인해 보겠습니다.
-```python
+```bash
 kubectl get pod
 ```
-```python
+```bash
 NAME                  READY   STATUS              RESTARTS   AGE
 exp01-example-mnpbz   0/1     ContainerCreating   0          29s
 ```
 현재는 Container가 생성되고 있는 중입니다. 조금 기다렸다가 다시 현재 `pod` 상태를 받아왔을때 `Running` 상태로 바뀌었다면 정상적으로 `Pod`가 실행하고 있다는 것을 뜻합니다. 간혹 `Pending` 상태로 계속해서 남아 있는 경우가 있을 수도 있는데 그럴 경우 쿠버네티스의 `describe` 명령어를 통해 `Pod`의 상태를 확인해 보시기 바랍니다.
-```python
+```bash
 kubectl describe pod exp01-example-mnpbz
 ```
-```python
+```bash
 Name:               exp01-example-mnpbz
 Namespace:          default
 Priority:           0
@@ -204,7 +204,7 @@ Events:
 워커 노드에 문제가 있거나 서버의 스펙이 너무 낮아서 제출한 Job이 실행되지 못할 수도 있습니다. 그럴 경우 아래의 `Events` 부분을 확인하여 어떤 이유 때문에 실행이 되지 않는지 확인해 보시기 바랍니다.
 
 이제 실행하고 있는 컨테이너에 붙어서 로그 기록을 확인해 보겠습니다.
-```python
+```bash
 kubectl logs -f exp01-example-mnpbz  # docker logs
 # or
 kubectl attach exp01-example-mnpbz   # docker attach
@@ -300,7 +300,7 @@ for exp in experiments:
 
 ```
 
-```python
+```bash
 ubuntu@ip-172-31-22-76:~$ python run-experiments.py
 job.batch/exp01 created
 job.batch/exp02 created
@@ -310,7 +310,7 @@ job.batch/exp23 created
 job.batch/exp24 created
 ```
 
-```python
+```bash
 ubuntu@ip-172-31-22-76:~$ kubectl get pod
 NAME                       READY   STATUS      RESTARTS   AGE
 exp01-vszdr                1/1     Running     0          8s
@@ -326,7 +326,7 @@ exp24-dk6bk                0/1     Pending     0          3s
 `kubectl get pod`를 실행해보면 지금까지 쿠버네티스에 제출된 학습들이 나옵니다. 그중에서 몇몇 `Pod`는 실행 중이고 나머지는 `Pending` 상태에 있습니다. 쿠버네티스에 리소스를 설정하면 쿠버네티스가 요청한 리소스와 현재 `Node`에 남아있는 리소스를 비교하여 부족하다고 판단하면 더 이상 컨테이너를 실행 시키지 않고 `Pending` 상태로 둡니다. 이를 통해 굳이 분석가가 일일이 가용한 서버를 찾을 필요 없이 쿠버네티스에 맡기면 쿠버네티스가 리소스 상황에 맞춰서 스케줄링하게 됩니다. 정말 편리하지 않나요?
 
 또한 여러개의 모델을 여러 서버에서 실험을 돌려도 각 서버에 들어가서 확인해 볼 필요 없이 `kubectl` 툴을 통하여 여기 저기의 Job들을 확인해 볼 수 있습니다.
-```python
+```bash
 kubectl attach exp02-dcwtg
 kubectl attach exp04-65bk4
 ```
@@ -386,11 +386,11 @@ spec:
   backoffLimit: 0
 ```
 이제 oom 스크립트를 실행 시켜 보겠습니다.
-```python
+```bash
 kubectl apply -f oom.yaml
 ```
 실행 이후에 `Pod`의 상태를 파악하는 명령어에 `watch`를 걸어서 OOM이 발생하는 `Pod`의 상태가 어떻게 변하는지 알아보겠습니다.
-```python
+```bash
 watch kubectl get pod -o wide
 
 Every 2.0s: kubectl get pod -o wide                                                                                                                            
@@ -400,7 +400,7 @@ exp-oom-vh7lp   1/1     Running   0          11d   192.168.165.54    ip-192-168-
 ```
 실제 `Pod`가 실행되고 있는 `Node`로 들어가서 [`nmon`](http://nmon.sourceforge.net/pmwiki.php) 과 같은 리소스 모니터링 툴을 이용하여 서버의 리소스 사용률을 확인해 보실 수도 있습니다.
 
-```python
+```bash
 kubectl attach exp-oom-vh7lp
 ```
 명령으로 직접 컨테이너로 들어가서 로그를 확인해 보시면 어느 정도 진행이 되다가 컨테이너가 죽는 것을 볼수 있습니다. 이때 `Pod`의 `STATUS`를 확인해 보면 `OOMKilled`으로 상태가 바뀐 것을 확인하실 수 있습니다. 이것은 문제의 컨테이너가 서버의 모든 자원을 다 소진하여 죽은 것이 아니라 미리 정의된 리소스까지만 사용하다가 죽은 것입니다. 직접 `Node`의 리소스 상황을 모니터링해 보시면 서버의 메모리가 100% 사용하기 전에 컨테이너가 죽었는 것을 확인하실 수 있습니다. 
