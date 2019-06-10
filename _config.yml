@@ -6,6 +6,7 @@ repository: hongkunyoo/hongkunyoo.github.io
 meta_description: "술 좋아하면 술고래, 커피 좋아하면 커피고래"
 
 markdown: kramdown
+permalink: pretty
 timezone: Asia/Seoul
 highlighter: rouge
 logo: /assets/images/coffee_whale_only_bg.png
