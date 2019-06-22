@@ -22,7 +22,7 @@ a:focus,
 a:active,
 a.active {
     outline: 0;
-    color: #18bc9c;
+    color: #0011FF;
 }
 
 h1,
@@ -490,6 +490,13 @@ background-image: url("img/star_30_white_hover.png");
 .margin-down {
     margin-bottom: 20px;
 }
+.margin-down2 {
+    margin-bottom: 25px;
+}
+.margin-left {
+    margin-left: 15px;
+}
+
 .clickable {
     color : #2c3e50;
     cursor: pointer;
@@ -515,7 +522,13 @@ background-image: url("img/star_30_white_hover.png");
     /*color : #0066FF;*/
     /*color : #008AE6;*/
     /*color : #0074FF;*/
+    /*color : #006def;*/
     color : #006def;
-    
-    
+}
+
+.mydim {
+    color : #566b80;
+}
+.font-white {
+    color: #ffffff;
 }

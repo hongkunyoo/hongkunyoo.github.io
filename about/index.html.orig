@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="CoffeeWhale">
+    <meta name="description" content="Coffee Whale's About Me">
+
+    <title>Coffee Whale's About Me</title>
+	
+	<link rel="shortcut icon" href="img/favicon.ico" />
+    <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/freelancer.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+<body id="page-top" class="index">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#page-top">
+                	<img src='img/star_30_white.png'/> Coffee Whale</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#portfolio">Work</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#about">About</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+    
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <img class="img-responsive img-circle" src="img/profile01.jpg" alt="profile">
+                    <div class="intro-text">
+                        <span class="name">Hongkun Yoo</span>
+                        <hr class="star-light">
+                        <span class="skills">
+                            hello world!<br/>
+                            Everyone likes a cup of coffee and a cute whale.<br>
+                    	</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Portfolio Grid Section -->
+    <section id="portfolio">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>My Work</h2>
+                    <hr class="star-primary">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4 portfolio-item">
+                    <a href="#portfolioModal1" class="portfolio-link" data-toggle="modal">
+                        <div class="caption">
+                            <div class="caption-content">
+                                <!-- <i class="fa fa-search-plus fa-3x"></i> -->
+                                <h3>Handong App</h3>
+                                <span>Univ. Info Service App</span>
+                            </div>
+                        </div>
+                        <img src="img/portfolio/01handong_app00_840.png" class="img-responsive" alt="">
+                    </a>
+                </div>
+                <div class="col-sm-4 portfolio-item">
+                    <a href="#portfolioModal2" class="portfolio-link" data-toggle="modal">
+                        <div class="caption">
+                            <div class="caption-content">
+                                <!-- <i class="fa fa-search-plus fa-3x"></i> -->
+                                <h3>SaladToss</h3>
+                                <span>Windows 8 App Game</span>
+                            </div>
+                        </div>
+                        <img src="img/portfolio/02SaladToss02.png" class="img-responsive" alt="">
+                    </a>
+                </div>
+                <div class="col-sm-4 portfolio-item">
+                    <a href="#portfolioModal3" class="portfolio-link" data-toggle="modal">
+                        <div class="caption">
+                            <div class="caption-content">
+                                <!-- <i class="fa fa-search-plus fa-3x"></i> -->
+                                <h3>Penguin Almighty</h3>
+                                <span>Facebook App Game</span>
+                            </div>
+                        </div>
+                        <img src="img/portfolio/03Penguin03-sliced.png" class="img-responsive" alt="">
+                    </a>
+                </div>
+                <div class="col-sm-4 portfolio-item">
+                    <a href="#portfolioModal4" class="portfolio-link" data-toggle="modal">
+                        <div class="caption">
+                            <div class="caption-content">
+                                <!-- <i class="fa fa-search-plus fa-3x"></i> -->
+                                <h3>Handong Bobgo</h3>
+                                <span>Meal Schedule Managing App</span>
+                            </div>
+                        </div>
+                        <img src="img/portfolio/04Handong_bobgo00.png" class="img-responsive" alt="">
+                    </a>
+                </div>
+                <div class="col-sm-4 portfolio-item">
+                    <a href="#portfolioModal5" class="portfolio-link" data-toggle="modal">
+                        <div class="caption">
+                            <div class="caption-content">
+                                <!-- <i class="fa fa-search-plus fa-3x"></i> -->
+                                <h3>Zumpy</h3>
+                                <span>Windows 8 App Game</span><br />
+                                
+                            </div>
+                        </div>
+                        <img src="img/portfolio/05Zumpy00.png" class="img-responsive" alt="">
+                    </a>
+                </div>
+                <div class="col-sm-4 portfolio-item">
+                    <a href="#portfolioModal6" class="portfolio-link" data-toggle="modal">
+                        <div class="caption">
+                            <div class="caption-content">
+                                <h3>Bom Project</h3>
+                                <span>Africa IT Volunteer Work</span>
+                            </div>
+                        </div>
+                        <img src="img/portfolio/06Bom00.png" class="img-responsive" alt="">
+                    </a>
+                </div>
+                <div class="col-sm-4 portfolio-item">
+                    <a href="#portfolioModal7" class="portfolio-link" data-toggle="modal" id="portfolioModal7_btn">
+                        <div class="caption">
+                            <div class="caption-content">
+                                <!-- <i class="fa fa-search-plus fa-3x"></i> -->
+                                <h3>At Here</h3>
+                                <span>Instant File Sharing App</span>
+                            </div>
+                        </div>
+                        <img src="img/portfolio/07AtHere03.png" class="img-responsive" alt="">
+                    </a>
+                </div>
+                <div class="col-sm-4 portfolio-item">
+                    <a href="#portfolioModal8" class="portfolio-link" data-toggle="modal">
+                        <div class="caption">
+                            <div class="caption-content">
+                                <!-- <i class="fa fa-search-plus fa-3x"></i> -->
+                                <h3>Chupa</h3>
+                                <span>Anonymous Communication App</span>
+                            </div>
+                        </div>
+                        <img src="img/portfolio/08Chupa00.png" class="img-responsive" alt="">
+                    </a>
+                </div>
+                <div class="col-sm-4 portfolio-item">
+                    <a href="#portfolioModal9" class="portfolio-link" data-toggle="modal">
+                        <div class="caption">
+                            <div class="caption-content">
+                                <!-- <i class="fa fa-search-plus fa-3x"></i> -->
+                                <h3>What next?</h3>
+                                <!-- <span>Anonymous Communication App</span> -->
+                            </div>
+                        </div>
+                        <img src="img/portfolio/next.png" class="img-responsive" alt="">
+                    </a>
+                </div>
+            </div>
+            <div class='row'>
+            	<div class="col-lg-12 text-center">
+                    <!-- <hr class=""> -->
+                    <!-- <button type='submit' class='btn btn-green' onclick="window.location='img/portfolio.pdf'">Download for PDF in Korean</button> -->
+                    <!-- <button class='btn btn-green' download="img/portfolio/05Zumpy00.png">Download for PDF</button> -->
+                    <!-- <ul class="list-inline">
+	                    <li>
+	                        <a href="https://www.facebook.com/mark8625" class="btn-social btn-default"><i class="fa fa-fw fa-facebook"></i></a>
+	                    </li>
+	                    <li>
+	                        <a href="https://github.com/hongkunyoo" class="btn-social btn-default"><i class="fa fa-fw fa-github"></i></a>
+	                    </li>
+                    </ul> -->
+                    <!-- <a href="https://www.facebook.com/mark8625" class="btn-social btn-default"><i class="fa fa-fw fa-facebook"></i></a> -->
+                </div>
+	        </div>
+        </div>
+        
+        
+    </section>
+
+    <!-- About Section -->
+    <section class="success" id="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>About</h2>
+                    <hr class="star-light">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <!-- <p>
+                    	I was born in Busan Korea, in 1989. And went to Connecticut, USA when I was young.
+                    	Came back to Korea before entering the school. 
+                    	I played guitar and soccer in my teenager's. 
+                    	My first programming language was C language. Printing 'hello world!' was thrilling. 
+                    	I can never forget that feeling.
+                    	After that, I started to dream to be a programmer. Someday, I might write an awesome code. :)
+                	</p> -->
+                    <h3 class="impact-color text-center margin-down">Education</h3>
+                    <p><span class="myhighlighter" style="margin-right:10px;">M.S</span> Text Mining, KAIST, 2017</p> 
+                    <p><span class="myhighlighter" style="margin-right:10px;">B.S</span> Computer Science, Handong University, 2015</p>       
+                    <hr>    
+                </div>
+
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h3 class="impact-color text-center margin-down">Experience</h3>
+		    <p><span class="myhighlighter" style="margin-right:10px;">LG Electronics</span> Data Engineer, 2017 ~ Current</p> 
+                    <p class="level1">- Data Analysis Team</p>
+                    <!--
+                    <p><span class="myhighlighter" style="margin-right:10px;">BOM Project</span> IT Volunteer Work, Malawi, Africa, 2013</p> 
+                    <p class="level1">- Medical Record System development</p>
+                    -->
+                    <p><span class="myhighlighter" style="margin-right:10px;">RocektOz Inc.</span> Software Engineer Intern, 2012 ~ 2013</p> 
+                    <p class="level1">- Game Develop: HTML5 Web game</p>
+                    
+                    <hr>    
+                </div>
+                
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h3 class="impact-color text-center margin-down">Skill sets</h3>
+                    <p class='myhighlighter no-margin'>Python</p>
+                        <ul style="font-size: 1.3em;">
+                            <li>Tensorflow, Keras</li>
+                            <li>Flask, SQLAlchemy</li>
+                        </ul>
+                    <p class='myhighlighter no-margin'>AWS services</p>
+                        <ul style="font-size: 1.3em;">
+                            <li>Lambda, API Gateway</li>
+                            <li>EKS, Batch</li>
+                            <li>S3, EFS</li>
+                        </ul>
+                    <p class='myhighlighter no-margin'>Container</p>
+                        <ul style="font-size: 1.3em;">
+                            <li>Certified Kubernetes Administrator (CKA)</li>
+                            <li>Amazon EKS</li>
+                            <li>Docker</li>
+                        </ul>
+                    <p class='myhighlighter no-margin'>Development Tool</p>
+                        <ul style="font-size: 1.3em;">
+                            <li>git, tmux, vim</li>
+                        </ul>
+                    <hr>    
+                </div>
+
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h3 class="impact-color text-center margin-down">Awards</h3>
+                    <p><span class="myhighlighter" style="margin-right:10px;">Microsoft, Imagine Cup</span> Korean Finalist, World Semi Finalist, 2014</p> 
+                    <p class="level1">- At Here, Instant File Sharing App </p>
+                    <p><span class="myhighlighter" style="margin-right:10px;">Global K-Startup</span> KISA, 2014</p> 
+                    <p class="level1">- Top 40 team selected</p>
+                    
+                    <hr>    
+                </div>
+
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h3 class="impact-color text-center margin-down">Speaker</h3>
+                    <p><span class="myhighlighter" style="margin-right:10px;">AWS Summit Seoul 2019</span> Community Session</p> 
+                    <p class="level1"><a class="clickable" href="https://www.slideshare.net/mobile/awskorea/amazon-eks-lg-aws-summit-seoul-2019">- How to scale your ML job with Amazon EKS</a></p>
+                    <p><span class="myhighlighter" style="margin-right:10px;">LG Electronics BigData Conference 2018</span> Non-public</p> 
+                    <p class="level1">- How to prepare model flooding world - Model manager</p>
+                    
+                    <hr>    
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Contact Me</h2>
+                    <hr class="star-primary">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                	<a href='#'><p>hongkunyoo [at] gmail [dot] com</p></a>
+                	<ul class="list-inline">
+	                    <li>
+	                        <a href="https://www.facebook.com/mark8625" class="btn-social btn-default"><i class="fa fa-fw fa-facebook"></i></a>
+	                    </li>
+	                    <li>
+	                        <a href="https://github.com/hongkunyoo" class="btn-social btn-default"><i class="fa fa-fw fa-github"></i></a>
+	                    </li>
+                        <li>
+                            <a href="https://hongkunyoo.github.io" class="btn-social btn-default"><i class="fa fa-fw fa-rss"></i></a>
+                        </li>
+	                <li>
+	                    <a href="https://www.linkedin.com/in/hongkunyoo" class="btn-social btn-default"><i class="fa fa-fw fa-linkedin"></i></a>
+	                </li> 
+	                    <!-- <li>
+	                        <a href="https://twitter.com/HongkunYoo" class="btn-social btn-default"><i class="fa fa-fw fa-twitter"></i></a>
+	                    </li>-->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <!-- <div class="footer-above">
+            <div class="container">
+                <div class="row">
+                    <div class="footer-col col-md-4">
+                        <h3>Location</h3>
+                        <p>3481 Melrose Place<br>Beverly Hills, CA 90210</p>
+                    </div>
+                    <div class="footer-col col-md-4 col-md-offset-4">
+                        <h3>Around the Web</h3>
+                        <ul class="list-inline">
+                            <li>
+                                <a href="https://www.facebook.com/mark8625" class="btn-social btn-outline"><i class="fa fa-fw fa-facebook"></i></a>
+                            </li>
+                            <li>
+                                <a href="#" class="btn-social btn-outline"><i class="fa fa-fw fa-google-plus"></i></a>
+                            </li>
+                            <li>
+                                <a href="#" class="btn-social btn-outline"><i class="fa fa-fw fa-twitter"></i></a>
+                            </li>
+                            <li>
+                                <a href="#" class="btn-social btn-outline"><i class="fa fa-fw fa-linkedin"></i></a>
+                            </li>
+                            <li>
+                                <a href="#" class="btn-social btn-outline"><i class="fa fa-fw fa-dribbble"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="footer-col col-md-4">
+                        <h3>About Freelancer</h3>
+                        <p>Freelance is a free to use, open source Bootstrap theme created by <a href="http://startbootstrap.com">Start Bootstrap</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <div class="footer-below">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        Copyright &copy; hongkunyoo 2014<br/> All rights reserved.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+    <div class="scroll-top page-scroll visible-xs visble-sm">
+        <a class="btn btn-primary" href="#page-top">
+            <i class="fa fa-chevron-up"></i>
+        </a>
+    </div>
+
+    <!-- Portfolio Modals -->
+    <div class="portfolio-modal modal fade" id="portfolioModal1" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>Handong App</h2>
+                            <hr class="star-primary">
+                            <img src="img/portfolio/01handong_app00_840.png" class="img-responsive img-centered" alt="">
+                    		<p>Android Application that provides Univ. information for students.<br/>
+                    		The role of mine was to bring the <a href="http://library.handong.edu/">library web searching function</a> to mobile.<br/>
+							The application is still well used in Handong University. However unfortunately, the book searching function has been deprecated.<br/>
+							<a href='https://play.google.com/store/apps/details?id=ghost.android.ghosthguapp'>Look at Google Play Store</a>                    		
+                			</p>
+                            <ul class="list-inline item-details">
+                                <li>Develop period :  
+                                    <a><strong>2011.07 ~ 2011.09</strong></a>
+                                </li>
+                                <li>Service : 
+                                    <a><strong>Mobile App - Android</strong></a>
+                                </li>
+                                <li>Language : 
+                                    <a><strong>Java</strong></a>
+                                </li>
+                            </ul>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal2" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>SaladToss</h2>
+                            <hr class="star-primary">
+                            <img src="img/portfolio/02SaladToss01.png" class="img-responsive img-centered" alt="">
+                            <img src="img/portfolio/02SaladToss02.png" class="img-responsive img-centered" alt="">
+                            <p>Windows 8 app game base on HTML5 game engine <a href="http://www.impactjs.com">'ImpactJS'</a><br/>
+                            	Salad Toss is a match three puzzle game filled with cute and fun vegetables. 
+                            	the vegetables around to form three or more of the same vegetables in a row to get the highest score possible.
+                            	<span class='text-danger'>Not available now.</span>
+                            </p>
+                            <ul class="list-inline item-details">
+                                <li>Develop period :  
+                                    <a><strong>2012.03 ~ 2012.07</strong></a>
+                                </li>
+                                <li>Service : 
+                                    <a><strong>Windows 8 App Game</strong></a>
+                                </li>
+                                <li>Language : 
+                                    <a><strong>HTML5/JS</strong></a>
+                                </li>
+                            </ul>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal3" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>Penguin Almighty</h2>
+                            <hr class="star-primary">
+                            <!-- <img src="img/portfolio/03Penguin01.png" class="img-responsive img-centered" alt="">
+                            <img src="img/portfolio/03Penguin03.png" class="img-responsive img-centered" alt=""> -->
+                            <div id="carousel03" class="carousel slide" data-ride="carousel">
+								  <!-- Wrapper for slides -->
+								  <div class="carousel-inner">
+								    <div class="item active">
+								      <img src="img/portfolio/03Penguin01.png" alt="" class='img-responsive center-block'>
+								      <!-- <div class="carousel-caption">
+								        caption
+								      </div> -->
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/03Penguin02.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/03Penguin03.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/03Penguin04.png" alt="" class='img-responsive center-block'>
+								    </div>
+								  </div>
+								
+								  <!-- Controls -->
+								  <a class="left carousel-control" href="#carousel03" role="button" data-slide="prev">
+								    <span class="glyphicon glyphicon-chevron-left"></span>
+								  </a>
+								  <a class="right carousel-control" href="#carousel03" role="button" data-slide="next">
+								    <span class="glyphicon glyphicon-chevron-right"></span>
+								  </a>
+							</div>
+							<p>Facebook App Game base on 'ImpactJ'. <span class='text-danger'>Available outside Korea on</span> 
+								<a href='https://apps.facebook.com/penguinalmighty'>facebook</a><br/>
+								Save the penguin family by hitting zombies hidden behind the ice blocks! <br/>
+								Advance to more challenging levels by hitting all of the zombies.Use power-ups and special items for advanced game play
+								</p>
+                            <ul class="list-inline item-details">
+                                <ul class="list-inline item-details">
+                                <li>Develop period :  
+                                    <a><strong>2012.08 ~ 2012.12</strong></a>
+                                </li>
+                                <li>Service : 
+                                    <a><strong>Facebook App Game</strong></a>
+                                </li>
+                                <li>Language : 
+                                    <a><strong>HTML5/JS</strong></a>
+                                </li>
+                            </ul>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal4" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>Handong Bobgo</h2>
+                            <hr class="star-primary">
+                            <!-- <img src="img/portfolio/04Handong_bobgo01.png" class="img-responsive img-centered" alt="">
+                            <img src="img/portfolio/04Handong_bobgo02.png" class="img-responsive img-centered" alt="">
+                            <img src="img/portfolio/04Handong_bobgo03.png" class="img-responsive img-centered" alt=""> -->
+                            <div id="carousel04" class="carousel slide" data-ride="carousel">
+								  <!-- Wrapper for slides -->
+								  <div class="carousel-inner">
+								    <div class="item active">
+								      <img src="img/portfolio/04Handong_bobgo00.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/04Handong_bobgo02.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/04Handong_bobgo03.png" alt="" class='img-responsive center-block'>
+								    </div>
+								  </div>
+								
+								  <!-- Controls -->
+								  <a class="left carousel-control" href="#carousel04" role="button" data-slide="prev">
+								    <span class="glyphicon glyphicon-chevron-left"></span>
+								  </a>
+								  <a class="right carousel-control" href="#carousel04" role="button" data-slide="next">
+								    <span class="glyphicon glyphicon-chevron-right"></span>
+								  </a>
+							</div>
+                            <p>Meal scheduling app for handong students.<br/>
+                            	Every day you have a meal with lots of people. <br/>
+                            	it's quite difficult to remember all.<br/>
+                            	HandongBobgo is for Handong student to managing their meal schedule.<br />
+                            	<span class='text-danger'>Not available on Google Play.</span>
+                            	<a href='https://github.com/hongkunyoo/handong-bobgo'>source code available</a>
+                            	
+                            	
+                            </p>
+                            <ul class="list-inline item-details">
+                                <ul class="list-inline item-details">
+                                <li>Develop period :  
+                                    <a><strong>2012.09 ~ 2012.11</strong></a>
+                                </li>
+                                <li>Service : 
+                                    <a><strong>Mobile App - Android</strong></a>
+                                </li>
+                                <li>Language : 
+                                    <a><strong>Java</strong></a>
+                                </li>
+                            </ul>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal5" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>Zumpy</h2>
+                            <hr class="star-primary">
+                            <h4 class='text-danger'>2012 Windows 8 App Star Awarded - Bronze prize</h4>
+                            <!-- <img src="img/portfolio/05Zumpy01.png" class="img-responsive img-centered" alt="">
+                            <img src="img/portfolio/05Zumpy02.png" class="img-responsive img-centered" alt="">
+                            <img src="img/portfolio/05Zumpy03.png" class="img-responsive img-centered" alt=""> -->
+                            <div class="embed-responsive embed-responsive-4by3">
+                              <iframe frameborder="0" class="embed-responsive-item" src="http://hongkunyoo.github.io/zumpy"></iframe>
+                            </div>
+                            <div id="carousel05" class="carousel slide" data-ride="carousel">
+								  <!-- Wrapper for slides -->
+								  <div class="carousel-inner">
+								    <div class="item active">
+								      <img src="img/portfolio/05Zumpy01.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/05Zumpy02.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/05Zumpy03.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/05Zumpy04.png" alt="" class='img-responsive center-block'>
+								    </div>
+								  </div>
+								
+								  <!-- Controls -->
+								  <a class="left carousel-control" href="#carousel05" role="button" data-slide="prev">
+								    <span class="glyphicon glyphicon-chevron-left"></span>
+								  </a>
+								  <a class="right carousel-control" href="#carousel05" role="button" data-slide="next">
+								    <span class="glyphicon glyphicon-chevron-right"></span>
+								  </a>
+							</div>
+                            <p>It is an 8 bit style game with a side-scrolling format. The player, Zumpy jumps out of the block to keep move forward.
+                            	It was also developed by <a href="http://impactjs.com">ImpactJS</a> and was ported to Windows 8 App.
+                            	The game was awarded of the 2012 Windows 8 App Star Bronze Prize by Microsoft Korea.
+                        	</p>
+                            
+                            <ul class="list-inline item-details">
+                                <ul class="list-inline item-details">
+                                <li>Develop period :  
+                                    <a><strong>2012.10 ~ 2012.11</strong></a>
+                                </li>
+                                <li>Service : 
+                                    <a><strong>Windows 8 App Game</strong></a>
+                                </li>
+                                <li>Language : 
+                                    <a><strong>HTML5/JS</strong></a>
+                                </li>
+                            </ul>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal6" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>Bom Project</h2>
+                            <hr class="star-primary">
+                            <!-- <img src="img/portfolio/06Bom00.png" class="img-responsive img-centered" alt="">
+                            <img src="img/portfolio/06Bom01.png" class="img-responsive img-centered" alt="">
+                            <img src="img/portfolio/06Bom02.png" class="img-responsive img-centered" alt="">
+                            <img src="img/portfolio/06Bom03.png" class="img-responsive img-centered" alt=""> -->
+                            <div id="carousel06" class="carousel slide" data-ride="carousel">
+								  <!-- Wrapper for slides -->
+								  <div class="carousel-inner">
+								    <div class="item active">
+								      <img src="img/portfolio/06Bom00.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/06Bom01.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/06Bom02.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/06Bom03.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/06Bom05.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/06Bom06.png" alt="" class='img-responsive center-block'>
+								    </div>
+								  </div>
+								
+								  <!-- Controls -->
+								  <a class="left carousel-control" href="#carousel06" role="button" data-slide="prev">
+								    <span class="glyphicon glyphicon-chevron-left"></span>
+								  </a>
+								  <a class="right carousel-control" href="#carousel06" role="button" data-slide="next">
+								    <span class="glyphicon glyphicon-chevron-right"></span>
+								  </a>
+							</div>
+                            <p>Project BOM(Blindness Zero Movement) is an international development assistance launched by Yeonsei Severance Hospital(Dept. of ophthalmology)
+                            	The project is held in lilongwe Malawi, Arifa. The main purpose is to prevent blindness for the local residents.
+                            	I join the project as IT support faculty. My major work was to develop an medical record system with local NGO called 'Baobab'.
+                            	The main part of mine was to develop an electronic eye chart with <a href="http://rubyonrails.org/">Ruby on Rails</a> and <a href="http://openmrs.org/">OpenMRS</a>.
+                            	See more details <a href="http://project-bom.org/">here.</a> 
+                            	</p>
+                            <ul class="list-inline item-details">
+                                <ul class="list-inline item-details">
+                                <li>Develop period :  
+                                    <a><strong>2013.07 ~ 2013.12</strong></a>
+                                </li>
+                                <li>Service : 
+                                    <a><strong>Medical Record System</strong></a>
+                                </li>
+                                <li>Language : 
+                                    <a><strong>Ruby on Rails / Ruby</strong></a>
+                                </li>
+                            </ul>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal7" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>At Here</h2>
+                            <h4 class='text-danger'>2014 Microsoft Imagine Cup Innovation <br />
+                            	Korea 1st Prize, World Semi Finalist</h4>
+                            <hr class="star-primary">
+                            <div id="carousel07" class="carousel slide" data-ride="carousel">
+								  <!-- Wrapper for slides -->
+								  <div class="carousel-inner">
+								    <div class="item active">
+								      <img src="img/portfolio/07AtHere01.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/07AtHere02.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/07AtHere03.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/07AtHere04.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/07AtHere05.png" alt="" class='img-responsive center-block'>
+								    </div>
+								  </div>
+								  <!-- Controls -->
+								  <a class="left carousel-control" href="#carousel07" role="button" data-slide="prev">
+								    <span class="glyphicon glyphicon-chevron-left"></span>
+								  </a>
+								  <a class="right carousel-control" href="#carousel07" role="button" data-slide="next">
+								    <span class="glyphicon glyphicon-chevron-right"></span>
+								  </a>
+							</div>
+							<div class='row'>
+								<div class="col-lg-12">
+							    	<div class="flex-video widescreen">
+							    		<!-- <iframe src="img/athere_mov.mp4" frameborder="0" allowfullscreen=""></iframe> -->
+							    		<!-- <video controls>
+										  <source src="img/athere_mov.mp4" type="video/mp4">
+											Your browser does not support the video tag.
+										</video> -->
+										<div class="embed-responsive embed-responsive-4by3">
+											<iframe frameborder="0" class="embed-responsive-item" allowfullscreen></iframe>
+										</div>
+							    		</div>
+							  	</div>
+						  	</div>
+                            <p>
+                            	<a href='#'>'At Here'</a> brought a new paradigm of file sharing system.<br/>
+                            	'At Here' is a simple instant file sharing service. The differences between other services are,
+                            	'At Here' doesn't need any accounts. It uses location to recognize other users.
+                            	You only need to be with them to share information. <br/>
+                                See more about <a href="http://news.imaso.co.kr/39621">out story</a> and our team, <a href="https://www.imaginecup.com/Team/Index/38222">'Pin the Cloud'</a><br/>
+                                Check out <a href="https://www.imaginecup.com/Custom/Index/2014Semifinalists_Innovation">what we achieved</a>
+                            </p>
+                            <ul class="list-inline item-details">
+                                <ul class="list-inline item-details">
+                                <li>Develop period :  
+                                    <a><strong>2014.01 ~ 2014.06</strong></a>
+                                </li>
+                                <li>Service : 
+                                    <a><strong>Windows 8 Phone</strong></a>
+                                </li>
+                                <li>Language : 
+                                    <a><strong>C#</strong></a>
+                                </li>
+                            </ul>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portfolio-modal modal fade" id="portfolioModal8" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>Chupa</h2>
+                            <hr class="star-primary">
+                            <div id="carousel08" class="carousel slide" data-ride="carousel">
+								  <!-- Wrapper for slides -->
+								  <div class="carousel-inner">
+								    <div class="item active">
+								      <img src="img/portfolio/08Chupa00.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/08Chupa01.png" alt="" class='img-responsive center-block'>
+								    </div>
+								    <div class="item">
+								      <img src="img/portfolio/08Chupa02.png" alt="" class='img-responsive center-block'>
+								    </div>
+								  </div>
+								
+								  <!-- Controls -->
+								  <a class="left carousel-control" href="#carousel08" role="button" data-slide="prev">
+								    <span class="glyphicon glyphicon-chevron-left"></span>
+								  </a>
+								  <a class="right carousel-control" href="#carousel08" role="button" data-slide="next">
+								    <span class="glyphicon glyphicon-chevron-right"></span>
+								  </a>
+							</div>
+                            <p class='text-danger'>Coming Soon</p>
+                            <ul class="list-inline item-details">
+                                <ul class="list-inline item-details">
+                                <li>Develop period :  
+                                    <a><strong>2014.06 ~ 2014.10</strong></a>
+                                </li>
+                                <li>Service : 
+                                    <a><strong>Mobile App - Android</strong></a>
+                                </li>
+                                <li>Language : 
+                                    <a><strong>Java</strong></a>
+                                </li>
+                            </ul>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery Version 1.11.0 -->
+    <script src="js/jquery-1.11.0.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/cbpAnimatedHeader.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="js/jqBootstrapValidation.js"></script>
+    <script src="js/contact_me.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/freelancer.js"></script>
+
+</body>
+
+</html>
