@@ -6,7 +6,7 @@ categories: kubernetes cka
 ---
 2018년 12월 19일 고대하던 CKA 자격증을 취득하였습니다. 자랑겸, 정보 공유겸 취득 후기 포스트를 작성합니다.
 
-제일 처음 자격증에 대한 정보를 알게된 건, [Kubernetes를 이용한 기계학습 cluster](/kubernetes/ml/k8s/docker/machine-learning/2019/01/11/k8s-ml-01.html)를 구축하는 일을 하는 중, 쿠버네티스 공식 자격증이 있다는 것을 알게 되었습니다. 해당 자격증은 Cloud Native Computing Foundation에서 만들고 Linux Foundation에서 주관하는 쿠버네티스 Admin 자격증입니다. 가장 특이한 점으로는 보통 시험과는 다르게 문제와 답이 있어서 정답을 맞추는 시험이 아니라 제한 시간내에 직접 쿠버네티스 cluster를 조작하여 결과를 내야하는 완전한 hands-on 시험이라는 것입니다. 또한 쿠버네티스 공식 홈페이지 (https://kubernetes.io)를 시험 시간 동안 접속할 수 있기 때문에 전혀 암기할 필요 없이 쿠버네티스를 완벽하게 다룰 수만 있다면 풀 수 있는 시험입니다. 아직 한국어가 지원되지 않아서 전부 영어로 감독관과 대화하고 문제를 읽어야 하지만 그렇게 어려운 단어들이 나오지 않기 때문에 크게 문제가 되진 않습니다.
+제일 처음 자격증에 대한 정보를 알게된 건, [Kubernetes를 이용한 기계학습 cluster](/kubernetes/ml/k8s/docker/machine-learning/2019/01/11/k8s-ml-01)를 구축하는 일을 하는 중, 쿠버네티스 공식 자격증이 있다는 것을 알게 되었습니다. 해당 자격증은 Cloud Native Computing Foundation에서 만들고 Linux Foundation에서 주관하는 쿠버네티스 Admin 자격증입니다. 가장 특이한 점으로는 보통 시험과는 다르게 문제와 답이 있어서 정답을 맞추는 시험이 아니라 제한 시간내에 직접 쿠버네티스 cluster를 조작하여 결과를 내야하는 완전한 hands-on 시험이라는 것입니다. 또한 쿠버네티스 공식 홈페이지 (https://kubernetes.io)를 시험 시간 동안 접속할 수 있기 때문에 전혀 암기할 필요 없이 쿠버네티스를 완벽하게 다룰 수만 있다면 풀 수 있는 시험입니다. 아직 한국어가 지원되지 않아서 전부 영어로 감독관과 대화하고 문제를 읽어야 하지만 그렇게 어려운 단어들이 나오지 않기 때문에 크게 문제가 되진 않습니다.
 https://www.cncf.io/certification/cka/
 
 #### 유용한 리소스 자료들
@@ -21,22 +21,25 @@ CKA 커리큘럼에 따라 학습해야 할 내용들을 잘 정리하였습니�
 ##### 3. [kubernetes the hard way](https://github.com/kelseyhightower/kubernetes-the-hard-way)
 쿠버네티스 클러스터를 구축하는 방법은 여러가지가 있습니다. 가장 간편하게는 `kops`나 `AWS CloudFormation template`을 이용하여 명령어 몇줄로 전체 클러스터를 손쉽게 만드는 방법이 있습니다. 또는 `kubeadm` 툴을 이용하여 마스터 서버를 구축하고 worker node를 하나씩 붙여나가는 방법도 있습니다. `kubeadm`툴을 이용하면 `kops`나 `cloudformation`을 이용하는 방법보다는 low level 세팅을 할 수 있지만 여전히 여러 보이지 않는 magic이 숨겨져 있습니다. `kubernetes the hard way`에서는 완벽한 Ground base부터 쿠버네티스 클러스터를 구축합니다. 그렇기 때문에 쿠버네티스가 어떻게 동작하는지에 대해 세세하게 이해할 수 있었습니다. 저는 여기에 나와 있는 방법을 따라하면서 오히려 `openssl`, `cfssl`, `systemd`, `tls`와 같이 쿠버네티스 클러스터를 구축하기 위한 기술에 대해 더 공부하는 계기가 되었습니다.
 
-##### 4. [Google Docs Resource](https://docs.google.com/spreadsheets/d/10NltoF_6y3mBwUzQ4bcQLQfCE1BWSgUDcJXy-Qp2JEU/edit#gid=0)
+##### 4. [Understanding kubernetes networking 시리즈](https://medium.com/google-cloud/understanding-kubernetes-networking-pods-7117dd28727)
+쿠버네티스 네트워킹에 대해 세부적인 내용으로 이해하기 쉽게 적은 블로그 시리즈입니다. 가장 먼저 Pod 네트워킹에 대해서 그 다음 service, 마지막으로 ingress가 어떻게 동작하는지 순서대로 정리가 되어 있습니다. 쿠버네티스 네트워킹을 이해하는데에 많은 도움을 얻게 되어 직접 제가 [번역한 포스트](/k8s/network/2019/04/19/k8s-network-01/)도 있으니 참고 바랍니다.
+
+##### 5. [Google Docs Resource](https://docs.google.com/spreadsheets/d/10NltoF_6y3mBwUzQ4bcQLQfCE1BWSgUDcJXy-Qp2JEU/edit#gid=0)
 사람들이 유용하다고 생각한 리소스들을 쭉 listing한 페이지입니다. 전체를 다 볼 필요 없이 아래로 내려가 보시면 `For CKA(D) Candidates` section이 있는데 그쪽 부분 위주로 살펴 보시면 좋습니다. CKA 취득 후기 블로그와 유용한 `kubectl` 명령어 tip들을 정리한 부분이 도움이 되었습니다.
 
-##### 5. (도서) [쿠버네티스 시작하기](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&mallGb=KOR&barcode=9791161751733&orderClick=LAG&Kc=)
+##### 6. (도서) [쿠버네티스 시작하기](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&mallGb=KOR&barcode=9791161751733&orderClick=LAG&Kc=)
 [Kubernetes Up & Running](http://shop.oreilly.com/product/0636920043874.do) 한글 버전 책입니다. 쿠버네티스를 처음 접하시는 분이라면 책이 그리 두껍지 않으니 전체적으로 다 읽어 보시길 바랍니다. 인터넷에 영문 pdf로도 돌아다니는 것 같아 참고해 보시기 바랍니다.
 
-##### 6. [Network Policy](https://ahmet.im/blog/kubernetes-network-policy/)
+##### 7. [Network Policy](https://ahmet.im/blog/kubernetes-network-policy/)
 쿠버네티스 Network policy에 대해 시각적으로 이해하기 쉽게 정리가 잘 되어 있는 페이지입니다. 깃허브 튜토리얼을 따라 들어가시면 구체적인 예시와 함께 network policy manifest 파일들을 살펴보실 수 있습니다. 저는 여러 창을 띄어놓고 각 YAML 파일들을 비교해 보면서 어떠한 차이가 있는지 공부하였습니다. 개인적인 의견으로, 쿠버네티스 네트워크 정책 설정이 그리 직관적이진 않아 보입니다만 해당 페이지를 통해 많이 이해할 수 있었습니다.
 
-##### 7. http://www.kubernet.io/
+##### 8. http://www.kubernet.io/
 각 단원마다 내용이 길진 않지만 꼭 확인하고 가야할 부분들만 콕 집어서 정리되어 있어서 좋았습니다. 대부분 쿠버네티스 공식 홈페이지 content로 링크가 되어 있긴 하지만 해당 페이지를 더 집중해서 보게 되어 시험 준비 마지막에 정리하는 차원에서 도움이 될 것 같습니다. 
 
-##### 8. [edX Introduction to Kubernetes (무료)](https://www.edx.org/course/introduction-to-kubernetes)
+##### 9. [edX Introduction to Kubernetes (무료)](https://www.edx.org/course/introduction-to-kubernetes)
 edX에서 제공하는 무료 쿠버네티스 강의입니다. 강의 레벨은 초급이어서 처음 쿠버네티스를 접하시는 분에게 적합합니다. 쿠버네티스를 처음 접할 때, 쿠버네티스 클러스터 환경을 세팅하는 부분부터 막혀서 제대로 실습을 하지 못하는 상황이 발생하는데 여기서는 [Minikube](https://github.com/kubernetes/minikube)를 세팅하는 방법부터 알려줘서 그대로 따라하기만 하면 되어서 좋습니다. (Minikube란, 쿠버네티스를 로컬 PC에서 가상으로 클러스터를 만들어서 테스트해 볼 수 있는 툴입니다.)
 
-##### 9. [Linux Foundation Training (유료)](https://training.linuxfoundation.org/training/kubernetes-fundamentals/)
+##### 10. [Linux Foundation Training (유료)](https://training.linuxfoundation.org/training/kubernetes-fundamentals/)
 우연한 기회에 쿠버네티스 자격증 시험 바우처와 linux Foundation Training 코스를 번들로 싸게 판매하는 `Cyber Monday Sale`라는 이벤트를 통해 절반 이하의 가격에 구매하여 강의를 들었습니다. 강의 진행 방식은 100% 온라인이고 self-paced 방식이라 본인이 강의 진도를 마음대로 조절할 수 있습니다. 강의 레벨은 초급이며 컨텐츠는 전부 글로 되어 있습니다. 간단한 퀴즈 문제와 Hands-on Lab이 있어 직접 문제를 풀어볼 수 있습니다. 개인적으로는 세일을 통해서 강의를 들었지만 정식 구매 가격으로 수강을 생각하신다면 쿠버네티스 공식 홈페이지 문서를 전부 읽는 것만으로도 강의 내용을 전부 커버할 수 있다는 점을 참고하시기 바랍니다. 회사에서 교육 훈련비를 지원해주거나 금액적인 부분은 문제가 되지 않는다면 나쁘지 않은 선택으로 보입니다.
 
 ----
