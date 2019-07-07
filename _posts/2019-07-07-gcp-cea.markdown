@@ -2,11 +2,11 @@
 layout: post
 title:  "Google Certified Cloud Engineer Associate 취득 후기"
 date:   2019-07-07 00:00:00
-categories: bayesian linear regression
+categories: certificate gcp
 ---
 구글 클라우드 자격증 취득 후기에 대해 공유 드립니다. [GCP Cloud Engineer Associate 자격증](https://cloud.google.com/certification/cloud-engineer)취득에 관심있으신 분이라면 꼭 한번 읽어주세요! (19년 6월 기준)
 
-보통 사람들이 Google Cloud Platform은 3대 클라우드 플랫폼 중에서 가장 후발 주자라고 많이들 얘기합니다. 하지만 저는 보는 관점에 따라서 꼭 그렇지만은 않다라고 말씀 드리고 싶습니다. 먼저 매출면에서는 가장 적은 비중을 차지하는 것이 맞습니다만 클라우드 기술면에서는 가장 뒤떨어진다라고 생각하지 않습니다. 왜냐하면 구글 클라우드에서는 App Engine을 필두로한 PaaS쪽을 먼저 시작하였고 AWS 경우, SQS를 가장 먼저 서비스하긴 하였지만 바로 EC2를 메인 서비스로 가져갔기 때문에 IaaS쪽에 더 강점을 보입니다. 현재 제 개인적인 생각으로 구글 클라우드의 전략을 보면 Google App Engine에서 잘 사용하는 컴포넌트들을 GCP 서비스 레벨로 올리는 작업들을 하지 않나 생각합니다. 또한 빅데이터 분석, 머신러닝 분야에서 만큼은 구글 클라우드의 제품들이 선두를 달리고 있지 않나 생각합니다. AWS도 물론 그렇지만 특히 GCP에서 GCS - Dataflow- Dataproc - BigQuery / Cloud ML engine (AI platform) 으로 서로 긴밀하게 연결되는 데이터분석/ML 제품군이 굉장히 매력적으로 보였습니다. 그리하여 GCP에 대해서 더 자세히 알아보겸 GCP 자격증도 취득할겸 공부를 하기 시작하였습니다.
+보통 사람들이 Google Cloud Platform은 3대 클라우드 플랫폼 중에서 가장 후발 주자라고 많이들 얘기합니다. 하지만 저는 보는 관점에 따라서 꼭 그렇지만은 않다라고 말씀 드리고 싶습니다. 먼저 매출면에서는 가장 적은 비중을 차지하는 것이 맞습니다만 클라우드 기술면에서는 가장 뒤떨어진다라고 생각하지 않습니다. 왜냐하면 구글 클라우드에서는 App Engine을 필두로한 PaaS쪽을 먼저 시작하였고 AWS 경우, SQS를 가장 먼저 서비스하긴 하였지만 바로 EC2를 메인 서비스로 가져갔기 때문에 IaaS쪽에 더 강점을 보인다고 생각합니다. 현재 제 개인적인 생각으로 구글 클라우드의 전략을 보면 Google App Engine에서 잘 사용하는 컴포넌트들을 GCP 서비스 레벨로 올리는 작업들을 하지 않나 생각합니다. GCP하면 제가 좋아하는 쿠버네티스를 빼먹을 수가 없는데요. 쿠버네티스 태생이 구글에서 나왔는지라 쿠버네티스를 편하게 제대로 사용하려고 한다면 GKE 만큼 좋은 서비스가 없다고 생각합니다. 또한 빅데이터 분석, 머신러닝 분야에서 만큼은 구글 클라우드의 제품들이 선두를 달리고 있지 않나 생각합니다. AWS도 물론 그렇지만 특히 GCP에서 GCS - Dataflow- Dataproc - BigQuery / Cloud ML engine (AI platform) 으로 서로 긴밀하게 연결되는 데이터분석/ML 제품군이 굉장히 매력적으로 보였습니다. 그리하여 GCP에 대해서 더 자세히 알아보겸 GCP 자격증도 취득할겸 공부를 하기 시작하였습니다.
 ![](https://cloud.google.com/dataflow/images/diagram-dataflow.png)
 
 
@@ -31,19 +31,18 @@ categories: bayesian linear regression
 - Deployment Manager: 저는 사실 Deployment Manager에 대해서 많이 공부하지 않고 가서 당황하였는데 해당 서비스에 대해서도 공부하시면 도움이 많이 될 것 같습니다.
 - BigData / ML: 전반적인 Bigdata, ML 서비스들에 대해서 한번은 훑고 가면 도움일 될 것 같습니다.
 
----
 
 #### Study Resources
 
 다음은 제가 시험을 준비하며 공부한 자료입니다.
 - [Google Cloud Certification Challenge](https://cloud.google.com/blog/topics/training-certifications/get-google-cloud-certified-in-3-months): 구글에서 제공하는 챌린지입니다. 무료이며 각 챌린지 스탭을 이수하면 보상을 줍니다. 저는 해당 챌린지에서 가장 좋았던 부분은 아래의 리소스 중 하나인 Qwiklabs 핸즈온 퀘스트를 무료로 1달 사용할 수 있는 subscription을 제공해 주기 때문에 (5만원 상당) 정말 도움이 많이 되었습니다. 자격증을 1달 안에 따실 생각이 있으시면 꼭 신청하시기 바랍니다.
-- [Qwiklabs](https://www.qwiklabs.com/): GCP 서비스들을 혼자서 차례대로 실습해 볼 수 있는 핸즈온 사이트입니다.  역시 클라우드 서비스들은 눈으로 공부하는 것보다는 직접 손으로 실행시켜 가보면서 배우는 것이 제일 효과적인대로 해당 사이트에서 제공하는 실습 순서만 잘 따라가기만 한다면 쉽게 쉽게 서비스에 대해 이해하실 수 있게 됩니다. 또한 각 Quest를 깨면 예쁜 [뱃지](https://www.qwiklabs.com/public_profiles/879ad1a4-25c7-4bc8-bfe6-0555654feddb)도 하나씩 주는데요, 이런 것들을 하나씩 모으는 재미도 솔솔합니다. 꼭 Google Cloud Certification 챌린지를 신청하시어 무료 subscription 쿠폰을 받아가시기 바랍니다. 더군다나 꼭 GCP 시험 관련된 Quest에만 한정되어 있지 않기 때문에 여러 클라우드 서비스들을 맛보실 수 있는 기회가 됩니다. 아래는 제에게 도움이 많이 되었던 Quest들 위주로 나열해 보았습니다.
+- [Qwiklabs](https://www.qwiklabs.com/): GCP 서비스들을 혼자서 차례대로 실습해 볼 수 있는 핸즈온 사이트입니다.  역시 클라우드 서비스들은 눈으로 공부하는 것보다는 직접 손으로 실행시켜 가보면서 배우는 것이 제일 효과적이라 생각합니다. 해당 사이트에서 제공하는 실습 순서만 잘 따라가기만 한다면 쉽게 쉽게 서비스에 대해 이해하실 수 있게 됩니다. 또한 각 Quest를 깨면 예쁜 [뱃지](https://www.qwiklabs.com/public_profiles/879ad1a4-25c7-4bc8-bfe6-0555654feddb)도 하나씩 주는데요, 이런 것들을 하나씩 모으는 재미도 솔솔합니다. 꼭 Google Cloud Certification 챌린지를 신청하시어 무료 subscription 쿠폰을 받아가시기 바랍니다. 더군다나 꼭 GCP 시험 관련된 Quest에만 한정되어 있지 않기 때문에 여러 클라우드 서비스들을 맛보실 수 있는 기회가 됩니다. 아래는 제에게 도움이 많이 되었던 Quest들 위주로 나열해 보았습니다.
 	- [GCP Essentials](https://www.qwiklabs.com/quests/23)
 	- [Baseline: Infrastructure](https://www.qwiklabs.com/quests/33)
 	- [Security & Identity Fundamentals](https://www.qwiklabs.com/quests/40)
 	- [Cloud Engineering](https://www.qwiklabs.com/quests/66)
 	- [Kubernetes in the Google Cloud](https://www.qwiklabs.com/quests/29)
-- [A Cloud Guru](https://www.udemy.com/course/google-certified-associate-cloud-engineer/): 해당 강의는 제가 [AWS CSAA 자격증 취득 때](/certificate/aws/2019/06/02/csaa/) 도움을 많이 받은 교육 기관의 GCP ver. 강의입니다. AWS 강의 만큼 엄청 도움이 많이 된 것은 아니지만 가격 대비 성과는 나쁘지 않습니다. 특히 강의의 절반이 쿠버네티스에 대한 내용이 들어있는데 저 같은 경우 따로 쿠버네티스를 공부하여 강의의 절반은 skip하였습니다만 그럼에도 불구하고 나머지 강의들은 GCP 자격증을 따는데에 도움이 되었다고 생각합니다.
+- [A Cloud Guru](https://www.udemy.com/course/google-certified-associate-cloud-engineer/): 해당 강의는 제가 [AWS CSAA 자격증 취득 때](/certificate/aws/2019/06/02/csaa/) 도움을 많이 받은 교육 기관의 GCP ver. 강의입니다. AWS 강의 만큼 엄청 도움이 많이 된 것은 아니지만 가격 대비 성과는 나쁘지 않습니다. 특히 강의의 절반이 쿠버네티스에 대한 내용이 들어있는데 저 같은 경우 쿠버네티스를 따로 공부하여 강의의 절반은 skip하였습니다만 그럼에도 불구하고 나머지 강의들은 GCP 자격증을 따는데에 많은 도움이 되었다고 생각합니다.
 - [Official Practice Exam](https://cloud.google.com/certification/practice-exam/cloud-engineer): Google Cloud에서 공식적으로 제공하는 Practice 시험입니다. 무료이고 계속해서 응시할 수 있습니다. 하지만 매번 같은 문제가 나오므로 공부를 다하고 시험치기 마지막 직전 점검용으로 응시해보시면 좋을 것 같습니다.
 - [Udemy Practice Exam](https://www.udemy.com/google-cloud-platform-associate-cloud-engineer-practice-test/): Udemy에서 판매하는 GCP 연습문제입니다. Quality가 그리 높다고는 말할 순 없지만 현재 Udemy에 나와있는 GCP 연습문제들이 그렇게 많지가 않아서 그 중에서 그나마 리뷰가 가장 높은 것을 골랐습니다. 그래도 연습 시험을 보지 않는 것보다는 보는 것이 합격에 조금 더 도움이 되지 않을까 생각합니다.
 
