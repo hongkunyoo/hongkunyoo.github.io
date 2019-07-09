@@ -532,3 +532,9 @@ background-image: url("img/star_30_white_hover.png");
 .font-white {
     color: #ffffff;
 }
+.mylink:after {
+    margin-left: 5px;
+    text-decoration: underline;
+    content: "link";
+    font-size: 80%;
+}
