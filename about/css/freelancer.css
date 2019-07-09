@@ -491,7 +491,7 @@ background-image: url("img/star_30_white_hover.png");
     margin-bottom: 20px;
 }
 .margin-down2 {
-    margin-bottom: 25px;
+    margin-bottom: 35px;
 }
 .margin-left {
     margin-left: 15px;
@@ -526,6 +526,10 @@ background-image: url("img/star_30_white_hover.png");
     color : #006def;
 }
 
+h4 {
+    margin-bottom: 5px;
+}
+
 .mydim {
     color : #566b80;
 }
@@ -537,4 +541,15 @@ background-image: url("img/star_30_white_hover.png");
     text-decoration: underline;
     content: "link";
     font-size: 80%;
+}
+
+img.myimg {
+    width: 80px;
+    height: auto;
+    display: inline-block;
+    #float: left;
+    #margin-right: 20px;
+    background-color: rgb(300, 300, 300);
+    padding: 3px 3px 3px 3px;
+    border-radius: 40px;
 }
