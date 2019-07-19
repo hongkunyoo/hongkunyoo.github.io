@@ -1,0 +1,34 @@
+---
+layout: post
+title:  "Kubernetes ML - 핸즈온"
+date:   2019-07-19 00:00:00
+categories: k8s ml
+---
+안녕하세요. 이번 ["Open Infrastructure & Cloud Native Days Korea 2019"](https://openinfradays.kr/)에서 "How to scale your ML job with Kubernetes"라는 주제로 핸즈온 워크샵을 진행하였습니다.
+
+해당 워크샵은 제가 지금까지 블로깅한 글을 바탕으로 준비한 워크샵입니다.
+- [쿠버네티스와 ML#1](https://coffeewhale.com/kubernetes/ml/k8s/docker/machine-learning/2019/01/11/k8s-ml-01/)
+- [쿠버네티스와 ML#2](https://coffeewhale.com/kubernetes/ml/k8s/docker/machine-learning/2019/03/18/k8s-ml-02/)
+- [쿠버네티스와 ML#3](https://coffeewhale.com/kubernetes/eks/cluster-autoscaler/2019/04/14/eks-cas/)
+
+아래의 내용은 워크샵에 대한 간단한 설명입니다.
+#### [How to scale your ML job with Kubernetes](https://github.com/hongkunyoo/how-to-scale-your-ml-job-with-k8s)
+
+* 내용: 데이터과학자, 분석가 입장에서 조금 더 편리하게 기계학습을 실험해 보고 여러 서버에 걸쳐서 손쉽게 기계학습 잡을 확장시키는 방법에 대해서 알아보도록 하겠습니다.
+* 워크샵 소요시간: 2시간~2시간30분
+* 준비 사항: AWS or GCP 계정
+* 난이도: 중
+* 대상 청중
+    - 쿠버네티스를 활용하여 ML job 실행에 관심 있으신 분
+    - Kubernetes 기본 지식(pod, job 등)
+    - Job, Argo workflow  등을 실습할 예정입니다.
+    - 이미 kubeflow 등 쿠버네티스를 이용한 ML툴을 사용해 보신 분들한테는 쉬울 수 있습니다.
+
+##### 워크샵 순서
+1. Why Kubernetes? (간략 소개)
+2. Provisioning K8S (on AWS / GCP)
+3. How to scale your ML job (핸즈온)
+
+
+아래의 핸즈온 워크샵 git repository를 가시면 직접 핸즈온 실습을 진행하실 수 있습니다.
+* [Hands-On materials](https://github.com/hongkunyoo/how-to-scale-your-ml-job-with-k8s/tree/master/hands-on)
