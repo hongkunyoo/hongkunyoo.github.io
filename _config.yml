@@ -14,12 +14,13 @@ host: 0.0.0.0
 port: 80
 paginate: 10
 baseurl: /
-domain_name: 'https://hongkunyoo.github.io'
+domain_name: 'https://coffeewhale.com'
 google_analytics: 'UA-63572991-1'
 plugins:
   - jekyll-paginate
   - jekyll-sitemap
   - jekyll-seo-tag
+  - jekyll-feed
 
 # Details for the RSS feed generator
 url:            'https://coffeewhale.com'
