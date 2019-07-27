@@ -22,5 +22,5 @@ plugins:
   - jekyll-seo-tag
 
 # Details for the RSS feed generator
-url:            'blog url'
+url:            'https://coffeewhale.com'
 author:         'hongkunyoo'
