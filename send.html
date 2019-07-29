@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <script type="text/javascript" src="/assets/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+</head>
+<body>
+
+    <script>
+       $(function() {
+           var msg = location.search.substring(5)
+           msg = decodeURIComponent(msg);
+           console.log(msg);
+           var obj = {'text': msg };
+           $.ajax({
+               url: "https://hooks.slack.com/services/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",
+               type: "POST",
+               crossDomain: true,
+               xhrFields: {
+                           withCredentials: true
+               },
+               data: JSON.stringify(obj),
+               dataType: "json",
+               success: function (response) {
+                   var resp = JSON.parse(response)
+                   console.log(resp);
+               },
+               error: function (xhr, status) {
+                   console.log("error");
+               }
+           });
+       });
+
+    </script>
+
+
+</body>
+</html>
