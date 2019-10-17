@@ -1,15 +1,11 @@
 ---
 layout: post
-title:  "Linear Regression Bayesians vs Frequentists"
+title:  "[번역] 선형 회귀 모델 Bayesians vs Frequentists"
 date:   2019-06-19 00:00:00
 categories: bayesian linear regression
 ---
-
-[From both sides now: the math of linear
-regression](http://katbailey.github.io/post/from-both-sides-now-the-math-of-linear-regression/)
-
-이 글은 다음과 같은 글을 읽고 frequentist와 bayesian 관점에서의 Regression을 잘 정리한 것 같아
-번역해 보았습니다.
+이 포스트는 다음 글을 읽고 frequentist와 bayesian 관점에서의 Regression을 잘 정리한 것 같아 번역해 보았습니다.
+[From both sides now: the math of linear regression](http://katbailey.github.io/post/from-both-sides-now-the-math-of-linear-regression/)
 
 ---
 
