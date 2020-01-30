@@ -11,7 +11,7 @@
 
     <script>
        $(function() {
-           var msg = location.search.substring(5)
+           var msg = location.search.substring(1)
            msg = decodeURIComponent(msg);
            console.log(msg);
            var obj = {'text': msg };
@@ -28,15 +28,19 @@
                success: function (response) {
                    var resp = JSON.parse(response)
                    console.log(resp);
+                   $( "#msg" ).html("sent");
                },
                error: function (xhr, status) {
                    console.log("error");
+                   $( "#msg" ).html("sent");
                }
            });
        });
 
     </script>
 
-
+    <div id="msg">
+        sending
+    </div>
 </body>
 </html>
