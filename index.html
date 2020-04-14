@@ -10,7 +10,7 @@ about: '/about'
     <nav class="main-nav overlay clearfix">
             {% if page.logo %}
                 <a class="blog-logo" href>
-                    <img src="{{ page.logo }}" alt="Blog Logo" />
+                    <img src="{{ page.logo }}" alt="Blog Logo" class="responsive" />
                 </a>
             {% endif %}
         <!-- 
@@ -51,7 +51,7 @@ about: '/about'
         <footer class="post-meta">
             {% if site.author %}
             <a href="{{ post.site }}/about">
-                <img class="author-thumb" src="/assets/images/profile.png" alt="Author's profile picture" nopin="nopin" />
+                <img class="author-thumb" src="/assets/images/profile.png" alt="Author's profile picture" nopin="nopin" class="responsive"/>
                 {{ site.author }}
                 </a>
             {% endif %}
