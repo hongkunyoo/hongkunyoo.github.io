@@ -113,6 +113,7 @@ table { border-collapse: collapse; border-spacing: 0; }
         url("../fonts/casper-icons.svg#icons") format("svg");
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
 }
 
 /* Apply these base styles to all icons */
