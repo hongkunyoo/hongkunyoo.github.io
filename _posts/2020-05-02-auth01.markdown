@@ -9,14 +9,14 @@ categories: kubernetes authentication x509
 쿠버네티스 공식 홈페이지에 나와 있는 구성과 동일하게 살펴 보겠습니다. 다만 단순 번역이 아닌 개인적으로 아쉬웠던 부분에 대한 설명을 조금 더 보강하고 직접 따라해 볼 수 있게 재구성 하였습니다.
 쿠버네티스 인증 완벽이해 순서는 다음과 같습니다.
 
-1. X.509 Client Certs: 인증서를 이용하여 클라이언트 인증을 하는 방법에 대해서 살펴 봅니다.
-2. Static file: basic, token auth 파일을 이용한 HTTP Authorization 방법에 대해서 살펴 봅니다. (TBA)
-3. Service Account: 쿠버네티스에서 제공해주는 Service Account라는 리소스를 이용한 인증 방법에 대해서 살펴 봅니다. (TBA)
-4. OpenID Connect: Google OAuth와 같은 3rd party 인증 provider를 이용하여 인증하는 방법에 대해서 살펴 봅니다. (TBA)
-5. Webhook: Webhook을 통해 쿠버네티스 내부 인증 시스템이 아닌 외부 인증 메커니즘을 이용하는 방법에 대해서 살펴 봅니다. (TBA)
-6. Proxy Auth: API server에 도달하기 이전에 먼저 proxy 인증 서버를 거쳐 미리 인증을 받아 넘어가는 방법에 대해서 살펴 봅니다. (TBA)
+1. **X.509 Client Certs**: 인증서를 이용하여 클라이언트 인증을 하는 방법에 대해서 살펴 봅니다.
+2. **Static file**: basic, token auth 파일을 이용한 HTTP Authorization 방법에 대해서 살펴 봅니다. (TBA)
+3. **Service Account**: 쿠버네티스에서 제공해주는 Service Account라는 리소스를 이용한 인증 방법에 대해서 살펴 봅니다. (TBA)
+4. **OpenID Connect**: Google OAuth와 같은 3rd party 인증 provider를 이용하여 인증하는 방법에 대해서 살펴 봅니다. (TBA)
+5. **Webhook**: Webhook을 통해 쿠버네티스 내부 인증 시스템이 아닌 외부 인증 메커니즘을 이용하는 방법에 대해서 살펴 봅니다. (TBA)
+6. **Proxy Auth**: API server에 도달하기 이전에 먼저 proxy 인증 서버를 거쳐 미리 인증을 받아 넘어가는 방법에 대해서 살펴 봅니다. (TBA)
 
-## Before
+---
 
 ### 환경설정
 X.509 Client Certificate를 위한 테스트 환경은 다음과 같습니다.
@@ -26,11 +26,11 @@ X.509 Client Certificate를 위한 테스트 환경은 다음과 같습니다.
 - 인증 테스트 서버: `nginx` (docker 컨테이너)
 - 쿠버네티스 설치툴: `kubeadm`
 
-### 몇 가지 미리 이해하면 좋은 내용
+### 시작하기에 앞서
+
+시작하기에 앞서 다음과 같은 내용들을 먼저 짚고 넘어 가봅시다.
 
 #### 1. 쿠버네티스 접근제어 체계
-
-쿠버네티스의 접근제어 체계는 다음과 같습니다.
 
 ![](/assets/images/k8s-auth/01-01.png)
 
@@ -59,6 +59,8 @@ API 서버는 굉장히 복잡해 보이지만 사실 멀리서 겉모습만 바
 
 그럼 쿠버네티스 authentication 첫번째 방법, X.509 Client Certification에 대해서 알아보도록 합시다.
 
+---
+
 ## X.509 Client Certificate
 
 ### X.509
@@ -81,10 +83,11 @@ Public 키는 단순히 메세지를 암호화하고 Private 키로 암호화된
 
 인증서에는 해당 인증서를 발급해준 발급 기관 (Issuer) 정보를 포함하고 있습니다. 해당 정보를 이용하여 지금 보고 있는 인증서가 아무에게서나 발급된 인증서가 아니라 공인된 인증 기관에서 발급된 인증서라는 것을 확인할 수 있습니다. 이것을 Certificate Authority (인증 기관)이라 부르고 짧게 CA라고도 합니다. 이 CA 또한 인증서로 이루어져 있어 해당 Public 키로 인증기관의 유효성을 동일한 메커니즘으로 검사할 수 있습니다. CA도 마찬가지로 CA의 인증서를 발급한 인증 기관(CA)이 존재하며 이것을 Certificate Chain (인증 체인)이라고 하고 인증 체인의 가장 끝에는 `Root CA`라고 하는 인증서가 있습니다. 이 Root CA는 따로 인증 기관이 존재하지 않으며 스스로가 스스로를 인증합니다.
 
+---
 
 ## Certificate을 이용한 사용자 인증
 
-지금까지 X.509 Certificate에 대해 알아 봤는데 이 기술을 이용하여 어떻게 사용자 인증을 할 수 있는지 살펴 보겠습니다.
+지금까지 X.509 Certificate에 대해 알아 봤습니다. 이 기술을 이용하여 어떻게 사용자 인증을 할 수 있는지 살펴 보겠습니다.
 
 ### 1. 인증서 발급
 
@@ -427,18 +430,18 @@ curl --cacert k8s-rootCA.pem --cert k8s-client.pem --key k8s-client-key.pem  htt
 
 #### root CA
 쿠버네티스에서 사용하는 rootCA의 키들은 다음과 같습니다.
-- 인증서: /etc/kubernetes/pki/ca.crt
-- key: /etc/kubernetes/pki/ca.key
+- 인증서: `/etc/kubernetes/pki/ca.crt`
+- key: `/etc/kubernetes/pki/ca.key`
 
 #### server 인증서
 api 서버의 인증서 및 키는 다음과 같습니다.
-- 인증서: /etc/kubernetes/pki/apiserver.crt
-- key: /etc/kubernetes/pki/apiserver.key
+- 인증서: `/etc/kubernetes/pki/apiserver.crt`
+- key: `/etc/kubernetes/pki/apiserver.key`
 
 #### client 인증서
 클라이언트의 인증서 및 키는 다음과 같습니다.
-- 인증서: /etc/kubernetes/admin.conf `client-certificate-data`
-- key: /etc/kubernetes/admin.conf `client-key-data`
+- 인증서: `/etc/kubernetes/admin.conf` 파일내 `client-certificate-data` 부분
+- key: `/etc/kubernetes/admin.conf` 파일내 `client-key-data` 부분
 
 
 ### 5. 쿠버네티스 CA를 이용하여 신규 인증서 발급
