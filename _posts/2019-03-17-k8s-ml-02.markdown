@@ -6,6 +6,12 @@ categories: kubernetes ml k8s docker machine-learning
 ---
 이번 포스트에서는 쿠버네티스 환경을 구축해보고 직접 여러 개의 모델을 훈련시켜 보아 기존 방법에 비해 어떤 부분들이 더 좋은지 알아보도록 하겠습니다.
 
+쿠버네티스의 MLOps는 다음과 같은 시리즈로 구성되어 있습니다.
+- [쿠버네티스와 MLOps#1](https://coffeewhale.com/kubernetes/ml/k8s/docker/machine-learning/2019/01/11/k8s-ml-01/)
+- **쿠버네티스와 MLOps#2**
+- [쿠버네티스와 MLOps#3](https://coffeewhale.com/kubernetes/eks/cluster-autoscaler/2019/04/14/eks-cas/)
+- [쿠버네티스와 MLOps#4](https://coffeewhale.com/k8s/ml/2019/07/19/workshop/)
+
 #### kubernetes 환경 구축
 쿠버네티스 클러스터를 직접 구축하는 일은 그리 간단하지 않습니다. 저는 AWS 클라우드 상에서 클러스터를 구축하는 방법을 소개해 드리겠습니다. 크게 3가지 방법이 있습니다.
 

@@ -7,6 +7,12 @@ tags: 머신러닝 쿠버네티스 eks
 ---
 오늘은 AWS에서 제공하는 Kubernetes managed 서비스인 EKS에서 요청량에 따라 자동으로 worker 노드들을 늘렸다가 줄여주는 Cluster Autoscaler를 설정하는 방법에 대해서 공유하고자 합니다.
 
+쿠버네티스의 MLOps는 다음과 같은 시리즈로 구성되어 있습니다.
+- [쿠버네티스와 MLOps#1](https://coffeewhale.com/kubernetes/ml/k8s/docker/machine-learning/2019/01/11/k8s-ml-01/)
+- [쿠버네티스와 MLOps#2](https://coffeewhale.com/kubernetes/ml/k8s/docker/machine-learning/2019/03/18/k8s-ml-02/)
+- **쿠버네티스와 MLOps#3**
+- [쿠버네티스와 MLOps#4](https://coffeewhale.com/k8s/ml/2019/07/19/workshop/)
+
 ### Amazon EKS란?
 Amazon EKS를 간단히 설명드리자면, AWS에서 쿠버네티스 마스터 노드를 (control plane) 완전 관리형으로 제공해주는 서비스입니다. 기존에 EC2위에 직접 마스터 노드를 구축하여 사용하였을 때보다 아래와 같은 장점들이 있습니다.
 #### 1. 마스터 클러스터를 직접 구축할 필요가 없습니다.
