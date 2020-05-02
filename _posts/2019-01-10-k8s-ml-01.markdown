@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Kubernetes와 ML #1"
+title:  "Kubernetes와 MLOps #1"
 date:   2019-01-10 21:30:00
 categories: kubernetes ml k8s docker machine-learning
 ---

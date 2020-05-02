@@ -1,30 +1,37 @@
 ---
 layout: post
-title:  "Kubernetes ML - 핸즈온"
+title:  "Kubernetes와 MLOps #4 (핸즈온)"
 date:   2019-07-19 00:00:00
 categories: k8s ml
 ---
 안녕하세요. 이번 ["Open Infrastructure & Cloud Native Days Korea 2019"](https://openinfradays.kr/)에서 "How to scale your ML job with Kubernetes"라는 주제로 핸즈온 워크샵을 진행하였습니다.
 
 해당 워크샵은 제가 지금까지 블로깅한 글을 바탕으로 준비한 워크샵입니다.
-- [쿠버네티스와 ML#1](https://coffeewhale.com/kubernetes/ml/k8s/docker/machine-learning/2019/01/11/k8s-ml-01/)
-- [쿠버네티스와 ML#2](https://coffeewhale.com/kubernetes/ml/k8s/docker/machine-learning/2019/03/18/k8s-ml-02/)
-- [쿠버네티스와 ML#3](https://coffeewhale.com/kubernetes/eks/cluster-autoscaler/2019/04/14/eks-cas/)
+- [쿠버네티스와 MLOps#1](https://coffeewhale.com/kubernetes/ml/k8s/docker/machine-learning/2019/01/11/k8s-ml-01/)
+- [쿠버네티스와 MLOps#2](https://coffeewhale.com/kubernetes/ml/k8s/docker/machine-learning/2019/03/18/k8s-ml-02/)
+- [쿠버네티스와 MLOps#3](https://coffeewhale.com/kubernetes/eks/cluster-autoscaler/2019/04/14/eks-cas/)
 
-아래의 내용은 워크샵에 대한 간단한 설명입니다.
-#### [How to scale your ML job with Kubernetes](https://github.com/hongkunyoo/how-to-scale-your-ml-job-with-k8s)
 
-* 내용: 데이터과학자, 분석가 입장에서 조금 더 편리하게 기계학습을 실험해 보고 여러 서버에 걸쳐서 손쉽게 기계학습 잡을 확장시키는 방법에 대해서 알아보도록 하겠습니다.
+### [How to scale your ML job with Kubernetes](https://github.com/hongkunyoo/how-to-scale-your-ml-job-with-k8s)
+
+이제는 학습 플랫폼을 이해하지 못하고는 제대로된 연구 성과를 올리는 것이 힘들어 졌습니다. 나의 모델을 더욱 효과적으로 학습 시킬 수 있도록 MLOps 스킬을 늘려봅시다.
+MLOps를 제대로 하기 위해서는 학습 잡 스케줄링, 네트워킹, 리소스 관리, 모니터링, 자동확장 등 여러가지 기술들을 활용할 수 있어야 합니다. 기계학습 모델을 만들기도 바쁜데 언제 이런 것들까지 공부할 수 있을까요? 쿠버네티스를 잘 활용한다면 앞서 나열한 문제들을 한방에 해결할 수 있습니다. 이제 머리 아픈 일은 쿠버네티스에 맡기고 여러분은 더 중요한 일에 시간을 쏟으시기 바랍니다.
+
+* 내용: 데이터 분석, 모델링 기술 뿐만 아니라 머신러닝 엔지니어링 또한 필수적인 기술로 자리 잡아가고 있습니다. 데이터과학자, 분석가 입장에서 편리하게 기계학습을 실험해 보고 여러 서버에 걸쳐서 손쉽게 분석모델의 학습을 확장시키는 방법에 대해서 알아 보는 시간을 가져 봅니다.
 * 워크샵 소요시간: 2시간~2시간30분
 * 준비 사항: AWS or GCP 계정
 * 난이도: 중
 * 대상 청중
-    - 쿠버네티스를 활용하여 ML job 실행에 관심 있으신 분
-    - Kubernetes 기본 지식(pod, job 등)
-    - Job, Argo workflow  등을 실습할 예정입니다.
-    - 이미 kubeflow 등 쿠버네티스를 이용한 ML툴을 사용해 보신 분들한테는 쉬울 수 있습니다.
+  - 쿠버네티스를 활용한 MLOps에 관심 있으신 분
+  - 효율적인 기계학습 플랫폼 운영에 관심이 많으신 분
+  - 분산 기계학습을 통해 대규모 모델 학습을 수행하고자 하는 데이터 사이언티스
+* 배우는 내용
+  - Kubernetes를 이용하여 ML job 실행 방법
+  - Job, Argo workflow 사용법
+  - 모델 특징에 따른 CPU, Memory, GPU intensive 서버 선택 방법
+  - Auto Scaling을 통한 비용 최적화 방법
 
-##### 워크샵 순서
+### 워크샵 순서
 1. Why Kubernetes? (간략 소개)
 2. Provisioning K8S (on AWS / GCP)
 3. How to scale your ML job (핸즈온)
