@@ -9,12 +9,12 @@ categories: kubernetes authentication x509
 쿠버네티스 공식 홈페이지에 나와 있는 구성과 동일하게 살펴 보겠습니다. 다만 단순 번역이 아닌 개인적으로 아쉬웠던 부분에 대한 설명을 조금 더 보강하고 직접 따라해 볼 수 있게 재구성 하였습니다.
 쿠버네티스 인증 완벽이해 순서는 다음과 같습니다.
 
-1. **X.509 Client Certs**: 인증서를 이용하여 클라이언트 인증을 하는 방법에 대해서 살펴 봅니다.
-2. **Static file**: basic, token auth 파일을 이용한 HTTP Authorization 방법에 대해서 살펴 봅니다. (TBA)
-3. **Service Account**: 쿠버네티스에서 제공해주는 Service Account라는 리소스를 이용한 인증 방법에 대해서 살펴 봅니다. (TBA)
-4. **OpenID Connect**: Google OAuth와 같은 3rd party 인증 provider를 이용하여 인증하는 방법에 대해서 살펴 봅니다. (TBA)
-5. **Webhook**: Webhook을 통해 쿠버네티스 내부 인증 시스템이 아닌 외부 인증 메커니즘을 이용하는 방법에 대해서 살펴 봅니다. (TBA)
-6. **Proxy Auth**: API server에 도달하기 이전에 먼저 proxy 인증 서버를 거쳐 미리 인증을 받아 넘어가는 방법에 대해서 살펴 봅니다. (TBA)
+쿠버네티스 인증 완벽 이해 시리즈
+1. **X.509 Client Certs**: X.509 인증서를 이용한 상호 TLS 인증
+2. [HTTP Authentication](/kubernetes/authentication/http-auth/2020/05/03/auth02/): HTTP Authentication을 이용한 사용자 인증
+3. OpenID Connect: Google OAuth와 같은 인증 provider를 이용한 인증 (TBA)
+4. Webhook: Webhook 서버를 통한 외부 시스템 인증 (TBA)
+5. Proxy Auth: Proxy 서버를 통한 대리 인증 (TBA)
 
 ---
 
@@ -495,8 +495,9 @@ https://kubernetes.io/docs/setup/best-practices/certificates/#configure-certific
 sudo cp /etc/kubernetes/admin.conf $HOME/kubeconfig
 sudo chown $(id -u):$(id -g) $HOME/kubeconfig
 
-# 신규 사용자 인증서로 대체
-kubectl config --kubeconfig=$HOME/kubeconfig set-credentials kubernetes-admin --client-certificate=k8s-new-client.pem --client-key=k8s-new-client-key.pem
+# kubectl 신규 사용자 설정 - X.509
+kubectl config --kubeconfig=$HOME/kubeconfig set-credentials x509 --client-certificate=k8s-new-client.pem --client-key=k8s-new-client-key.pem
+kubectl config --kubeconfig=$HOME/kubeconfig set-context kubernetes-admin@kubernetes --user=x509
 kubectl config --kubeconfig $HOME/kubeconfig view
 ```
 
@@ -511,14 +512,14 @@ kubectl cluster-info
 API_SERVER_ADDR=XXXX  # 예시) localhost
 API_SERVER_PORT=XXX   # 예시) 6443
 
-# curl - 신규 사용자 인증
+# curl - 신규 X.509 사용자 인증
 curl --cacert k8s-rootCA.pem --cert k8s-new-client.pem --key k8s-new-client-key.pem https://$API_SERVER_ADDR:$API_SERVER_PORT/api
 
-# kubectl - 신규 사용자 인증
+# kubectl - 신규 X.509 사용자 인증
 kubectl --kubeconfig=$HOME/kubeconfig get pod -n kube-system
 ```
 
 ## 마치며
 
 이번 포스트에서 PKI 기술에 대한 전반적인 내용에 대해서 다뤄보았고 `X.509 Certificate`을 이용하여 서버, 클라이언트간 인증 방법을 살펴 보았습니다. API 서버도 일반적인 웹 서버와 마찬가지로 TLS mutual authenticate을 통하여 서로의 신원을 확인하는 방법에 대해서 확인해 보았습니다.
-다음 포스트에서는 `HTTP Authorization Header`를 이용하여 쿠버네티스의 인증을 처리하는 방법에 대해서 살펴보도록 하겠습니다.
+[다음 포스트에서는 `HTTP Authentication`을 이용하여 쿠버네티스 인증](/kubernetes/authentication/http-auth/2020/05/03/auth02/)을 처리하는 방법에 대해서 살펴보도록 하겠습니다.

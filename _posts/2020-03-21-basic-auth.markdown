@@ -10,7 +10,7 @@ categories: kubernetes nginx-ingress basic-auth
 
 ![01.png](/assets/images/basic_auth/01.png)
 
-## Bastic Authentication
+## Basic Authentication
 
 Basic Authentication은 쿠버네티스나 NGINX의 기능이 아니라 단순한 HTTP 프로토콜의 인증 방법 중 하나입니다. 특별한 패키지 설치 없이 HTTP 헤더에 아래과 같은 정보를 넘겨서 인증을 받을 수 있습니다.
 
@@ -26,7 +26,7 @@ curl -v -H "Authorization: Basic $(echo -n myuser:mypass | base64)" https://http
 
 ![02.png](/assets/images/basic_auth/02.png)
 
-## NGINX Ingress Baisc Auth
+## NGINX Ingress Basic Auth
 
 이제 쿠버네티스의 Ingress Controller 중 하나인 NGINX Ingress에서 어떻게 Basic Auth를 설정할 수 있는지 알아보고 그 장점에 간단히 설명 드리겠습니다. 이를 통해 사용자가 개별적인 Ingress 단계에서 서비스의 인증 설정을 할 수 있게 되어 필요에 따라 어플리케이션 레벨에서, 혹은 Ingress 레벨에서 인증을 선택할 수 있게 됩니다.
 
@@ -42,11 +42,11 @@ Static User 방식은 미리 basic auth로 인증할 유저 리스트를 생성�
 
 먼저 `htpasswd`를 통해 basic auth 사용자 파일을 생성합니다.
 ```bash
-# foo 라는 사용자를 auth 파일에 생성
-$ htpasswd -c auth foo
-# New password: <bar>      # 비밀번호는 bar
-# New password:
-# Re-type new password:
+sudo apt-get install apache2-utils
+# htpasswd 설치
+
+# foo라는 사용자를 bar라는 비밀번호로 auth 파일에 생성
+$ htpasswd -cb auth foo bar
 # Adding password for user foo
 
 $ ls

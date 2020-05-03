@@ -1,0 +1,368 @@
+---
+layout: post
+title:  "k8s 인증 완벽이해 #2 - HTTP Authentication"
+date:   2020-05-03 00:00:00
+categories: kubernetes authentication http-auth
+---
+쿠버네티스 인증 완벽 이해 시리즈 2탄, HTTP Authentication을 이용한 쿠버네티스 인증에 대해서 살펴보는 시간을 가져 보겠습니다.
+
+쿠버네티스 인증 완벽 이해 시리즈
+1. [X.509 Client Certs](/kubernetes/authentication/x509/2020/05/02/auth01/): X.509 인증서를 이용한 상호 TLS 인증
+2. **HTTP Authentication**: HTTP Authentication을 이용한 사용자 인증
+3. OpenID Connect: Google OAuth와 같은 인증 provider를 이용한 인증 (TBA)
+4. Webhook: Webhook 서버를 통한 외부 시스템 인증 (TBA)
+5. Proxy Auth: Proxy 서버를 통한 대리 인증 (TBA)
+
+HTTP Authentication이란 HTTP 프로토콜에서 제공하는 인증 방법 중 하나입니다. HTTP Header를 통해 인증 정보를 서버에게 전달합니다. 저의 지난 포스트, [최소한의 보안인증 설정하기](/kubernetes/nginx-ingress/basic-auth/2020/03/21/basic-auth/) 에서도 Basic Authentication을 이용하여 nginx 서버의 최소한의 인증을 설정하는 방법에 대해서 알아 보았습니다. api 서버도 결국 일반 웹서버와 마찬가지기 때문에 api 서버에도 이러한 HTTP Authentication 설정을 적용할 수 있습니다.
+
+---
+
+### 환경설정
+HTTP Authentication을 위한 테스트 환경은 다음과 같습니다.
+
+- OS: `Ubuntu 18.04` 기준
+- root 권한 (sudo 권한) 필요
+- basic user 파일 생성툴: `htpasswd`
+- 인증 테스트 서버: `nginx` (docker 컨테이너)
+- 쿠버네티스 설치툴: `kubeadm`
+
+## HTTP Authentication
+
+### Authorization Header
+
+HTTP Authentication이 적용된 서버에 인증 없이 접속을 하면 `401` 에러 코드와 함께 아래와 같이 에러 메세지를 응답 받습니다.
+```bash
+HTTP/1.1 401 Unauthorized
+WWW-Authenticate: Basic realm="MyRealm"
+Content-Length: 0
+```
+
+사용자 인증 정보를 넣기 위해서는 HTTP Header에 `Authorization` 필드를 기입해야 합니다. 재밌는 점은 Authentication을 위한 헤더 정보의 필드명이 `Authorization`이라는 점입니다. 과거에도 Authentication과 Authorization의 용어를 혼용하여 사용한 것이 아닌가 생각됩니다.
+
+HTTP Authentication의 문법은 다음과 같습니다.
+
+```bash
+Authorization: <type> <credentials>
+```
+
+- `type`: 인증 방식을 선언합니다. 쿠버네티스에서는 Basic과 Bearer 타입을 사용합니다.
+- `credentials`: 사용자 인증정보를 기입합니다. ID 및 비밀번호, 혹은 토큰값을 넣습니다.
+
+### Basic type
+
+사용자의 ID 및 비밀번호를 `:` delimiter를 이용하여 합친 다음 base64 인코딩하여 서버로 전송합니다. 서버에서는 반대로 base64 디코딩과 delimiter를 기준으로 ID와 비밀번호를 분리하여 사용자 정보를 인식합니다.
+base64 인코딩 경우 암호화 기술이 아니기 때문에 보안을 위하여 HTTPS로 접속하는 것을 권장합니다.
+
+```bash
+Authorization: Basic BASE64($USER:$PASSWORD)
+```
+
+[최소한의 보안인증 설정하기](/kubernetes/nginx-ingress/basic-auth/2020/03/21/basic-auth/) 포스트에서 더 자세한 사용 방법이 나와있습니다.
+
+
+### Bearer type
+
+Bearer type 경우, 서버에서 지정한 어떠한 문자열도 입력할 수 있습니다. 예를 들어 서버에서 `hello-world-token`이라는 Bearer 토큰을 인증키로 지정한 경우, 사용자는 다음과 같이 헤더를 구성하여 서버에 전송하면 인증을 받을 수 있습니다.
+
+```bash
+Authorization: Bearer hello-world-token
+```
+
+Bearer 토큰 인증 방식 경우, 굉장히 허술한 느낌을 받습니다. 이를 보완하고자 쿠버네티스에서 Bearer 토큰을 전송할 때 주로 `jwt` (JSON Web Token) 토큰을 사용합니다.
+
+### JSON Web Token (jwt)
+
+`jwt`는 `X.509 Certificate`와 마찬가지로 private key를 이용하여 토큰을 서명하고 public key를 이용하여 서명된 메세지를 검증합니다. 이러한 메커니즘을 통해 해당 토큰이 쿠버네티스를 통해 생성된 valid한 토큰임을 인증할 수 있습니다. `X.509 Certificate`의 lightweight JSON 버전이라고 생각하면 편리합니다.
+
+![](/assets/images/k8s-auth/02-01.png)
+
+#### JWT 형식
+
+`jwt`는 JSON 형태로 토큰 형식을 정의한 스펙입니다. `jwt`는 쿠버네티스에서 뿐만 아니라 다양한 웹 사이트에서 인증, 권한 허가, 세션관리 등의 목적으로 사용합니다. `jwt`의 형식은 크게 3가지 파트로 나뉩니다.
+
+- Header: 토큰 형식와 암호화 알고리즘을 선언합니다.
+- Payload: 전송하려는 데이터를 JSON 형식으로 기입합니다.
+- Signature: Header와 Payload의 변조 가능성을 검증합니다.
+
+각 파트는 base64 URL 인코딩이 되어서 `.`으로 합쳐지게 됩니다. `jwt`의 최종 결과물은 다음과 같이 생성됩니다.
+
+```javascript
+base64UrlEncoded(header).base64UrlEncoded(payload).HASHED_SIGNATURE
+
+header = {
+  "alg": "HS256",
+  "typ": "JWT"
+}
+
+payload = {
+  "sub": "1234567890",
+  "name": "John Doe",
+  "iat": 1516239022
+}
+
+
+JWT(header, payload)
+// 예시) eyJhbGciOiJIUzII6IkpXVCJ9.eyJzdWIiOiIxM3ODkwIiwibmkDIyfQ.SflKxwRJSMeKK4fwpssw5c
+```
+
+#### Signature 파트
+
+여기서 `HASHED_SIGNATURE` 부분이 `jwt` 데이터의 무결성을 보장합니다. 쿠버네티스 서버에서 자신의 private key를 이용하여 `jwt` 데이터를 서명하고 외부에 전달합니다. 사용자 인증 시점에서 전달 받은 `jwt` 토큰을 자신의 public key를 이용하여 변조 가능성을 검사합니다. 검증이 이상없이 완료되면 해당 데이터가 자신이 생성한 토큰(자신이 생성한 사용자)이라는 것을 확인하여 사용자 인증을 통과시킵니다.
+
+아래는 `HASHED_SIGNATURE` 생성 pseudo 코드입니다. `$PRIVATE_KEY` 부분이 `jwt` 토큰을 서명하는 결정적인 역할을 담당합니다.
+
+```bash
+# HASHED_SIGNATURE
+RSASHA256(
+  base64UrlEncode(header) + "." +
+  base64UrlEncode(payload),
+  $PRIVATE_KEY
+)
+```
+
+주의해야 할 점은 `jwt` 기술이 인증 기술일 뿐 보안 기술은 아니라는 점입니다. `jwt` 토큰을 탈취 당하는 순간, 해커는 해당 토큰을 이용하여 서버에 정상적으로 접근할 수 있습니다. 이것은 사용자가 본인의 계정과 비밀번호를 탈취 당한 것과 같은 것을 의미합니다.
+
+### Service Account Token
+
+쿠버네티스에서는 Bearer 토큰을 사용할때 단순한 문자열이 아닌 위조 방지 장치가 내장된 `jwt` 토큰을 사용한다고 하였는데요, 바로 쿠버네티스의 `ServiceAccount` 리소스의 사용자 토큰을 생성할 때 `jwt`를 사용합니다. 아래의 예시는 `ServiceAccount`를 통해 생성된 `jwt` 예시입니다.
+
+![](/assets/images/k8s-auth/02-02.png)
+
+- 예시의 payload 부분에는 `ServiceAccount`가 생성된 `namespace`, `Secret` 이름, `ServiceAccount` 이름 등 쿠버네티스의 다양한 세부 정보가 담긴 것을 확인할 수 있습니다. 쿠버네티스에서는 이러한 사용자 정보를 활용하여 Bearer token을 통한 인증을 처리합니다.
+- 아래에 `jwt`의 서명이 Invalid하다는 결과가 나옵니다. 이것은 아직 Public key를 통하여 사용자의 `jwt` 토큰을 검증하지 않았기 때문입니다.
+
+![](/assets/images/k8s-auth/02-03.png)
+
+위와 같이 쿠버네티스 API 서버에서 제공하는 `ServiceAccount` Public key를 입력하게 되면 장상적으로 서명이 valid한 결과가 나옵니다. 아래 페이지에 접속하여 임의대로 payload를 변경시켜 보며 signature가 valid하게 나오는지 아닌지 실험해 보면 재밌습니다.
+
+#### [jwt.io - Service Account token 테스트](https://jwt.io/#debugger-io?token=eyJhbGciOiJSUzI1NiIsImtpZCI6IlJOdHJJQ0JhT3g3NGhVZWJqekoyX252dF9nTjVkTHhXQXk2b0QzY0pTajgifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRlZmF1bHQtdG9rZW4tZHo4NXMiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZGVmYXVsdCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjBlNWIzOTY2LTI0YjktNDg2Ni1iNDIyLTczMjQ1YzFiZmZiNSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0OmRlZmF1bHQifQ.ZCyODMzT8QdZjXu7R5f_9Qc_XHcpMIdWvr-9HCIxpiNtq3KQfiO9LkVtksXZJVMnSyX1QbMl57MTx09rhWH6Ma-h93rYEOKE0977ihG5prPP9BBnIKiffH2TD0iyLBtu6BvUvyxIEoeZY-l6yfp4PokhYpS_EBRlFaKyv56dHJWJl_4RU01tySqUB0dwrh1eQQXBMjFF7B9SbAkJYlvWBuvjkXnNR3XSBO8F-6NAlhWljQc5T4p-YP2eVIJJVauNxOqI4M67yBzlprD0BTlwuopCMsmlz3FEXzqZmfFp3-ZQBVxsqy0FLn3NnGDqPJ08TMSJsNZjSoieXYbk8nfE1A&publicKey=-----BEGIN%20PUBLIC%20KEY-----%0AMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApbDR3ORHzux4XMG59TJK%0AxHwWMKCtLSrsh9LNsUSzYBTofKi4i8KN9EpzckvzklGgCzaypcRo56MFVQRvU3jB%0AqrjXgRN53E8vW7mW8%2FaY9HC%2BGdN1HCv%2F0GxUhV55qK4IhS2k7KR%2BFPz%2FcJq1g%2FwE%0AuhYEe%2BI2jGVlgIPsWNVvDVfgaSOw0Wxr9dCPDO919LlFJR1bMKuUjaRoXLfc2665%0AIj4fuviovykSbzBUxsqceGk%2FRSFXjacVSSSptnYXs5S912e%2F6AklyoVP5RnLSzSo%0AtL73pvh5LwnVuU2ADbTV7rkg%2BdGGcUnPuTrzHsVXJ2m8UBgnSLaBwZ5G1xrLTBal%0A8wIDAQAB%0A-----END%20PUBLIC%20KEY-----)
+
+---
+
+## HTTP 인증 실험
+
+지금까지 HTTP Authentication의 방법으로 Basic Auth, Bearer token Auth에 대해서 살펴 보았고 Bearer token 은 아무 문자열을 사용할 수도 있지만 `jwt` 토큰 형식에 대해서 살펴 보았습니다. 이번 섹션에서는 직접 NGINX 서버와 API 서버를 설정하여 실험해 보도록 하겠습니다.
+
+### NGINX Basic Auth
+
+먼저 NGINX 서버의 Basic Authentication을 설정해 보겠습니다.
+```bash
+sudo apt-get install -y apache2-utils jq
+
+# auth라는 파일에 ID: user1, PW: pass1 생성
+htpasswd -cb auth user1 pass1
+
+ls
+# auth
+```
+
+```nginx
+# default.conf
+server {
+    listen 80;
+    server_name localhost;
+
+    auth_basic           "MyRealm";
+    auth_basic_user_file /etc/nginx/conf.d/auth; 
+
+    location / {
+        root   /usr/share/nginx/html;
+        index index.html index.htm;
+    }
+}
+```
+docker를 활용하여 NGINX 서버를 띄웁니다.
+```bash
+docker run -p 8080:80 -v $(pwd):/etc/nginx/conf.d nginx
+```
+
+#### curl basic auth
+
+아래와 같이 HTTP Authentication Header를 통해서만 접근이 가능한 것을 확인할 수 있습니다.
+```bash
+# Plain http
+curl -v http://localhost:8080
+# HTTP/1.1 401 Unauthorized
+# ...
+# WWW-Authenticate: Basic realm="MyRealm"
+
+# Basic Auth Header
+curl -v -H "Authorization: Basic $(echo -n user1:pass1 | base64)" http://localhost:8080
+# HTTP/1.1 200 OK
+
+# curl --user option
+curl -v --user user1:pass1 http://localhost:8080
+# HTTP/1.1 200 OK
+```
+
+### API 서버 Basic Auth
+
+이번에는 API 서버의 Basic Authentication을 설정합니다. 먼저 다음 형식의 password 파일을 생성합니다. base64나 hash값이 아닌 plain text로 생성합니다.
+
+```bash
+password,user,uid,"group1,group2,group3"
+```
+
+`basic-auth` 파일 생성 (username: user1 / password: pass1)
+```bash
+sudo bash -c 'echo pass1,user1,user1,system:masters > /etc/kubernetes/pki/basic-auth'
+```
+
+해당 파일을 api 서버 설정에 `--basic-auth-file` 옵션으로 추가합니다.
+
+```bash
+# API 서버 설정 파일
+sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml
+# -----[kube-apiserver.yaml]------
+    - kube-apiserver
+    - --allow-privileged=true
+    - --authorization-mode=Node,RBAC
+    # .....
+    - --basic-auth-file=/etc/kubernetes/pki/basic-auth
+# --------------------------------
+```
+
+#### curl을 이용한 Basic auth 테스트
+API 서버의 Basic auth 세팅이 완료되었습니다. 이제 basic auth로 요청 테스트를 합니다.
+```bash
+kubectl cluster-info
+# Kubernetes master is running at https://XXXX:XXX
+
+# API 서버 주소 및 포트 설정
+API_SERVER_ADDR=XXXX  # 예시) localhost
+API_SERVER_PORT=XXX   # 예시) 6443
+
+# curl - basic auth 사용자 인증
+curl -k --user user1,pass1 https://$API_SERVER_ADDR:$API_SERVER_PORT/api
+curl -k -H "Authorization: Basic $(echo -n user1:pass1 | base64)" https://$API_SERVER_ADDR:$API_SERVER_PORT/api
+```
+
+#### Optional
+> 기존에 `$HOME/kubeconfig` 파일이 없는 경우 아래와 같이 새로 생성합니다. (optional)
+```bash
+# 기존 admin 사용자 kubeconfig 파일 복사 (optional)
+sudo cp /etc/kubernetes/admin.conf $HOME/kubeconfig
+sudo chown $(id -u):$(id -g) $HOME/kubeconfig
+```
+
+#### kubectl을 이용한 Basic auth 테스트
+```bash
+# kubectl 신규 사용자 설정 - basic-auth
+kubectl config --kubeconfig=$HOME/kubeconfig set-credentials basic-user --username=user1 --password=pass1
+kubectl config --kubeconfig=$HOME/kubeconfig set-context kubernetes-admin@kubernetes --user=basic-user
+kubectl config --kubeconfig $HOME/kubeconfig view
+
+# kubectl - basic auth 사용자 인증
+kubectl --kubeconfig $HOME/kubeconfig get pod -n kube-system
+
+# 혹은 단순히 --username, --password 파라미터를 이용할 수도 있습니다.
+kubectl get pod -n kube-system --username user1 --password pass1
+```
+
+### Bearer token 인증
+
+단순 Bearer token을 이용하여 API 서버 인증을 거쳐 보겠습니다. basic auth file과 형식이 유사합니다.
+
+```bash
+token,user,uid,"group1,group2,group3"
+```
+
+`token-auth` 파일 생성 (token: hello-world-token)
+```bash
+sudo bash -c 'echo hello-world-token,user1,user1,system:masters > /etc/kubernetes/pki/token-auth'
+```
+
+해당 파일을 api 서버의 `--token-auth-file` 옵션으로 추가합니다.
+
+```bash
+# API 서버 설정 파일
+sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml
+# -----[kube-apiserver.yaml]------
+    - kube-apiserver
+    - --allow-privileged=true
+    - --authorization-mode=Node,RBAC
+    # .....
+    - --token-auth-file=/etc/kubernetes/pki/token-auth
+```
+
+#### curl을 이용한 Bearer token 테스트
+Base64 인코딩을 하지 않는 plain text로 Bearer 토큰을 전달합니다.
+```bash
+curl -k -H "Authorization: Bearer hello-world-token"  https://$API_SERVER_ADDR:$API_SERVER_PORT/api
+```
+
+#### kubectl을 이용한 Bearer token 테스트
+```bash
+# kubectl 신규 사용자 설정 - token-auth
+kubectl config --kubeconfig=$HOME/kubeconfig set-credentials token-user --token hello-world-token
+kubectl config --kubeconfig=$HOME/kubeconfig set-context kubernetes-admin@kubernetes --user=token-user
+kubectl config --kubeconfig $HOME/kubeconfig view
+
+# kubectl - basic auth 사용자 인증
+kubectl --kubeconfig $HOME/kubeconfig get pod -n kube-system
+
+# 혹은 단순히 --token 파라미터를 이용할 수도 있습니다.
+kubectl get pod -n kube-system --token hello-world-token
+```
+
+### Service Account token 인증
+
+마지막으로 `ServiceAccount`에서 생성되는 token을 이용하여 테스트를 해보겠습니다.
+
+```bash
+kubectl get serviceaccount default -oyaml
+# apiVersion: v1
+# kind: ServiceAccount
+# metadata:
+#   name: default
+#   namespace: default
+# secrets:
+# - name: default-token-xxxx
+
+JWT_TOKEN=$(kubectl get secret default-token-xxx -ojson | jq -r .data.token | base64 -d)
+echo $JWT_TOKEN
+# eyJhbGXXX.XXXXX.XXX
+```
+
+혹은 Pod 실행시 내부에 mount되는 `Secret` token을 확인할 수도 있습니다.
+```bash
+kubectl run cat-token --image k8s.gcr.io/busybox -- cat /var/run/secrets/kubernetes.io/serviceaccount/token
+JWT_TOKEN=$(kubectl logs cat-token)
+echo $JWT_TOKEN
+# eyJhbGXXX.XXXXX.XXX
+```
+
+`$JWT_TOKEN` 을 복사하여 [jwt.io](https://jwt.io)에서 직접 테스트해 볼 수 있습니다. 검증에 사용할 public key는 `/etc/kubernetes/pki/sa.pub`에 위치합니다.
+
+#### curl을 이용한 Bearer token 테스트
+```bash
+curl -k -H "Authorization: Bearer $JWT_TOKEN"  https://$API_SERVER_ADDR:$API_SERVER_PORT/api
+```
+
+#### kubectl을 이용한 Bearer token 테스트
+```bash
+kubectl api-versions --token $JWT_TOKEN
+```
+
+`kubectl get pod -n kube-system --token hello-world-token`을 실행하면 아래와 같은 에러 메세지가 나옵니다.
+```bash
+kubectl get pod -n kube-system --token hello-world-token
+# Forbidden: pods is forbidden: User "system:serviceaccount:default:default" cannot list resource "pods" in API group "" in the namespace "kube-system"
+```
+
+이것은 사용자 인증 (Authentication)은 성공하였지만 해당 사용자에게 권한이 아직 부여되지 않았기 때문입니다. (Authorization)
+기존의 사용자들의 그룹을 `system:masters`로 마스터 권한을 부여했기 때문에 admin으로 모든 권한을 다 가졌지만 `default` `ServiceAccount`에는 추가적으로 권한을 부여해야 합니다.
+
+```bash
+# default 서비스 계정에 clusterrole 권한 부여
+kubectl create clusterrolebinding default-admin --clusterrole cluster-admin --serviceaccount default:default
+# clusterrolebinding.rbac.authorization.k8s.io/default-admin created
+
+kubectl get pod -n kube-system --token hello-world-token
+# 성공!
+```
+
+## 마치며
+
+이번 포스트에서는 `HTTP Authentication`을 이용한 쿠버네티스 인증 방법에 대해서 살펴 봤습니다. 크게 Basic User, Bearer Token을 `Authorizaton` 헤더 필드에 넣어서 인증하는 방식이었습니다. Bearer 토큰인 경우, `jwt`라는 확장된 토큰 형식을 이용하여 API 서버에 전송할 수 있는 것을 확인하였습니다. `ServiceAccount`를 이용하여 쿠버네티스에 요청을 보낼 경우, `/var/run/secrets/kubernetes.io/serviceaccount/token` 위치의 토큰을 얻어와서 간단히 HTTP Bearer token을 전송함으로써 인증 받는 것을 확인하였습니다. 물론 해당 `ServiceAccount`에 적절한 권한이 사전에 부여되어야 합니다.
+다음 포스트에서는 Google OAuth와 같은 3rd Party 인증 provider를 이용하여 OpenID Connect 방식의 인증 방법에 대해서 살펴 보겠습니다.
