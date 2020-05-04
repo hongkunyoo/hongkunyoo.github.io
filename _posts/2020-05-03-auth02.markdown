@@ -9,7 +9,7 @@ categories: kubernetes authentication http-auth
 쿠버네티스 인증 완벽 이해 시리즈
 1. [X.509 Client Certs](/kubernetes/authentication/x509/2020/05/02/auth01/): X.509 인증서를 이용한 상호 TLS 인증
 2. **HTTP Authentication**: HTTP Authentication을 이용한 사용자 인증
-3. OpenID Connect: Google OAuth와 같은 인증 provider를 이용한 인증 (TBA)
+3. [OpenID Connect](/kubernetes/authentication/oidc/2020/05/04/auth03/): Google OAuth와 같은 인증 provider를 이용한 인증
 4. Webhook: Webhook 서버를 통한 외부 시스템 인증 (TBA)
 5. Proxy Auth: Proxy 서버를 통한 대리 인증 (TBA)
 
@@ -171,6 +171,9 @@ server {
     }
 }
 ```
+- `auth_basic`: `401 Unauthorized` 응답시, 응답헤더에 표시되는 메세지를 입력합니다. `WWW-Authenticate: Basic realm="MyRealm"`
+- `auth_basic_user_file`: `htpasswd`을 통해서 생성한 사용자 정보 파일 위치를 입력합니다.
+
 docker를 활용하여 NGINX 서버를 띄웁니다.
 ```bash
 docker run -p 8080:80 -v $(pwd):/etc/nginx/conf.d nginx
@@ -261,7 +264,7 @@ kubectl get pod -n kube-system --username user1 --password pass1
 
 ### Bearer token 인증
 
-단순 Bearer token을 이용하여 API 서버 인증을 거쳐 보겠습니다. basic auth file과 형식이 유사합니다.
+단순 Bearer token을 이용하여 API 서버 인증을 거쳐 보겠습니다. basic auth file과 형식이 유사합니다. 마찬기지로 base64나 hash값이 아닌 plain text로 생성합니다.
 
 ```bash
 token,user,uid,"group1,group2,group3"
@@ -326,7 +329,7 @@ echo $JWT_TOKEN
 
 혹은 Pod 실행시 내부에 mount되는 `Secret` token을 확인할 수도 있습니다.
 ```bash
-kubectl run cat-token --image k8s.gcr.io/busybox -- cat /var/run/secrets/kubernetes.io/serviceaccount/token
+kubectl run cat-token --image k8s.gcr.io/busybox --restart OnFailure -- cat /var/run/secrets/kubernetes.io/serviceaccount/token
 JWT_TOKEN=$(kubectl logs cat-token)
 echo $JWT_TOKEN
 # eyJhbGXXX.XXXXX.XXX

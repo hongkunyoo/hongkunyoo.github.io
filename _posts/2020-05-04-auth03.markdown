@@ -1,0 +1,163 @@
+---
+layout: post
+title:  "k8s 인증 완벽이해 #3 - OpenID Connect"
+date:   2020-05-04 00:00:00
+categories: kubernetes authentication oidc
+---
+쿠버네티스 인증 완벽 이해 시리즈 3탄, OpenID Connect를 이용한 쿠버네티스 인증에 대해서 살펴보는 시간을 가져 보겠습니다.
+
+쿠버네티스 인증 완벽 이해 시리즈
+1. [X.509 Client Certs](/kubernetes/authentication/x509/2020/05/02/auth01/): X.509 인증서를 이용한 상호 TLS 인증
+2. [HTTP Authentication](/kubernetes/authentication/http-auth/2020/05/03/auth02/): HTTP Authentication을 이용한 사용자 인증
+3. **OpenID Connect**: Google OAuth와 같은 인증 provider를 이용한 인증
+4. Webhook: Webhook 서버를 통한 외부 시스템 인증 (TBA)
+5. Proxy Auth: Proxy 서버를 통한 대리 인증 (TBA)
+
+이번 포스트에서는 OpenID Connect라는 Authentication 프로토콜을 이용하여 사용자 인증을 처리하는 방법에 대해서 살펴 봅니다.
+
+---
+
+### 환경설정
+HTTP Authentication을 위한 테스트 환경은 다음과 같습니다.
+
+- OS: `Ubuntu 18.04` 기준
+- root 권한 (sudo 권한) 필요
+- Identify Provider: Google OAuth 2.0 Playground
+- 쿠버네티스 설치툴: `kubeadm`
+
+## OpenID Connect
+
+### OpenID Connect란?
+
+OpenID Connect(OIDC)는 권한허가 프로토콜인 OAuth 2.0 기술을 이용하여 만들어진 인증 레이어 입니다. (OpenID Connect is an authentication layer on top of OAuth 2.0, an authorization framework.) JSON 포맷을 이용한 RESTful API 형식을 사용하여 인증합니다.
+OpenID Connect를 이용하면 손쉽게 외부 서비스를 통하여 사용자 인증을 구현할 수 있습니다.
+
+#### OAuth 2.0
+
+OAuth는 권한허가를 처리하기 위해 만들어진 표준 프로토콜입니다. Google, Facebook, Twitter 등에서 자신의 서비스를 외부 시스템에서 사용할 수 있게 제공해주기 위해서 생겨난 기술입니다. OAuth는 사용자 인증 보다는 제한된 사람에게 (혹은 시스템) 제한된 권한을 어떻게 잘 부여할 것인가에 대해서 중점적으로 다룹니다. 이에 반해 OpenID는 인증 시스템으로써 사용자 정보를 관리하고 인증하는 것에 초점이 맞춰져 있습니다.
+
+*정확히 말하자면 OAuth 1.0이 있고 OAuth 2.0이 있습니다. 해당 포스트에서 얘기하는 OAuth는 2.0을 생략한 OAuth 2.0으로, OAuth 2.0과 OAuth를 혼용하여 사용하겠습니다.*
+
+![](/assets/images/k8s-auth/03-01.png)
+
+사용자 인증을 통한 응답 차이
+- OpenID Connect: 사용자 인증 및 사용자 정보 제공 (id token)
+- OAuth: 권한 부여 (access token) - 페이스북 posting 권한, 유저 profile view 권한 등
+
+#### Identity Provider (OpenID Provider)
+
+Identity Provider, 짧게 줄여서 IdP는 실제 사용자 정보를 제공해 주는 신원 제공자입니다. OpenID Connect는 인증 표준 규격을 정의하는 프로토콜에 가깝고 실제 인증 및 사용자 정보 제공은 IdP를 통하여 수행합니다. 재밌게도 OpenID Connect에서 IdP의 역할을 OAuth가 수행합니다.
+
+![](/assets/images/k8s-auth/03-02.png)
+
+[OAuth 진영에서 OAuth 기술은 Authentication 기술이 아니라고 명시합니다.](https://oauth.net/articles/authentication/) OAuth에서 제공해주는 access token은 특정 액션을 위해 일시적으로 권한을 허가해 준 토큰일 뿐이지 사용자에 대한 정보를 전혀 담고 있지 않다고 얘기합니다. (access token을 가지고 있는 누구나 해당 권한을 사용할 수 있습니다.) 그렇기 때문에 access token을 발급하기 위해 사용자 인증을 거치긴 하였지만 access token 자체가 사용자 신원 정보를 대표해서는 안된다고 설명합니다. 그렇다면 OpenID Connect에서는 이러한 문제를 어떻게 해결했을까요?
+
+#### openid scope & id token
+
+개인적으로 OpenID Connect와 OAuth가 굉장히 똑똑한 방법으로 이 문제를 해결하였다고 생각합니다. OpenID Connect가 하고 싶은 것은 사용자 인증과 사용자 신원 정보 제공이고 OAuth가 잘하는 것은 권한을 허가해주는 일입니다. 그렇다면 OpenID Connect가 OAuth에게 사용자 신원 정보를 제공해 달라고 권한을 요청하면 어떨까요? OAuth는 OpenID Connect의 요청에 따라 사용자를 인증하고 사용자 신원 정보를 전달할 수 있을 것입니다.
+![](/assets/images/k8s-auth/03-03.png)
+
+이때 "사용자 정보 제공" 권한을 `openid scope`, 사용자 신원 정보가 담긴 토큰을 `id token`이라고 부릅니다. 또한 이해를 돕기 위해 OpenID Connect라는 컴포넌트를 그렸지만 실제로 OpenID Connect는 인증 표준 규격을 정의하는 프로토콜에 가깝고 모든 구현은 OAuth에 들어 있습니다. 그래서 보다 정확한 그림은 아래의 이미지가 됩니다.
+![](/assets/images/k8s-auth/03-04.png)
+
+마지막으로 이때 사용하는 `id token`의 형태는 `jwt` 형식을 따릅니다. 그렇기 때문에 IdP를 통해 생성되어 사용자로 전달된 토큰이 변조 되었는지 쿠버네티스쪽에서 쉽게 확인할 수 있습니다. [지난 포스트의 JWT 설명 부분](https://coffeewhale.com/kubernetes/authentication/http-auth/2020/05/03/auth02/#json-web-token-jwt)도 참고 바랍니다.
+
+*이해하기 쉽게 제 개인적인 생각을 덫붙여서 설명 드렸습니다. 더 자세하고 정확한 설명은 다음 웹 페이지를 참고 바랍니다.* https://oauth.net/articles/authentication/#openid-connect
+
+### 쿠버네티스와의 인증 메커니즘
+
+지금까지 OpenID Connect를 이용하여 사용자 인증 및 사용자 정보를 제공 받는 방법에 대해서 알아 보았습니다. 이러한 기술을 이용하여 어떻게 쿠버네티스 인증까지 연결되는지 확인해 보겠습니다.
+
+![](/assets/images/k8s-auth/03-05.png)
+
+1. 사용자가 OAuth 시스템에 로그인을 합니다. 이때 openid scope의 권한을 요청합니다.
+2. 사용자 인증을 하고 사용자 신원 정보를 `jwt` 형태로 `id token` 필드에 전달합니다. 
+3. 사용자는 전달 받은 토큰을 HTTP Authentication 헤더에 Bearer 토큰으로 쿠버네티스에 전송합니다.
+4. 쿠버네티스 API 서버는 전달 받은 `jwt` 토큰이 자신이 생성한 `OAuth Client ID`인지, 변조되진 않았는지 확인합니다.
+5. 모든 절차가 정상적으로 끝나면 인증이 완료됩니다.
+
+---
+
+## OpenID Connect 인증 실험
+
+### 인증 중개 서버
+
+OAuth 테스트를 하기 위해서 직접 Google developer 콘솔에서 `OAuth Client ID`를 생성하고 사용자 인증 중개 서버를 구축하여 테스트를 할 수도 있지만 본 실험에서는 테스트 용도로 이미 구축된 `Google OAuth 2.0 Playground`를 사용하겠습니다.
+
+#### 직접 구현
+[https://console.developers.google.com/apis/credentials](https://console.developers.google.com/apis/credentials)
+![](/assets/images/k8s-auth/03-06.png)
+
+1. `OAuth Client ID` 발급
+2. 인증 중개 서버 개발
+3. 인증 중개 서버, IdP 연결
+
+
+#### Google OAuth 2.0 Playground
+
+##### 1. [https://developers.google.com/oauthplayground](https://developers.google.com/oauthplayground)를 접속합니다.
+##### 2. Step1 "Select & authorize APIs"에서 `Google OAuth2 API v2`의 openid scope을 클릭하고 아래의 파란색 Authorize APIs 버튼을 클릭합니다.
+![](/assets/images/k8s-auth/03-07.png)
+
+##### 3. 쿠버네티스로 접속할 사용자로 로그인합니다.
+##### 4. Step2 "Exchange authorization code for token"에서 파란색 Exchange authorization code for tokens 버튼을 클릭합니다.
+![](/assets/images/k8s-auth/03-08.png)
+
+##### 5. Step3 "Configure request to API"에서 다음 값들을 복사합니다.
+
+- `client_id`: 쿠버네티스에서 어떤 `OAuth Client ID`를 이용하여 토큰을 생성했는지 확인하기 위해서 필요합니다.
+- `id_token`: 사용자 신원 정보가 저장되어 있는 `jwt` 토큰으로 해당 토큰을 이용하여 쿠버네티스에 인증을 받습니다.
+![](/assets/images/k8s-auth/03-09.png)
+
+
+### API 서버 설정
+
+이제 API 서버 설정을 수정해 보겠습니다. 
+
+- `--oidc-issuer-url`: OAuth IdP로 구글 OAuth 사용을 나타냅니다. (https://accounts.google.com)
+- `--oidc-client-id`: Step3 "Configure request to API"에서 복사한 `client_id`를 기입합니다.
+```bash
+# API 서버 설정 파일
+sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml
+# -----[kube-apiserver.yaml]------
+    - kube-apiserver
+    - --allow-privileged=true
+    - --authorization-mode=Node,RBAC
+    # .....
+    - --oidc-issuer-url=https://accounts.google.com
+    - --oidc-client-id=$client_id
+# --------------------------------
+```
+
+API 서버 설정은 비교적 쉽게 끝이 났습니다. 이제 쿠버네티스에 사용자 인증을 테스트해 보겠습니다.
+
+### 쿠버네티스 인증
+
+```bash
+# Step3 "Configure request to API"에서 복사한 id_token을 환경변수로 저장합니다.
+export JWT_TOKEN=eyJhbGciOiJSUzI1NiIs.vb2dsZS5jb20iLCJxxxxx
+
+kubectl get pod -n kube-system --token $JWT_TOKEN
+# Error from server (Forbidden): pods is forbidden: User "https://accounts.google.com#xxxx" cannot list resource "pods" in API group "" in the namespace "default"
+```
+
+HTTP Authentication 실험때와 마찬가지로 인증은 완료되었지만 default 네임스페이스의 Pod를 리스팅할 권한이 없기 때문에 에러가 발생합니다.
+
+```bash
+kubectl create clusterrolebinding oidc-admin --clusterrole cluster-admin --user https://accounts.google.com#xxxx
+# clusterrolebinding.rbac.authorization.k8s.io/oidc-admin created
+
+kubectl get pod -n kube-system --token $JWT_TOKEN
+# 성공!
+```
+
+## 마치며
+
+OpenID Connect를 이용하여 인증을 처리하게 되면,
+1. 따로 인증을 위한 웹 페이지 개발이 필요
+2. `id_token`은 일정 시간 이후 만료가 되기 때문에 매번 다시 로그인 필요
+[*참고 페이지*](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens)
+
+라는 번거로움이 있지만 이미 많은 사람들이 보유하고 있는 계정을 빌려 사용할 수 있다는 점과 사용자 인증 시스템을 따로 구축하지 않아도 된다는 점에서는 이벤트성 인증방식[^1]으로 나쁘지 않는 방법 같습니다.
+
+[^1]: 예를 들어, 일시적으로 불특정 다수에게 쿠버네티스 접속을 허용하고 싶은 경우 등
