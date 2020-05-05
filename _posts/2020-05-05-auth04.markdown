@@ -35,7 +35,7 @@ Webhook이란 특정 이벤트가 발생하였을 때, 사전에 정의된 웹 U
 
 ### Webhook 인증 서버
 
-아래의 이미지는 쿠버네티스 Webhook 인증 쳬계도입니다.
+아래의 이미지는 쿠버네티스 Webhook 인증 순서도입니다.
 ![](/assets/images/k8s-auth/04-01.png)
 
 1. 사용자가 `Bearer token`으로 쿠버네티스 API 서버에게 인증을 요청합니다.
@@ -221,7 +221,7 @@ contexts:
 current-context: auth
 ```
 
-모든 세팅이 완료 되었습니다. 쿠버네티스 API 서버에 아무 토큰으로 요청을 보내봅시다. (하드코딩으로 항상 인증이 성공하게 만들었기 때문에 토큰값은 중요하지 않습니다.)
+모든 세팅이 완료 되었습니다. 쿠버네티스 API 서버에 아무 토큰으로 요청을 보내 봅시다. (하드코딩으로 항상 인증이 성공하게 만들었기 때문에 토큰값은 중요하지 않습니다.)
 
 ```bash
 kubectl get pod -n kube-system --token mytoken
@@ -231,6 +231,7 @@ kubectl get pod -n kube-system --token mytoken
 ### 외부 인증 시스템 연동
 
 Webhook을 이용한 인증의 장점은, `LDAP` 인증, `DB` 조회 등 쿠버네티스에서 제공하지 않는 인증 방식도 Webhook 서버를 통하여 연동할 수 있다는 점입니다. Webhook 서버가 마치 Glue 컴포넌트가 되어 두 시스템간 컨버터 역할을 담당하는 것이죠. (`LDAP` entity <-- Webhook --> `TokenReview`)
+
 이번 실험에서는 외부 HTTP Basic Auth 시스템을 이용하여 외부 인증 시스템과 연동하는 방법에 대해서 살펴 보겠습니다.
 
 *Basic Auth 경우, 직접적으로 쿠버네티스 인증 방식으로 제공하지만 **외부 인증 시스템을 연동**하는 방법에 대해서 중점적으로 살펴 보시기 바랍니다.*

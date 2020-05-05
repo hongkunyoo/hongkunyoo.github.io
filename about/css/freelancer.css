@@ -553,3 +553,14 @@ img.myimg {
     padding: 3px 3px 3px 3px;
     border-radius: 40px;
 }
+
+img.myimg2 {
+    width: 100px;
+    height: auto;
+    display: inline-block;
+    #float: left;
+    #margin-right: 20px;
+    background-color: rgb(300, 300, 300);
+    padding: 3px 3px 3px 3px;
+    #border-radius: 40px;
+}
