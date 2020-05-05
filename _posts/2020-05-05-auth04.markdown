@@ -1,0 +1,327 @@
+---
+layout: post
+title:  "k8s 인증 완벽이해 #4 - Webhook 인증"
+date:   2020-05-05 00:00:00
+categories: kubernetes authentication webhook
+---
+쿠버네티스 인증 완벽 이해 시리즈 4탄, Webhook을 이용한 쿠버네티스 인증에 대해서 살펴보는 시간을 가져 보겠습니다.
+
+쿠버네티스 인증 완벽 이해 시리즈
+1. [X.509 Client Certs](/kubernetes/authentication/x509/2020/05/02/auth01/): X.509 인증서를 이용한 상호 TLS 인증
+2. [HTTP Authentication](/kubernetes/authentication/http-auth/2020/05/03/auth02/): HTTP Authentication을 이용한 사용자 인증
+3. [OpenID Connect](/kubernetes/authentication/oidc/2020/05/04/auth03/): Google OAuth와 같은 인증 provider를 이용한 인증
+4. **Webhook 인증**: Webhook 인증서버를 통한 사용자 인증
+5. Proxy Auth: Proxy 서버를 통한 대리 인증 (TBA)
+
+지난 포스트에서 OpenID Connect의 Identity Provider (IdP)이라는 **외부 인증 시스템**을 통하여 사용자 인증을 처리하는 방법에 대해서 살펴 보았습니다. 이번에는 쿠버네티스에서 전달하는 Webhook 이벤트를 적절하게 처리하는 **외부 인증 시스템**이라면 어떠한 인증 체계를 구축할 수 있는, 확장성이 높은 Webhook 인증에 대해서 살펴 보도록 하겠습니다.
+
+- OpenID Connect: oidc 표준에 따른 IdP 사용
+- Webhook 인증: Webhook 이벤트를 구현하는 임의의 인증 서버 사용
+
+---
+
+### 환경설정
+Webhook 인증을 위한 테스트 환경은 다음과 같습니다.
+
+- OS: `Ubuntu 18.04` 기준
+- root 권한 (sudo 권한) 필요
+- Webhook 인증서버: Flask 웹서버
+- 쿠버네티스 설치툴: `kubeadm`
+
+## Webhook 인증
+
+Webhook이란 특정 이벤트가 발생하였을 때, 사전에 정의된 웹 URL로 이벤트 정보와 함께 요청을 보내어 후속 작업을 처리할 수 있게 고안된 체계이죠. 쿠버네티스 API 서버에도 인증 처리를 위한 Webhook을 구현할 수 있는 메커니즘이 존재합니다.
+이때 특정 이벤트는 Authenticate 이벤트가 되고 함께 전송되는 이벤트 객체(정보)는 사용자가 전송한 토큰이 됩니다.
+
+### Webhook 인증 서버
+
+아래의 이미지는 쿠버네티스 Webhook 인증 쳬계도입니다.
+![](/assets/images/k8s-auth/04-01.png)
+
+1. 사용자가 `Bearer token`으로 쿠버네티스 API 서버에게 인증을 요청합니다.
+2. API 서버에서 사전에 정의된 Webhook 서버로 `TokenReview`라는 `json` 이벤트 객체와 함께 REST 요청을 보냅니다.
+3. Webhook 인증 서버에서는 자체적인 인증 솔루션을 이용하여 사용자를 인증합니다.
+4. Webhook 인증 서버에서 API 서버로 `TokenReview`을 응답하는데 그 안에 인증결과(`status`)가 포함됩니다.
+5. API 서버에서 인증 결과를 확인하여 사용자에게 응답합니다.
+
+### 요청: `TokenReview`
+
+`TokenReview`라는 이벤트 객체가 어떤 모양을 가졌는지 확인해 보겠습니다.
+
+```json
+{
+  "kind": "TokenReview",
+  "apiVersion": "authentication.k8s.io/v1beta1",
+  "metadata": {
+    "creationTimestamp": null
+  },
+  "spec": {
+    "token": "$BEARER_TOKEN"
+  }
+}
+```
+
+- `spec.token`: 사용자가 전송한 `Bearer Token`
+
+간단한 `json` 형태의 이벤트 객체입니다. 사용자가 인증을 위해 전송한 `Bearer token`이 Webhook 인증 서버로 전달되어 해당 값이 유효한지 확인합니다.
+이때 사용되는 토큰의 형식은 고정되어 있지 않고 Webhook 인증서버가 정의한대로 사용합니다. (`jwt`, `plain text`, `HEX`값 등)
+
+### 응답: `TokenReview` + `status`
+
+Webhook 인증서버에서 응답되는 데이터 형식을 살펴봅니다.
+
+```json
+{
+  "kind": "TokenReview",
+  "apiVersion": "authentication.k8s.io/v1beta1",
+  "metadata": {
+    "creationTimestamp": null
+  },
+  "spec": {
+    "token": "$BEARER_TOKEN"
+  },
+  "status": {
+    "authenticated": true,
+    "user": {
+      "username": "user1",
+      "uid": "user1",
+      "groups": [ "system:masters" ]
+    }
+  }
+}
+```
+
+- `status`: 응답 객체
+- `status.authenticated`: 사용자 인증 성공 여부 (`true` / `false`)
+- `status.user.username`: 사용자의 이름
+- `status.user.uid`: 쿠버네티스에서 인식하는 식별자
+- `status.user.groups`: 쿠버네티스 내부 그룹 지정
+
+Webhook 인증서버가 API 서버에게 응답해야 하는 형식은 위와 같습니다. 넘겨 받은 `TokenReview` 안에 `status` 객체를 포함시키는데 인증 성공 여부, 쿠버네티스에서 사용할 식별자 및 그룹 정보가 들어 있습니다.
+
+지금까지 API 서버와 Webhook 서버간의 어떤 데이터를 주고 받아야 하는지에 대해서 살펴 보았는데요, 이제 어떻게 호출하는지 살펴 보겠습니다.
+
+### API 서버 설정
+
+사용자로부터 API 서버로 인증 요청이 들어왔을때, 해당 이벤트를 Webhook 인증서버로 보내야 합니다. 이를 위해서 API 서버에 `--authentication-token-webhook-config-file` 옵션을 추가해 줘야 합니다. 해당 옵션은 API 서버로 인증 요청이 들어왔을 때, 어디로 이벤트를 전달할지 알려주는 설정 파일이 저장된 위치를 가리킵니다. 
+
+```bash
+# API 서버 설정 파일
+sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml
+# -----[kube-apiserver.yaml]------
+    - kube-apiserver
+    - --allow-privileged=true
+    - --authorization-mode=Node,RBAC
+    # .....
+    - --authentication-token-webhook-config-file=/etc/kubernetes/pki/webhook.yaml
+# --------------------------------
+```
+
+`/etc/kubernetes/pki/webhook.yaml` 설정 파일의 모양은 다음과 같습니다. 지금까지 봐온 `KUBECONFIG` (`$HOME/.kube/config`) 파일과 동일하다는 것을 알 수 있습니다.
+
+```yaml
+# /etc/kubernetes/pki/webhook.yaml
+apiVersion: v1
+kind: Config
+clusters:
+- name: flask-auth
+  cluster:
+    server: <WEBHOOK_SERVER_ADDR>   # https://<ADDR>:<PORT> 형식
+    insecure-skip-tls-verify: true  # tls 설정 disable
+users:
+- name: kube-apiserver
+contexts:
+- context:
+    cluster: flask-auth
+    user: kube-apiserver
+  name: auth
+current-context: auth
+```
+
+## Webhook 인증 실험
+
+이제 실제로 Webhook 서버를 구축하여 정상적으로 쿠버네티스 인증이 처리되는 확인해 봅시다.
+
+### Webhook 인증 서버 구축
+
+간단한 웹 서버 구현을 위해 `flask`를 설치합니다.
+```bash
+# flask 설치
+pip install flask
+```
+
+다음과 같이 간단한 Webhook 인증 서버를 `app.py` 파일로 만듭니다.
+
+```python
+from flask import Flask, request, jsonify
+import pprint
+
+app = Flask(__name__)
+
+
+@app.route('/', methods=['POST'])
+def auth():
+	# API 서버로부터 TokenReview 수신
+    tokenReview = request.json
+
+    # 인증 결과 (하드코딩)
+    status = {}
+    status['authenticated'] = True
+    status['user'] = {
+    	'username': 'alice',
+    	'uid': 'alice',
+        'groups': ['system:masters']
+    }
+
+    # TokenReview에 인증결과 객체 삽입
+    tokenReview['status'] = status
+    pprint.pprint(tokenReview)
+
+    # API 서버로 json 응답
+    return jsonify(tokenReview)
+
+
+if __name__ == '__main__':
+    app.run(host= '0.0.0.0', port=5000, debug=True)
+
+```
+
+- `status.authenticated`: 항상 `true`
+- `status.user.username`: `alice`
+- `status.user.uid`: `alice`
+- `status.user.groups`: `['system:masters']`
+
+Webhook 서버를 실행합니다.
+
+```bash
+python app.py
+# * Serving Flask app "app" (lazy loading)
+# .....
+# * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+```
+
+`--authentication-token-webhook-config-file` 설정 파일에서 Webhook 서버 `IP:PORT`로 수정합니다. 예시에서는 API 서버와 동일한 호스트에서 Webhook 서버가 실행되므로 `127.0.0.1`을 입력하였습니다.
+
+```yaml
+# /etc/kubernetes/pki/webhook.yaml
+apiVersion: v1
+kind: Config
+clusters:
+- name: flask-auth
+  cluster:
+    server: https://127.0.0.1:5000
+    insecure-skip-tls-verify: true
+users:
+- name: kube-apiserver
+contexts:
+- context:
+    cluster: flask-auth
+    user: kube-apiserver
+  name: auth
+current-context: auth
+```
+
+모든 세팅이 완료 되었습니다. 쿠버네티스 API 서버에 아무 토큰으로 요청을 보내봅시다. (하드코딩으로 항상 인증이 성공하게 만들었기 때문에 토큰값은 중요하지 않습니다.)
+
+```bash
+kubectl get pod -n kube-system --token mytoken
+# 성공!
+```
+
+### 외부 인증 시스템 연동
+
+Webhook을 이용한 인증의 장점은, `LDAP` 인증, `DB` 조회 등 쿠버네티스에서 제공하지 않는 인증 방식도 Webhook 서버를 통하여 연동할 수 있다는 점입니다. Webhook 서버가 마치 Glue 컴포넌트가 되어 두 시스템간 컨버터 역할을 담당하는 것이죠. (`LDAP` entity <-- Webhook --> `TokenReview`)
+이번 실험에서는 외부 HTTP Basic Auth 시스템을 이용하여 외부 인증 시스템과 연동하는 방법에 대해서 살펴 보겠습니다.
+
+*Basic Auth 경우, 직접적으로 쿠버네티스 인증 방식으로 제공하지만 **외부 인증 시스템을 연동**하는 방법에 대해서 중점적으로 살펴 보시기 바랍니다.*
+
+##### 외부 Basic Auth 서버
+
+아래와 같이 URL을 호출시, URL `PATH`에 사용한 User, Password를 HTTP Basic Authentication 정보로 전달해야 하는 시스템이 존재합니다.
+```bash
+https://httpbin.org/basic-auth/<basic-user>/<basic-password>
+```
+
+예를 들어, 아래와 같이 URL을 호출하면, User에 `user1`, Password에 `pass1`을 HTTP Basic Auth로 넘겨줘야 합니다.
+
+```bash
+curl -v https://httpbin.org/basic-auth/user1/pass1
+# HTTP/2 401 Unauthorized
+# WWW-Authenticate: Basic realm="Fake Realm"
+
+curl -v -H "Authorization: Basic $(echo -n user1:pass1 | base64)" https://httpbin.org/basic-auth/user1/pass1
+# HTTP/2 200
+{
+  "authenticated": true,
+  "user": "user1"
+}
+```
+
+##### 외부 인증 시스템과 연동
+
+위와 같은 외부 인증 시스템을 Webhook과 연동해 보겠습니다.
+
+```python
+from flask import Flask, request, jsonify
+import pprint
+import requests
+from requests.auth import HTTPBasicAuth
+
+app = Flask(__name__)
+
+
+@app.route('/', methods=['POST'])
+def auth():
+    tokenReview = request.json
+
+    # 인증 결과 (외부 인증)
+    tokenReview['status'] = external_auth(tokenReview)
+    pprint.pprint(tokenReview)
+
+    # API 서버로 json 응답
+    return jsonify(tokenReview)
+
+# 외부 인증 시스템
+def external_auth(tokenReview):
+	try:
+        user, pw = tokenReview['spec']['token'].split(':')
+        ret = requests.get('https://httpbin.org/basic-auth/user1/pass1', auth=HTTPBasicAuth(user, pw))
+
+        status = {}
+        status['authenticated'] = ret.status_code == 200
+        status['user'] = {
+            'username': user,
+            'uid': user,
+            'groups': ['system:masters']
+        }
+    except:
+    	status = {}
+    	status['authenticated'] = False
+
+    return status
+
+
+if __name__ == '__main__':
+    app.run(host= '0.0.0.0', port=5000, debug=True)
+
+```
+
+`def external_auth(tokenReview):` 함수에서 사용자로부터 전달 받은 토큰을 이용하여 외부 인증 시스템에 Basic Auth 형태로 인증 요청합니다.
+외부 인증 시스템에서 응답한 결과를 가지고 쿠버네티스 API 서버에게 인증 결과를 다시 전달합니다.
+
+이제 아래와 같이 토큰을 이용하여 인증 요청을 합니다. *(Basic Auth 형식을 빌렸을 뿐, 실제 요청은 Bearer Token으로 요청해야 합니다.)*
+
+```bash
+kubectl get pod -n kube-system --token user1:pass1
+# 성공!
+
+kubectl get pod -n kube-system --token user1:pass2
+# 인증 실패
+```
+
+## 마치며
+
+예시에서는 간단한 Basic Auth 외부 인증 서비스를 사용하였지만 Webhook 서버를 이용하면 거의 모든 인증 시스템을 연결할 수 있는 엄청난 유연함을 가질 수 있습니다. 쿠버네티스는 이런 Webhook 인증을 이용하여 쿠버네티스에서 기본적으로 제공하지 않는 인증 체계를 쉽게 확장할 수 있게 만들어 줍니다.
+각 클라우드 서비스의 완전 관리형 쿠버네티스 서비스인 `EKS`, `AKS`, `GKE`들도 전부 이 Webhook을 이용하여 각 플랫폼에 맞게 인증을 수행합니다. (AWS IAM, Azure AD 등)
+
+이번 포스트에서는 쿠버네티스 인증의 끝판왕, Webhook 인증에 대해서 살펴 보았습니다. 다음 시간에는 대리 인증 방식인 Proxy Authentication에 대해서 살펴 보겠습니다.

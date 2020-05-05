@@ -13,7 +13,7 @@ categories: kubernetes authentication x509
 1. **X.509 Client Certs**: X.509 인증서를 이용한 상호 TLS 인증
 2. [HTTP Authentication](/kubernetes/authentication/http-auth/2020/05/03/auth02/): HTTP Authentication을 이용한 사용자 인증
 3. [OpenID Connect](/kubernetes/authentication/oidc/2020/05/04/auth03/): Google OAuth와 같은 인증 provider를 이용한 인증
-4. Webhook: Webhook 서버를 통한 외부 시스템 인증 (TBA)
+4. [Webhook 인증](/kubernetes/authentication/webhook/2020/05/05/auth04/): Webhook 인증서버를 통한 사용자 인증
 5. Proxy Auth: Proxy 서버를 통한 대리 인증 (TBA)
 
 ---
@@ -49,12 +49,24 @@ X.509 Client Certificate를 위한 테스트 환경은 다음과 같습니다.
 특이하게 쿠버네티스에서는 내부적으로 유저 인증 정보를 저장하지 않습니다. 대부분의 웹 서비스나 인증 서버들은 사용자 정보를 내부적으로 저장하여 사용자로부터 인증 정보를 전달 받았을 때 저장된 정보를 바탕으로 인증을 처리합니다. (웹 사이트에서 계정과 비밀번호를 입력 받아 유저DB를 조회하여 사용자 인증을 처리하는 방법을 떠올릴 수 있습니다.)
 쿠버네티스는 이와 다르게 따로 인증 정보를 저장하지 않고 각각의 인증 시스템에서 제공해주는 신원 확인 기능들을 활용하여 사용자 인증을 하고 유저를 인식(identify) 합니다. 처음에는 이러한 쿠버네티스의 방식에 대해서 의아해 했지만 이러한 특징으로 인해 쿠버네티스에서는 쉽게 인증체계를 확장할 수 있습니다. 쿠버네티스 내부 인증체계에 종속되는 부분이 거의 없기 때문입니다. 쿠버네티스는 사용자 인증체계를 전부 외부 시스템 (혹은 메커니즘)에 의존한다고 볼 수 있습니다. (X.509, HTTP Auth, Proxy Authentication 등)
 
-#### 3. Static Pod란?
+#### 3. 쿠버네티스 그룹
+
+쿠버네티스 내부적으로 그룹이라는 개념이 존재합니다. 실제 그룹이라는 리소스가 존재하진 않지만 `RoleBinding` (혹은 `ClusterRoleBinding`) 리소스 내부에서 string match로 그룹에 따른 권한을 부여할 수 있습니다. 신규 사용자를 생성할 때, 해당 그룹에 속하여서 만들게 되면 그 그룹이 가지고 있는 권한을 동일하게 사용할 수 있습니다. 쿠버네티스에는 특별한 용도로 사용하기 위핸 몇가지 그룹 예약어들이 존재합니다.
+
+그룹 예약어
+- `system:authenticated`: 사용자 인증을 통과한 그룹을 나타냅니다.
+- `system:anonymous`: 사용자 인증을 하지 않은 익명 그룹을 나타냅니다.
+- `system:masters`: 쿠버네티스의 full access 권한을 가진 그룹을 나타냅니다. (admin)
+
+더 자세한 그룹 소개는 [쿠버네티스 RBAC 페이지](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#default-roles-and-role-bindings)를 참고 바랍니다. 쿠버네티스 인증 시리즈에서 실험을 위해 새로 생성한 사용자에게 바로 권한을 부여하기 위해 간혹 `system:masters` 그룹을 사용할 예정입니다.
+
+
+#### 4. Static Pod란?
 
 쿠버네티스에는 Static Pod라는 개념이 존재합니다. `kubelet`에서 API 서버의 요청과는 상관 없이 특정 디렉토리 안의 Pod YAML 정의서를 바라보고 직접 생성하는 Pod를 의미합니다. api-server와 무관하게 생성된다는 점 이외에는 일반 `Pod`와 동작 방식이 동일합니다. `kubeadm`으로 쿠버네티스 클러스터 구축시, Static Pod의 default 디렉토리로 `/etc/kubernetes/manifest`를 바라봅니다. 앞으로 여러 인증 체계를 살펴보기 위해서는 api server의 설정값을 직접 고쳐야하는 경우가 많은데 `kubeadm`에서는 이 api 서버가 바로 Static pod로 만들어지기 때문입니다.
 (어찌보면 당연한 얘기 같습니다. api 서버를 생성하기 위해서 api 서버에 Pod 생성 요청을 할 수 없으니 Static Pod를 통해서 api 서버를 생성합니다. 이러한 이유 때문에 `kubeadm`이 아닌 다른 쿠버네티스 설치툴에서는 `kube-apiserver`와 같은 core 컴포넌트들을 Pod (컨테이너) 형태가 아닌 일반적인 프로세스로 실행하는 방법을 사용하기도 합니다.)
 
-#### 4. API 서버는 그냥 웹서버
+#### 5. API 서버는 그냥 웹서버
 
 API 서버는 굉장히 복잡해 보이지만 사실 멀리서 겉모습만 바라보면 일반적인 웹서버와 다를 바가 없습니다. REST API로 요청을 보내면 json, yaml 형식으로 결과를 리턴해주며 내부적으로 DB에 데이터를 저장하는 웹 서버입니다. 그렇기 때문에 쿠버네티스의 사용자 인증 방식도 평범한 웹 서버의 인증 방식과 크게 다르지 않습니다. TLS를 이용한 서버 인증, HTTP Authorization Header를 통한 인증, OAuth 인증, Webhook 및 proxy 인증 서버를 통한 인증이 그것이죠. 저도 복잡하고 거대한 쿠버네티스의 인증 체계를 공부한다기 보다는 작고 간단한 웹서버 인증 방법들에 대해서 살펴본다는 생각으로 공부하였습니다.
 
