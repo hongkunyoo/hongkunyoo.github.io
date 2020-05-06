@@ -3,7 +3,7 @@ layout: post
 title:  "k8s 인증 완벽이해 #4 - Webhook 인증"
 date:   2020-05-05 00:00:00
 categories: kubernetes authentication webhook
-image: /assets/images/k8s-auth/landing-02-02.jpg
+image: /assets/images/k8s-auth/landing-04.jpg
 ---
 쿠버네티스 인증 완벽 이해 시리즈 4탄, Webhook을 이용한 쿠버네티스 인증에 대해서 살펴보는 시간을 가져 보겠습니다.
 
