@@ -3,6 +3,7 @@ layout: post
 title:  "k8s 인증 완벽이해 #3 - OpenID Connect"
 date:   2020-05-04 00:00:00
 categories: kubernetes authentication oidc
+image: /assets/images/k8s-auth/landing-02-01.jpg
 ---
 쿠버네티스 인증 완벽 이해 시리즈 3탄, OpenID Connect를 이용한 쿠버네티스 인증에 대해서 살펴보는 시간을 가져 보겠습니다.
 
