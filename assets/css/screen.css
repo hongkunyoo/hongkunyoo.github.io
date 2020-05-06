@@ -750,8 +750,16 @@ margin on the iframe, cause it breaks stuff. */
     box-shadow: #FFF 0 0 0 5px;
 }
 
+body:not(.post-template) .post-title-list {
+    font-size: 3.0rem;
+}
+
 body:not(.post-template) .post-title {
     font-size: 3.6rem;
+}
+
+.post-title-list a {
+    text-decoration: none;
 }
 
 .post-title a {
