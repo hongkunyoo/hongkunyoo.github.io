@@ -12,7 +12,7 @@ image: /assets/images/k8s-auth/landing-04.jpg
 2. [HTTP Authentication](/kubernetes/authentication/http-auth/2020/05/03/auth02/): HTTP Authentication을 이용한 사용자 인증
 3. [OpenID Connect](/kubernetes/authentication/oidc/2020/05/04/auth03/): Google OAuth와 같은 인증 provider를 이용한 인증
 4. **Webhook 인증**: Webhook 인증서버를 통한 사용자 인증
-5. Proxy Auth: Proxy 서버를 통한 대리 인증 (TBA)
+5. [Proxy Auth](/kubernetes/authentication/proxy/2020/05/06/auth05/): Proxy 서버를 통한 대리 인증
 
 지난 포스트에서 OpenID Connect의 Identity Provider (IdP)이라는 **외부 인증 시스템**을 통하여 사용자 인증을 처리하는 방법에 대해서 살펴 보았습니다. 이번에는 쿠버네티스에서 전달하는 Webhook 이벤트를 적절하게 처리하는 **외부 인증 시스템**이라면 어떠한 인증 체계를 구축할 수 있는, 확장성이 높은 Webhook 인증에 대해서 살펴 보도록 하겠습니다.
 

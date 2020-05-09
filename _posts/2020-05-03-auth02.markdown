@@ -12,7 +12,7 @@ image: /assets/images/k8s-auth/landing-02.jpg
 2. **HTTP Authentication**: HTTP Authentication을 이용한 사용자 인증
 3. [OpenID Connect](/kubernetes/authentication/oidc/2020/05/04/auth03/): Google OAuth와 같은 인증 provider를 이용한 인증
 4. [Webhook 인증](/kubernetes/authentication/webhook/2020/05/05/auth04/): Webhook 인증서버를 통한 사용자 인증
-5. Proxy Auth: Proxy 서버를 통한 대리 인증 (TBA)
+5. [Proxy Auth](/kubernetes/authentication/proxy/2020/05/06/auth05/): Proxy 서버를 통한 대리 인증
 
 HTTP Authentication이란 HTTP 프로토콜에서 제공하는 인증 방법 중 하나입니다. HTTP Header를 통해 인증 정보를 서버에게 전달합니다. 저의 지난 포스트, [최소한의 보안인증 설정하기](/kubernetes/nginx-ingress/basic-auth/2020/03/21/basic-auth/) 에서도 Basic Authentication을 이용하여 nginx 서버의 최소한의 인증을 설정하는 방법에 대해서 알아 보았습니다. api 서버도 결국 일반 웹서버와 마찬가지기 때문에 api 서버에도 이러한 HTTP Authentication 설정을 적용할 수 있습니다.
 

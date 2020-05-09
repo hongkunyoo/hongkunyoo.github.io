@@ -12,7 +12,7 @@ image: /assets/images/k8s-auth/landing-03.jpg
 2. [HTTP Authentication](/kubernetes/authentication/http-auth/2020/05/03/auth02/): HTTP Authentication을 이용한 사용자 인증
 3. **OpenID Connect**: Google OAuth와 같은 인증 provider를 이용한 인증
 4. [Webhook 인증](/kubernetes/authentication/webhook/2020/05/05/auth04/): Webhook 인증서버를 통한 사용자 인증
-5. Proxy Auth: Proxy 서버를 통한 대리 인증 (TBA)
+5. [Proxy Auth](/kubernetes/authentication/proxy/2020/05/06/auth05/): Proxy 서버를 통한 대리 인증
 
 이번 포스트에서는 OpenID Connect라는 Authentication 프로토콜을 이용하여 사용자 인증을 처리하는 방법에 대해서 살펴 봅니다.
 

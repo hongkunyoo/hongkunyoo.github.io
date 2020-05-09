@@ -15,7 +15,7 @@ image: /assets/images/k8s-auth/01-01.png
 2. [HTTP Authentication](/kubernetes/authentication/http-auth/2020/05/03/auth02/): HTTP Authentication을 이용한 사용자 인증
 3. [OpenID Connect](/kubernetes/authentication/oidc/2020/05/04/auth03/): Google OAuth와 같은 인증 provider를 이용한 인증
 4. [Webhook 인증](/kubernetes/authentication/webhook/2020/05/05/auth04/): Webhook 인증서버를 통한 사용자 인증
-5. Proxy Auth: Proxy 서버를 통한 대리 인증 (TBA)
+5. [Proxy Auth](/kubernetes/authentication/proxy/2020/05/06/auth05/): Proxy 서버를 통한 대리 인증
 
 ---
 
@@ -390,7 +390,6 @@ curl --cacert rootCA.pem --cert client.pem --key client-key.pem  https://localho
 ```bash
 # root CA PKI
 sudo cp /etc/kubernetes/pki/ca.crt ~/auth/k8s-rootCA.pem
-sudo cp /etc/kubernetes/pki/ca.key ~/auth/k8s-rootCA-key.pem
 
 # server PKI
 sudo cp /etc/kubernetes/pki/apiserver.crt ~/auth/k8s-server.pem
@@ -404,7 +403,6 @@ ls -l
 
 # root CA
 k8s-rootCA.pem
-k8s-rootCA-key.pem
 # server
 k8s-server.pem
 k8s-server-key.pem
@@ -451,8 +449,7 @@ curl --cacert k8s-rootCA.pem --cert k8s-client.pem --key k8s-client-key.pem  htt
 
 #### root CA
 쿠버네티스에서 사용하는 root CA의 PKI 키들은 다음과 같습니다.
-- 인증서: `/etc/kubernetes/pki/ca.crt`
-- 개인키: `/etc/kubernetes/pki/ca.key`
+- CA 인증서: `/etc/kubernetes/pki/ca.crt`
 
 #### server 인증서
 api 서버의 인증서 및 키는 다음과 같습니다.
