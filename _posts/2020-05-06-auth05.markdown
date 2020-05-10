@@ -50,13 +50,14 @@ API 서버의 주소를 사용자로부터 직접적으로 노출시키지 않�
 
 사용자는 Proxy 서버의 IP만 알고 있기 때문에 앞서 얘기한 보안 측면과 더불어 API 서버의 주소가 바뀌게 되더라도 사용자 입장에서는 변경점 없이 동일한 IP로 접근을 할 수 있습니다.
 
-#### 2. 부하분산 효과
+#### 2. 가용성 증대
 
-Proxy 서버가 API 서버 앞단에 위치하며 LoadBalancer 역할까지 수행할 수도 있습니다. 이 경우 복수의 API 서버에 부하를 분산하여 트래픽을 전달할 수 있습니다.
+Proxy 서버가 API 서버 앞단에 위치하며 LoadBalancer 역할까지 수행할 수도 있습니다. 복수의 API 서버를 Proxy 서버 뒤에 놓게 되면 부하 분산 효과와 더불어 가용성을 증대 시킬 수 있습니다.
 
 #### 3. 트래픽 모니터링
 
 사용자가 항상 Proxy 서버를 거치기 때문에 Proxy 서버에 적절한 모니터링 기능을 탑재한다면 사용자별 쿠버네티스 호출량 및 트래픽 등을 확인할 수 있습니다.
+
 
 ### Proxy 서버 구축
 
@@ -139,24 +140,22 @@ NGINX Proxy 서버에서는 다음과 같은 설정이 필요합니다.
 
 #### 1. Proxy Server Cert 설정
 
-인증 완벽이해 1편에서 만든 인증서들을 가져와 사용하겠습니다. 사용자를 위한 Proxy 서버 Cert를 설정합니다.
+NGINX 인증서 설정에 인증 완벽이해 1편에서 만든 인증서들을 가져와 사용하겠습니다. 가장 먼저 사용자에게 제공할 Proxy Server Cert를 설정합니다.
 
 ```nginx
 # default.conf
 server {
     listen 443 ssl;
     server_name localhost;
-    ssl_certificate      /etc/nginx/conf.d/k8s-server.pem;
-    ssl_certificate_key  /etc/nginx/conf.d/k8s-server-key.pem;
 
-    location / {
-      proxy_pass https://$API_SERVER_ADDR:$API_SERVER_PORT;
-    }
+    # Proxy Server Cert
+    ssl_certificate      /etc/nginx/conf.d/server.pem;
+    ssl_certificate_key  /etc/nginx/conf.d/server-key.pem;
 }
 ```
 
-- `ssl_certificate`:
-- `ssl_certificate_key`:
+- `ssl_certificate`: Proxy 서버의 인증서를 설정합니다.
+- `ssl_certificate_key`: 인증서의 개인키를 설정합니다.
 
 #### 2. Proxy Client Cert 설정
 
@@ -166,22 +165,23 @@ server {
 server {
     listen 443 ssl;
     server_name localhost;
-    ssl_certificate      /etc/nginx/conf.d/k8s-server.pem;
-    ssl_certificate_key  /etc/nginx/conf.d/k8s-server-key.pem;
+
+    # Proxy Server Cert
+    ssl_certificate      /etc/nginx/conf.d/server.pem;
+    ssl_certificate_key  /etc/nginx/conf.d/server-key.pem;
 
     location / {
       proxy_pass https://$API_SERVER_ADDR:$API_SERVER_PORT;
 
+      # Proxy Client Cert
       proxy_ssl_certificate         /etc/kubernetes/pki/front-proxy-client.crt;
       proxy_ssl_certificate_key     /etc/kubernetes/pki/front-proxy-client.key;
-
-
     }
 }
 ```
-- `$API_SERVER_ADDR:$API_SERVER_PORT`: 
-- `proxy_ssl_certificate`:
-- `proxy_ssl_certificate_key`:
+- `proxy_pass`: 트래픽을 전달할 서버(API 서버)의 주소 및 포트를 입력합니다.
+- `proxy_ssl_certificate`: API 서버에게 인증을 받을 클라이언트 인증서를 설정합니다. (`kubeadm`설치시, `front-proxy-client`라는 이름으로 제공합니다.)
+- `proxy_ssl_certificate_key`: 클라이언트 개인키를 설정정합니다.
 
 #### 3. Proxy pass header 설정
 
@@ -189,24 +189,27 @@ server {
 server {
     listen 443 ssl;
     server_name localhost;
-    ssl_certificate      /etc/nginx/conf.d/k8s-server.pem;
-    ssl_certificate_key  /etc/nginx/conf.d/k8s-server-key.pem;
+
+    # Proxy Server Cert
+    ssl_certificate      /etc/nginx/conf.d/server.pem;
+    ssl_certificate_key  /etc/nginx/conf.d/server-key.pem;
 
     location / {
       proxy_pass https://$API_SERVER_ADDR:$API_SERVER_PORT;
 
+      # Proxy Client Cert
       proxy_ssl_certificate         /etc/kubernetes/pki/front-proxy-client.crt;
       proxy_ssl_certificate_key     /etc/kubernetes/pki/front-proxy-client.key;
 
+      # Proxy header
       proxy_set_header X-Remote-User $remote_user;
       proxy_set_header X-Remote-Group system:masters;
     }
 }
 ```
 
-- `X-Remote-User`: 
-- `X-Remote-Group`:
-
+- `X-Remote-User`: API 서버에 전달할 사용자 식별자를 지정합니다.
+- `X-Remote-Group`: API 서버에 전달할 그룹 식별자를 지정합니다.
 
 #### 4. API Server CA 설정
 
@@ -214,27 +217,34 @@ server {
 server {
     listen 443 ssl;
     server_name localhost;
-    ssl_certificate      /etc/nginx/conf.d/k8s-server.pem;
-    ssl_certificate_key  /etc/nginx/conf.d/k8s-server-key.pem;
+
+    # Proxy Server Cert
+    ssl_certificate      /etc/nginx/conf.d/server.pem;
+    ssl_certificate_key  /etc/nginx/conf.d/server-key.pem;
 
     location / {
       proxy_pass https://$API_SERVER_ADDR:$API_SERVER_PORT;
 
+      # Proxy Client Cert
       proxy_ssl_certificate         /etc/kubernetes/pki/front-proxy-client.crt;
       proxy_ssl_certificate_key     /etc/kubernetes/pki/front-proxy-client.key;
 
+      # Proxy header
       proxy_set_header X-Remote-User $remote_user;
       proxy_set_header X-Remote-Group system:masters;
 
-      proxy_ssl_trusted_certificate /etc/kubernetes/pki/ca.crt
+      # API server CA
+      proxy_ssl_trusted_certificate /etc/kubernetes/pki/ca.crt;
+      proxy_ssl_name                kubernetes;
       proxy_ssl_verify              on;
-      # proxy_ssl_verify_depth        2;
+
     }
 }
 ```
 
-- `proxy_ssl_trusted_certificate`: 
-- `proxy_ssl_verify`:
+- `proxy_ssl_trusted_certificate`: API 서버의 인증서를 검증하기 위해 API 서버 인증키를 발급한 CA 인증서를 설정합니다.
+- `proxy_ssl_name`: API 서버의 검증할 인증서 이름을 설정합니다. (API 서버의 SAN (Subject Alternative Name)을 입력합니다.)
+- `proxy_ssl_verify`: 서버 인증서 검증을 활성화합니다. (default는 비활성화되어 있습니다.)
 
 #### 5. Proxy auth 설정
 
@@ -242,57 +252,71 @@ server {
 server {
     listen 443 ssl;
     server_name localhost;
-    ssl_certificate      /etc/nginx/conf.d/k8s-server.pem;
-    ssl_certificate_key  /etc/nginx/conf.d/k8s-server-key.pem;
 
+    # Proxy Server Cert
+    ssl_certificate      /etc/nginx/conf.d/server.pem;
+    ssl_certificate_key  /etc/nginx/conf.d/server-key.pem;
+
+    # Proxy auth
     auth_basic "basic auth";
     auth_basic_user_file /etc/nginx/conf.d/auth; 
 
     location / {
       proxy_pass https://$API_SERVER_ADDR:$API_SERVER_PORT;
 
+      # Proxy Client Cert
       proxy_ssl_certificate         /etc/kubernetes/pki/front-proxy-client.crt;
       proxy_ssl_certificate_key     /etc/kubernetes/pki/front-proxy-client.key;
 
+      # Proxy header
       proxy_set_header X-Remote-User $remote_user;
       proxy_set_header X-Remote-Group system:masters;
 
-      proxy_ssl_trusted_certificate /etc/kubernetes/pki/ca.crt
+      # API server CA
+      proxy_ssl_trusted_certificate /etc/kubernetes/pki/ca.crt;
+      proxy_ssl_name                kubernetes;
       proxy_ssl_verify              on;
-      # proxy_ssl_verify_depth        2;
+
     }
 }
 ```
 
-- `auth_basic`: 
-- `auth_basic_user_file`: 
+Basic Auth 파일은 쿠버네티스 인증 완벽이해 2탄에서 생성한 사용자 파일을 동일하게 사용합니다.
+
+- `auth_basic`: 사용자 검증을 위해 basic auth를 사용합니다.
+- `auth_basic_user_file`: 사용자 파일을 설정합니다.
 
 
-서버를 실행합니다. 정상적으로 실행이 된다면 이상없이 설정이 완료된 것입니다.
+`default.conf` 파일 작성이 완료되면 NGINX proxy 서버를 실행합니다. 정상적으로 실행이 된다면 이상없이 설정이 완료된 것입니다.
+
 ```bash
 docker run -p 8443:443 -v $(pwd):/etc/nginx/conf.d nginx
 ```
 
-
 ### 인증 테스트
 
 ```bash
-curl -v -H "Authorization: Basic $(echo -n user1:pass1 | base64)" https://localhost:8443/api
+curl --cacert k8s-rootCA.pem -v -H "Authorization: Basic $(echo -n user1:pass1 | base64)" https://localhost:8443/api
 ```
 
 ```bash
-kubectl config set-cluster 000000000
+kubectl config set-cluster proxy --server=https://localhost:8443 --insecure-skip-tls-verify=true
+kubectl config set-credentials proxy-auth --username=user1 --password=pass1
+kubectl config set-context proxy-context --cluster=proxy --user=proxy-auth
+kubectl config use-context proxy-context
 
-kubectl get pod -n kube-system --token user1:pass1
+kubectl get pod -n kube-system
 # 성공!
 
-kubectl get pod -n kube-system --token user1:pass2
-# 인증 실패
+# verbose 레벨을 높히면 API 서버 IP가 아닌 Proxy 서버로 요청이 전달되는 것을 확인할 수 있습니다.
+kubectl get pod -n kube-system -v 6
+# GET https://localhost:8443/api/v1/namespaces/kube-system/pods?limit=500 200 OK
 ```
 
 ## 마치며
 
-예시에서는 간단한 Basic Auth 외부 인증 서비스를 사용하였지만 Webhook 서버를 이용하면 거의 모든 인증 시스템을 연결할 수 있는 엄청난 유연함을 가질 수 있습니다. 쿠버네티스는 이런 Webhook 인증을 이용하여 쿠버네티스에서 기본적으로 제공하지 않는 인증 체계를 쉽게 확장할 수 있게 만들어 줍니다.
-각 클라우드 서비스의 완전 관리형 쿠버네티스 서비스인 `EKS`, `AKS`, `GKE`들도 전부 이 Webhook을 이용하여 각 플랫폼에 맞게 인증을 수행합니다. (AWS IAM, Azure AD 등)
+쿠버네티스 인증 완벽이해 시리즈의 마지막 포스트, Proxy 인증 서버를 이용한 대리 인증에서 Proxy 서버가 무엇인지에 대해서 알아보았고 그 장점과 사용법에 대해서 살펴 보았습니다. Proxy 서버를 사용함으로써, 보안과 가용성, 두마리 토끼를 다 잡을 수 있었습니다.
 
-이번 포스트에서는 쿠버네티스 인증의 끝판왕, Webhook 인증에 대해서 살펴 보았습니다. 다음 시간에는 대리 인증 방식인 Proxy Authentication에 대해서 살펴 보겠습니다.
+지금까지 여러 쿠버네티스 인증 방법에 대해서 하나씩 실습과 함께 살펴 봤습니다. 부족하지만 "k8s 인증 완벽이해 시리즈"를 준비해 봤습니다. 해당 포스트들을 통해 쿠버네티스에 대해 조금 더 자세히 이해할 수 있는 시간이 되셨으면 좋겠습니다.
+
+
