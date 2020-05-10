@@ -3,7 +3,7 @@ layout: post
 title:  "k8s 인증 완벽이해 #1 - X.509 Client Certs"
 date:   2020-05-02 00:00:00
 categories: kubernetes authentication x509
-image: /assets/images/k8s-auth/01-01.png
+image: /assets/images/k8s-auth/landing-01.jpg
 ---
 쿠버네티스를 지금까지 사용해 오면서 어렴풋이만 인증서와 토큰을 이용하여 사용자 인증을 하는지는 알고 있엇지만 그 이상 다른 방법에 대해서는 자세히 몰랐었습니다. [쿠버네티스 공인 자격증(CKA)](/kubernetes/cka/2019/01/13/cak)을 취득하기 위해 잠깐 인증서를 이용한 사용자 인증에 대해서 살펴 보았지만 당장 쿠버네티스를 설치하고 사용하는데 만족하여 더 이상 살펴보지 않았습니다. 시간이 지나 인증 체계에 대해서 조금 더 깊은 이해가 필요하게 되어 시간을 갖고 쿠버네티스 인증 체계에 대해서 완벽히 이해해보는 시간을 가져 보도록 하겠습니다.
 
