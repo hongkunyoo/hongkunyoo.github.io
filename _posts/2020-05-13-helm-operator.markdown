@@ -21,11 +21,9 @@ Helm이란 쿠버네티스 패키지 매니저입니다. `apt`나 `yum`과 같�
 
 helm chart만으로도 쿠버네티스를 효율적으로 운영하는데 굉장히 큰 도움이 됩니다. 하지만 서비스가 성장함에 따라 동일한 어플리케이션도 상황에 따라 조금씩 달라지는 경우가 발생하죠. 위의 그림과 같이 같은 NGINX 서버라 하더라도 운영과 개발을 나누기도 하고 웹서버로 사용하거나 proxy 서버로 사용하기도 합니다. 어플리케이션의 개수가 늘어나게 되면 자연스럽게 chart의 개수도 많아지게 되어 관리할 chart가 많아지게 됩니다. 하지만 조금만 생각해보면 nginx template은 상황에 따라 변하지 않는 공통부인 것을 알 수 있습니다. 그렇기 때문에 아래와 같이 공통부 template은 하나로 사용하고 구성에 따라 다른 `values.yaml` 파일을 사용하여 여러 어플리케이션을 생성할 수 있습니다.
 
-![](/assets/images/helm-op/03.png)
-
 더 나아가 `values.yaml` 파일만 따로 떼어다가 Operator로 관리하려는 시도들이 생겨 났고 그것이 바로 오늘 소개해 드릴 Flux 프로젝트의 일부인 **Helm Operator**입니다.
 
-![](/assets/images/helm-op/04.png)
+![](/assets/images/helm-op/033.png)
 
 ### Operator란?
 
