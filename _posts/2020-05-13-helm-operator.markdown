@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Helm Operator 소개"
-date:   2020-04-16 00:00:00
+date:   2020-05-13 00:00:00
 categories: kubernetes gitops helm
 image: /assets/images/helm-op/landing.jpg
 ---
@@ -35,12 +35,14 @@ Operator란 쿠버네티스의 기본적인 쿠버네티스 리소스 이외에 
 
 ### Helm Operator
 
-Helm Operator란 Helm Chart를 마치 Custom Resource로 바라보고 그것이 생성될 때 helm chart가 설치되고 (helm install) 리소스가 삭제될 때, helm list에서 삭제 (helm delete)되도록 구성한 Operator입니다. Helm Operator에서 이 Custom Resource를 `HelmRelease`라고 부릅니다. 사용자가 `HelmRelease`라는 Custom Resource를 생성하게 되면 Helm Operator가 자체적으로 control loop를 살펴보다 변경된 것을 감지하여 새로운 helm release를 배포해 줍니다.
+Helm Operator란 Helm Chart를 Custom Resource처럼 관리할 수 있게 해주는 Operator입니다. Custom Resource가 생성될 때 helm chart를 설치해주고 (helm install) 리소스가 삭제될 때, helm list에서 삭제 (helm delete)합니다. Helm Operator에서 이 Custom Resource를 `HelmRelease`라고 부릅니다. 사용자가 `HelmRelease`라는 Custom Resource를 생성하게 되면 Helm Operator가 자체적으로 control loop를 살펴보다 변경된 것을 감지하여 새로운 helm release를 배포해 줍니다.
 
 ```bash
 # 예시
 kubectl apply -f myHelmRelease.yaml   # --> helm install myHelmRelease
 ```
+
+위의 명령과 같이 `HelmRelease`라는 리소스를 하나 생성하게 되면 리소스의 값을 이용하여 helm chart를 하나 생성하게 됩니다. 이를 통해 helm chart를 쿠버네티스 리소스처럼 관리할 수 있게 됩니다.
 
 ### Flux
 
@@ -48,7 +50,7 @@ Flux는 GitOps라는 용어를 처음 사용한 Weaveworks라는 회사의 프�
 
 ### `HelmRelease` spec
 
-그럼 이제 본격적으로 `HelmRelease`가 어떻게 생겼는지 살펴보겠습니다. 아래에 보시는 YAML 파일이 가장 간단한 `HelmRelease` 리소스 정의입니다.
+그럼 이제 본격적으로 Helm Operator의 커스텀 리소스(CRD)인 `HelmRelease`가 어떻게 생겼는지 살펴보겠습니다. 아래에 보시는 YAML 파일이 가장 간단한 `HelmRelease` 리소스 정의입니다.
 
 ```yaml
 apiVersion: helm.fluxcd.io/v1
@@ -78,6 +80,8 @@ spec:
 - chart template 위치 정보 (`chart`)
 - 세부 설정 정보로 나뉩니다. (`values`)
 
+결국 마지막 `values` property에 따라서 helm chart의 내용이 변경되기에 `values` 부분이 가장 중요한 정보를 담고 있다고 말할 수 있습니다.
+
 그럼 이제 본격적으로 Helm Operator를 설치하고 사용해 봅시다.
 
 ### Helm Operator Install
@@ -96,15 +100,22 @@ helm upgrade -i helm-operator fluxcd/helm-operator \
     --set helm.versions=v3
 ```
 
+flux 네임스페이스에 helm operator가 생성되었는지 확인합니다.
+
 ```bash
 # 설치 확인
 kubectl get pod -nflux
+# NAME                READY   STATUS    RESTARTS
+# helm-operator-xxx   1/1     Running   0       
 ```
+
+helm-operator 라는 `Pod`가 Running하고 있다면 정상적으로 설치가 완료된 것 입니다.
 
 ### 첫 `HelmRelease` 생성하기
 
-Operator 설치가 완료되어 첫 `HelmRelease` 리소스를 생성합니다.
+Jenkins 서비스를 설치하는 `HelmRelease` 리소스를 생성합니다. 이때 사용성에 따라서 운영용과 개발용 젠킨스를 생성합니다.
 
+- 운영용 (prod)
 ```yaml
 # jenkins-prod.yaml
 apiVersion: helm.fluxcd.io/v1
@@ -117,12 +128,16 @@ spec:
   chart:
     repository: https://kubernetes-charts.storage.googleapis.com
     name: jenkins
-    version: 3.3.6
+    version: 1.15.0
   values:
-    replicas: 1
+    master:
+      resources:
+        limits:
+          cpu: "2"
+          memory: "4Gi"
 ```
 
-
+- 개발용 (dev)
 ```yaml
 # jenkins-dev.yaml
 apiVersion: helm.fluxcd.io/v1
@@ -135,19 +150,24 @@ spec:
   chart:
     repository: https://kubernetes-charts.storage.googleapis.com
     name: jenkins
-    version: 3.3.6
+    version: 1.16.0
   values:
-    replicas: 1
+    master:
+      resources:
+        limits:
+          cpu: "1"
+          memory: "2Gi"
 ```
 
-
+운영과 개발에 따라서 리소스 제한량과 젠킨스 버전을 다르게 설정합니다.
+`HelmRelease` 리소스를 생성합니다.
 ```bash
 kbuectl apply -f jenkins-prod.yaml
 
 kubectl apply -f jenkins-dev.yaml
 ```
 
-`HelmRelease`는 쿠버네티스 (커스텀) 리소스이기 때문에 기본 명령어가 전부 작동합니다.
+`HelmRelease`는 쿠버네티스 CRD 리소스이기 때문에 `apply` 명령 뿐만 아니라 `kubectl` 기본 명령이 전부 동일하게 작동합니다.
 
 ```bash
 # HelmRelease list
@@ -164,15 +184,32 @@ kubectl describe hr jenkins-dev
 
 ```bash
 helm list
+# NAME           NAMESPACE    REVISION    STATUS      CHART           APP VERSION
+# jenkins-dev    default      1           deployed    jenkins-1.15.0  lts
+# jenkins-prod   default      1           deployed    jenkins-1.16.0  lts
 
-helm status (state?, get)
+helm status jenkins-dev
+# NAME: jenkins-dev
+# ...
+# REVISION: 1
+# NOTES:
+# 1. Get your 'admin' user password by running:
+#   printf $(kubectl get secret --namespace default jenkins-dev -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
+# 2. Get the Jenkins URL to visit by running these commands in the same shell:
+#   export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/component=jenkins-master" -l "app.kubernetes.io/instance=jenkins-dev" -o jsonpath="{.items[0].metadata.name}")
+#   echo http://127.0.0.1:8080
+#   kubectl --namespace default port-forward $POD_NAME 8080:8080
+# 
+# 3. Login with the password from step 1 and the username: admin
+# 
+# For more information on running Jenkins on Kubernetes, visit:
+# https://cloud.google.com/solutions/jenkins-on-container-engine
 ```
+
+사용자는 `HelmRelease` 리소스를 생성한 것이 전부지만 실제로 helm chart까지 완벽하게 서비스가 배포되는 것을 확인할 수 있습니다. 이렇게 helm operator를 잘 활용하면 복잡한 쿠버네티스 어플리케이션들도 `HelmRelease` YAML 파일들로만 컴팩트하게 관리할 수 있게 됩니다.
+
+![](/assets/images/helm-op/05.png)
 
 ## 마치며
 
-[GitOps와 ArgoCD](/kubernetes/gitops/argocd/2020/02/10/gitops-argocd/)에서는 단순히 기본 k8s 리소스만 이용한 어플리케이션 배포에 대해 설명 하였습니다. 물론 ArgoCD도 helm chart를 배포하는 것이 자체적으로 가능하지만 Helm Operator를 적절히 조합하여 사용한다면 helm chart를 마치 하나의 k8s 리소스처럼 사용하여 어플리케이션 관리를 할 수 있는 장점이 있습니다. Helm Operator를 이용하여 helm chart들을 조금 더 체계적이고 효율적으로 관리하시길 바랍니다.
-
-
-
-
-
+[GitOps와 ArgoCD](/kubernetes/gitops/argocd/2020/02/10/gitops-argocd/)에서는 단순히 기본 k8s 리소스만 이용한 어플리케이션 배포에 대해 설명 하였습니다. 물론 ArgoCD도 helm chart를 배포하는 것이 자체적으로 가능하지만 Helm Operator를 적절히 조합하여 사용한다면 복잡한 어플리케이션 구성도 한눈에 파악하기 쉬워집니다. 더불어 helm chart 배포 작업 자체를 쿠버네티스 리소스처럼 다룰 수 있기에 더욱이 GitOps 철학에 가깝게 서비스를 구성할 수 있어 보입니다. 여러분들도 Helm Operator를 이용하여 더 체계적이고 효율적인 방법으로 어플리케이션을 관리해 보시기 바랍니다.
