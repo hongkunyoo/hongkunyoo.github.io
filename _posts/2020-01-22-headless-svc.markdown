@@ -15,7 +15,7 @@ categories: kubernetes service
 ### 1. namespace A Ingress에서 namespace B의 서비스로 연결하기
 
 ![](/assets/images/headless-svc/01.png)
-(*저자주: 실제 쿠버네티스에서는 패킷이 Service를 거치지 않고 바로 Pod로 전달됩니다. 개념 설명의 편리성을 위해 위와 같이 그렸습니다.)
+(*저자주*: 실제 쿠버네티스에서는 패킷이 Service를 거치지 않고 바로 Pod로 전달됩니다. 개념 설명의 편리성을 위해 위와 같이 그렸습니다.)
 
 처음 해결책을 고민해 봤을 때, 아래와 같이 k8s 내부 서비스를 참조하는 방식으로 네임스페이스가 다른 서비스를 Ingress에 연결하는 방법(<service>.<ns>.svc.cluster.local)을 생각했습니다만 이러한 방법으로는 작동하지 않는다는 사실을 깨닫게 되었습니다.
 ```yaml

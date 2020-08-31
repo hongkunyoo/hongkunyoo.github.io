@@ -1,0 +1,384 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "---\nlayout: post\ntitle:  \"나만의 k8s 클러스터 구축하기 - #1 VirtualBox편\"\ndate:   2020-08-29 00:00:00\ncategories: kubernetes cluster virtualbox\nimage: /assets/images/helm-op/landing.jpg\n---\n쿠버네티스 클러스터를 만드는 방법은 다양합니다. Minikube을 이용하는 방법, 클라우드 플랫폼의 VM을 이용하여 구축하는 방법, 라즈베리파이 보드를 구매하여 클러스터를 만드는 방법 등 다양한 방법들이 있습니다. \"나만의 k8s 클러스터 구축하기\" 시리즈에서 이러한 방법들을 하나씩 살펴 볼까합니다. 첫 포스트에서는 원도우 PC위에 VirtualBox를 이용하여 나만의 쿠버네티스 클러스터를 구축하는 방법에 대해서 살펴보겠습니다.\n\n클러스터 구축에 사용할 스택은 다음과 같습니다.\n\n- Windows10 (64bit): 윈도우10을 기준으로 설명하나 VirtualBox가 설치되는 어떤 호스트도 가능합니다.\n- VirtualBox: 오라클에서 만든 오픈소스 하이퍼바이저로 가상머신을 띄울 수 있게 해줍니다. 나의 윈도우PC 위에 두개의 우분투 서버를 생성하기 위해 설치합니다.\n- Ubuntu 20.04: 우분트 서버를 기준으로 쿠버네티스 클러스터를 생성해보겠습니다.\n- k3s: 적은 리소스로도 쿠버네티스 컴포넌트를 실행할 수 있도록 경량화한 쿠버네티스 배포판입니다. IoT & Edge 디바이스 위에서 돌릴 수 있도록 가볍게 만들어졌습니다.\n\n\n## 나만의 쿠버네티스 클러스터 아키텍처\n\n클러스터 구조는 다음과 같습니다.\n\n![](/assets/images/k8s-cluster/01.png)\n\n나의 윈도우PC 위에 Oracle VirtualBox를 설치하고 Ubuntu 20.04 VM 2대를 생성합니다. 이 때 master와 worker가 서로 통신할 수 있고 NAT로 외부와 통신할 수 있는 `k8s-network`라는 네트워크 서브넷을 만듭니다. 이 네트워크는 `10.0.1.0/24`의 범위를 가집니다. master와 worker는 해당 네트워크 안에서 각각 `10.0.1.5`, `10.0.1.6`의 IP를 가지고 default gateway(`Virtual NAT`)는 `10.0.1.1`의 IP를 가집니다.\n\n\n## Ubuntu 20.04 Desktop 다운로드\n\nVM에서 사용할 우분트 `iso` 이미지를 다운로드 받습니다. 다음 사이트를 접속하여 Desktop image를 선택합니다.\n\n`https://releases.ubuntu.com/20.04/`\n\n![](/assets/images/k8s-cluster/01-02.png)\n\n## VirtualBox 설치\n\n이미지를 다운 받는 동안 VirtualBox를 설치합니다. 다음 사이트를 접속하여 `VirtualBox platform packages` > `Windows hosts`에서 VirtualBox 설치 파일을 다운 받습니다. 윈도우가 아닌 다른 운영체제에서 구축하는 경우, 그에 맞는 플랫폼을 선택하시기 바랍니다.\n\n`https://www.virtualbox.org/wiki/Downloads`\n\n설치 방법\n\n- 설치 파일 더블 클릭 > Welcome 메세지 (Next) \n- 설치 위치 정하기 (Next) > 옵션 정하기 (Next) \n- Warning Network Interfaces (Yes) > Ready to Install (Install) \n- 앱 디바이스 변경 허용 (예) > 이 장치 소프트웨어를 설치하시겠습니까? (설치) \n- Finish\n\n설치가 완료되면 다음과 같은 VirtualBox 프로그램 화면을 볼 수 있습니다. 이제 본격적으로 네트워크 및 노드를 구성해보겠습니다.\n\n![](/assets/images/k8s-cluster/01-03.png)\n\n## 네트워크 및 노드 설정\n\n### NAT 네트워크 구성\n\n노드끼리 서로 통신하고 인터넷과 연결하기 위해서 NAT 네트워크를 먼저 구성해야 합니다.\n\n1. `CTRL + G`를 눌러 환경 설정에 들어갑니다. (`파일-환경 설정`으로도 들어갈 수 있습니다.)\n2. `네트워크` 클릭\n3. 새 NAT 네트워크를 추가합니다.\n4. 추가된 `NatNetwork` 더블클릭\n5. 다음과 같이 설정합니다.\n  - 네트워크 이름: k8s-network\n  - 네트워크 CIDR: 10.0.1.0/24\n  - 네트워크 옵션: DHCP 지원 (체크)\n6. 확인\n\n`확인`을 누르면 가상의 NAT 네트워크가 생성된 것입니다. 이 네트워크 안에 우분투 노드 2대를 생성해보겠습니다.\n\n## master 노드 설치\n\n### VM 생성\n\n1. `CTRL + N` (새로 만들기)를 눌러 VM을 생성합니다.\n2. 다음과 같이 설정합니다.\n  - 이름: `master`\n  - 머신 폴더: 디스크 용량이 넉넉한 드라이버를 선택해 주세요.\n  - 종류: Linux\n  - 버전: Ubuntu (64-bit)\n3. 메모리 크기: `2048 MB`\n4. 지금새 가상 하드 디스크 만들기\n5. VDI(VirtualBox 디스크 이미지)\n6. 하드 디스크: 고정 크기\n7. 하드 디스크 크기: `20 GB`\n8. 만들기\n\n생성이 완료되면 다음과 같은 VM 하나가 생성된 것을 볼 수 있습니다.\n\n![](/assets/images/k8s-cluster/01-04.png)\n\n### VM 설정\n\n설정 (`CTRL + S`)를 누릅니다.\n\n- 일반\n  - 고급\n  - 클립보드 공유: `양방향`\n- 네트워크\n  - 어댑터 1\n  - 네트워크 어댑터 사용하기 (체크)\n  - 다음에 연결됨: `NAT 네트워크` (`NAT`라고만 적혀 있는 것은 다른 네트워크입니다.)\n  - 네트워크 이름: k8s-network\n- 확인\n\n### VM 시작 및 우분투 설치\n\nmaster VM을 더블클릭하여 서버를 구동합니다.\n\n- 시동 디스크 선택: 다운로드 받은 우분투 20.04 이미지를 선택합니다.\n- 시작\n- English > Install Ubuntu (사용자의 취향에 맞게 설정합니다.)\n- Keyboard layout: English > English(US) (사용자의 취향에 맞게 설정합니다.) > Continue\n- Minimal installation > Download updates (체크 해제) > Continue\n- Erase disk and install Ubuntu (사용자의 취향에 맞게 설정합니다.) > Install Now\n- Write the changes to disk? > Continue\n- Where are you? (Seoul) > Continue\n- Who are you?\n  - Your name: ubuntu\n  - Your computer's name: master\n  - Pick a username: ubuntu\n  - Password: (사용자 지정)\n- Installation Complete > Restart Now\n- Please remove the installation medium, then press ENTER > ENTER\n\n### 네트워크 설정\n\n우분투 서버를 접속하여 네트워크를 설정합니다.\n\n![](/assets/images/k8s-cluster/01-05.png)\n\n- 우측 상단, 네트워크 아이콘 클륵\n- Settings 클릭\n- 톱니바퀴 아이콘 클릭\n- 이미 `10.0.1.4`로 IP가 자동으로 잡혀져있는 것을 확인할 수 있지만 IP를 명시적으로 고정시키기 위해 IPv4 수동 설정을 합니다.\n- IPv4 탭 클릭 > Manual 선택\n  - Address: 10.0.1.4\n  - Netmask: 255.255.255.0\n  - Gateway: 10.0.1.1\n  - DNS: 8.8.8.8\n- Apply 버튼 클릭\n- 네트워크 반영을 위해 토클 버튼을 눌러 잠깐 껐다가 다시 켜줍니다.\n\n`CTRL + ALT + T`를 눌러 터미널을 엽니다. 네트워크 설정이 정상적으로 동작하는지 확인해 보기 위해 다음 명령을 수행합니다.\n\n```bash\nsudo apt update\n```\n\n인터넷이 정상적으로 작동하면 VM 복제를 위해 종료합니다.\n\n```bash\nsudo shutdown now\n```\n\n## worker 노드 설치\n\nworker 노드를 설치하는 것은 조금 더 쉽습니다. 이미 생성한 master 노드를 복제하면 되기 때문입니다.",
+			"file": "_drafts/2020-05-11-helm-release.markdown",
+			"file_size": 5045,
+			"file_write_time": 132432306186661858,
+			"settings":
+			{
+				"buffer_size": 4111,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"prev",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"packagecontroll",
+				"Package Control: Install Package"
+			],
+			[
+				"preview",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"previe",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"previ",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"preivew",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"pre",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Users/hongk/OneDrive/바탕 화면/home/hongkunyoo.github.io",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/hongkunyoo.github.io/_drafts"
+	],
+	"file_history":
+	[
+		"/E/GoogleDrive/수정사항.txt",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/hongkunyoo.github.io/hongkunyoo.github.io.sublime-project",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/hongkunyoo.github.io/hongkunyoo.github.io.sublime-workspace",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/hongkunyoo.github.io/.sublime-project",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/hongkunyoo.github.io/_posts/2020-01-22-headless-svc.markdown",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/15-cicd/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/16-crd/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/14-logmon/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/08-helm/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/06-network/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/07-controller/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/how-to-scale-your-ml-job-with-k8s/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/docs/05-service.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/docs/02-kubectl-cmd.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/docs/01-install.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/13-ac/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/12-clustermgt/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/04-kubectl/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/01-docker/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/05-pod/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/03-install/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/17-wf/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/02-k8s/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/00-intro/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/18-appendix/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/11-scheduling/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/10-storage/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/09-ingress/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/compare/revised.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/cto.pem",
+		"/E/GoogleDrive/09-03.png",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/todo.md",
+		"/E/GoogleDrive/documents/coffee_whale_png/coffee_whale_only_bg.png",
+		"/C/Users/hongk/OneDrive/바탕 화면/abcc.cer",
+		"/C/Users/hongk/OneDrive/바탕 화면/route-table.txt",
+		"/N/. S_folder/. Shared_folder/Barista/Kubernetes 1탄/2020-07-27/수정사항.txt",
+		"/C/Users/hongk/OneDrive/바탕 화면/Kubernetes 1탄/수정사항.txt",
+		"/C/Users/hongk/OneDrive/바탕 화면/Kubernetes 1탄/docs/index.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/Kubernetes 1탄/docs/06-resources.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/Kubernetes 1탄/docs/10-secret.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/Kubernetes 1탄/docs/09-job.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/Kubernetes 1탄/docs/08-daemonset.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/Kubernetes 1탄/docs/07-deployment.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/Kubernetes 1탄/docs/06-replicaset.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/Kubernetes 1탄/docs/05-service.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/Kubernetes 1탄/docs/04-pods.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/Kubernetes 1탄/docs/03-kubectl-tip.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/Kubernetes 1탄/docs/02-kubectl-cmd.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/Kubernetes 1탄/docs/01-install.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/Kubernetes 1탄/docs/00-intro.md",
+		"/N/. S_folder/. Shared_folder/Barista/Kubernetes 1탄/수정사항.txt",
+		"/E/새 텍스트 문서.txt",
+		"/C/Users/hongk/Downloads/Sublime Text Build 3211 x64/Data/Packages/Default/Preferences.sublime-settings",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/script.sh",
+		"/E/GoogleDrive/Colab Notebooks/seoul.txt",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/.deprecated/19/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/.gitignore",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/hongkunyoo.github.io/about/index.html",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/16-operator/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/sftp-config.json",
+		"/C/Users/hongk/OneDrive/바탕 화면/site/site/index.html",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/07-controller/train.py",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/k8s/04.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/k8s/do-it-more/deployment.yaml",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/k8s/do-it-more/nginx.yaml",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/k8s/do-it-more/flask.yaml",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/k8s/do-it-more/mysql.yaml",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/docker/do-it-more/run-container.sh",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/docker/do-it-more/docker-compose.yaml",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/k8s/do-it-more/service.yaml",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/k8s/do-it-more/pod.yaml",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/k8s/03.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/k8s/02.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/k8s/01.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/docker/01.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/docker/04.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/docker/05.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/k8s/configmap/game-env.properties",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/k8s/configmap/ui.properties",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/k8s/configmap/game.properties",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/docker/do-it-more/Dockerfile.cmd",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/docker/do-it-more/cmd.sh",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/docker/app.py",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/docker/conf/default.conf",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/docker/html/index.html",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/docker/03.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/docker/02.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/project/01.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/project/run-multi.py",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/project/02.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/project/experiments.yaml",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/k8s/train.py",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/docker/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/docker-k8s-workshop/docker/01md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/07-resource/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/cicd/05-fluxcd/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/cicd/06-argocd/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/cicd/03-github/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/05/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/12/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/06/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/11/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/17/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/01/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/07/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/08/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/09/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/10/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/04/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/02/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/03/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/18/README.md",
+		"/E/GoogleDrive/발표자료/코드프레소/mobaxterm-font.txt",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/15/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/14/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/13/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/16/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/00/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/handson-k8s/19/README.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/hongkunyoo.github.io/_layouts/post.html",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/hongkunyoo.github.io/about/item.html",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/hongkunyoo.github.io/index.html",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/hongkunyoo.github.io/_config.yml",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/hongkunyoo.github.io/assets/css/screen.css",
+		"/C/Users/hongk/OneDrive/바탕 화면/동영상강의/quiz.md",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/hongkunyoo.github.io/_posts/2019-01-12-cak.markdown",
+		"/C/Users/hongk/OneDrive/바탕 화면/home/hongkunyoo.github.io/about/_index.html"
+	],
+	"find":
+	{
+		"height": 27.0
+	},
+	"find_in_files":
+	{
+		"height": 106.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "_drafts/2020-05-11-helm-release.markdown",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4111,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4111,
+								4111
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"parser": "github",
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Markdown/Markdown.sublime-syntax",
+							"tab_size": 2,
+							"target": "disk",
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2322.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 27.0
+	},
+	"input":
+	{
+		"height": 39.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.markdown":
+	{
+		"height": 126.0
+	},
+	"output.sftp":
+	{
+		"height": 126.0
+	},
+	"pinned_build_system": "",
+	"project": "hongkunyoo.github.io.sublime-project",
+	"replace":
+	{
+		"height": 50.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 183.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
