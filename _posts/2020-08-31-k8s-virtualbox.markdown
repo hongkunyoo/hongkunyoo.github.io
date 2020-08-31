@@ -19,7 +19,7 @@ image: /assets/images/k8s-cluster/landing.png
 
 클러스터 구조는 다음과 같습니다.
 
-![](/assets/images/k8s-cluster/01.png)
+![](/assets/images/k8s-cluster/01-01.png)
 
 나의 윈도우PC 위에 Oracle VirtualBox를 설치하고 Ubuntu 20.04 VM 2대를 생성합니다. 이 때 master와 worker가 서로 통신할 수 있고 NAT로 외부와 통신할 수 있는 `k8s-network`라는 네트워크 서브넷을 만듭니다. 이 네트워크는 `10.0.1.0/24`의 범위를 가집니다. master와 worker는 해당 네트워크 안에서 각각 `10.0.1.5`, `10.0.1.6`의 IP를 가지고 default gateway(`Virtual NAT`)는 `10.0.1.1`의 IP를 가집니다.
 
@@ -61,8 +61,8 @@ VM에서 사용할 우분트 `iso` 이미지를 다운로드 받습니다. 다�
 3. 새 NAT 네트워크를 추가합니다.
 4. 추가된 `NatNetwork` 더블클릭
 5. 다음과 같이 설정합니다.
-  - 네트워크 이름: k8s-network
-  - 네트워크 CIDR: 10.0.1.0/24
+  - 네트워크 이름: `k8s-network`
+  - 네트워크 CIDR: `10.0.1.0/24`
   - 네트워크 옵션: DHCP 지원 (체크)
 6. 확인
 
@@ -76,12 +76,12 @@ VM에서 사용할 우분트 `iso` 이미지를 다운로드 받습니다. 다�
 2. 다음과 같이 설정합니다.
   - 이름: `master`
   - 머신 폴더: 디스크 용량이 넉넉한 드라이버를 선택해 주세요.
-  - 종류: Linux
-  - 버전: Ubuntu (64-bit)
-3. 메모리 크기: 4,096 MB (k3s 스펙상 512 MB도 가능하나 원활한 테스트를 위해 최소 4GB를 잡습니다.)
-4. 지금새 가상 하드 디스크 만들기
+  - 종류: `Linux`
+  - 버전: `Ubuntu (64-bit)`
+3. 메모리 크기: `4,096 MB` (k3s 스펙상 `512 MB`도 가능하나 원활한 테스트를 위해 최소 4GB를 잡습니다.)
+4. 지금 새 가상 하드 디스크 만들기
 5. VDI(VirtualBox 디스크 이미지)
-6. 하드 디스크: 고정 크기
+6. 하드 디스크: `고정 크기`
 7. 하드 디스크 크기: `20 GB`
 8. 만들기
 
@@ -100,7 +100,7 @@ VM에서 사용할 우분트 `iso` 이미지를 다운로드 받습니다. 다�
   - 어댑터 1
   - 네트워크 어댑터 사용하기 (체크)
   - 다음에 연결됨: `NAT 네트워크` (`NAT`라고만 적혀 있는 것은 다른 네트워크입니다.)
-  - 네트워크 이름: k8s-network
+  - 네트워크 이름: `k8s-network`
 - 확인
 
 ### VM 시작 및 우분투 설치
@@ -110,18 +110,18 @@ master VM을 더블클릭하여 서버를 구동합니다.
 - 시동 디스크 선택: 다운로드 받은 우분투 20.04 이미지를 선택합니다.
 - 시작
 - English > Install Ubuntu (사용자의 취향에 맞게 설정합니다.)
-- Keyboard layout: English > English(US) (사용자의 취향에 맞게 설정합니다.) > Continue
+- Keyboard layout: `English > English(US)` (사용자의 취향에 맞게 설정합니다.) > Continue
 - Minimal installation > Download updates (체크 해제) > Continue
 - Erase disk and install Ubuntu (사용자의 취향에 맞게 설정합니다.) > Install Now
 - Write the changes to disk? > Continue
 - Where are you? (Seoul) > Continue
 - Who are you?
-  - Your name: ubuntu
-  - Your computer's name: master
-  - Pick a username: ubuntu
+  - Your name: `ubuntu`
+  - Your computer's name: `master`
+  - Pick a username: `ubuntu`
   - Password: (사용자 지정)
 - Installation Complete > Restart Now
-- Please remove the installation medium, then press ENTER > ENTER
+- Please remove the installation medium, then press ENTER > `ENTER`
 
 ### 네트워크 설정
 
@@ -134,10 +134,10 @@ master VM을 더블클릭하여 서버를 구동합니다.
 - 톱니바퀴 아이콘 클릭
 - 이미 `10.0.1.4`로 IP가 자동으로 잡혀져있는 것을 확인할 수 있지만 IP를 명시적으로 고정시키기 위해 IPv4 수동 설정을 합니다.
 - IPv4 탭 클릭 > Manual 선택
-  - Address: 10.0.1.4
-  - Netmask: 255.255.255.0
-  - Gateway: 10.0.1.1
-  - DNS: 8.8.8.8
+  - Address: `10.0.1.4`
+  - Netmask: `255.255.255.0`
+  - Gateway: `10.0.1.1`
+  - DNS: `8.8.8.8`
 - Apply 버튼 클릭
 - 네트워크 반영을 위해 토클 버튼을 눌러 잠깐 껐다가 다시 켜줍니다.
 
@@ -160,11 +160,11 @@ worker 노드를 설치하는 것은 조금 더 쉽습니다. 이미 생성한 m
 
 ![](/assets/images/k8s-cluster/01-06.png)
 
-- 이름: worker
+- 이름: `worker`
 - 경로: master VM을 저장한 위치에 저장합니다.
-- MAC 주소 정책: 모든 네트워크 어댑터의 새 MAC 주소 생성
+- MAC 주소 정책: `모든 네트워크 어댑터의 새 MAC 주소 생성`
 - 나머지 전부 체크 해제 > 다음
-- 복제 방식: 완전한 복제 > 복제
+- 복제 방식: `완전한 복제` > 복제
 
 복제가 완료되면 master, worker 노드 둘다 시작합니다.
 
@@ -184,10 +184,10 @@ exit
 Host명 변경 후 네트워크 세팅으로 들어가 다음과 같이 설정합니다. 
 
 - IPv4 탭 클릭 > Manual 선택
-  - Address: 10.0.1.5
-  - Netmask: 255.255.255.0
-  - Gateway: 10.0.1.1
-  - DNS: 8.8.8.8
+  - Address: `10.0.1.5`
+  - Netmask: `255.255.255.0`
+  - Gateway: `10.0.1.1`
+  - DNS: `8.8.8.8`
 - Apply 버튼 클릭
 - 네트워크 반영을 위해 토클 버튼을 눌러 잠깐 껐다가 다시 켜줍니다.
 
@@ -231,9 +231,9 @@ kubectl get node -o wide
 # master   Ready    master   27m   v1.18.6+k3s1   10.0.1.1       ...
 ```
 
-kubectl get node라는 명령으로 master가 보이고 STATUS가 READY로 확인할 수 있다면 일단 master 노드는 정상적으로 설치가 완료된 것입니다.
+`kubectl get node`라는 명령으로 master가 보이고 `STATUS`가 `READY`로 확인할 수 있다면 일단 master 노드는 정상적으로 설치가 완료된 것입니다.
 
-이제 클러스터에 worker 노드를 추가하기 위해 master 노드에서 NODE_TOKEN값과 MASTER_IP를 다음과 같이 확인합니다.
+이제 클러스터에 worker 노드를 추가하기 위해 master 노드에서 `NODE_TOKEN`값과 `MASTER_IP`를 다음과 같이 확인합니다.
 
 
 ```bash
@@ -251,7 +251,7 @@ master 노드에서 확인한 값들을 복사해 주시기 바랍니다. worker
 
 ### k3s worker 설정
 
-master 서버에서 나와 worker로 사용할 서버에 접속하여 다음과 같이 명령을 실행합니다. master 노드에서 확인한 NODE_TOKEN과 MASTER_IP를 변수에 입력합니다.
+master 서버에서 나와 worker로 사용할 서버에 접속하여 다음과 같이 명령을 실행합니다. master 노드에서 확인한 `NODE_TOKEN`과 `MASTER_IP`를 변수에 입력합니다.
 
 ```bash
 
@@ -268,7 +268,7 @@ curl -sfL https://get.k3s.io | K3S_URL=https://$MASTER_IP:6443 \
     INSTALL_K3S_VERSION="v1.18.6+k3s1" sh -s -
 ```
 
-worker 노드에서 설치가 완료된 이후에 worker 노드를 나와 다시 master 노드로 접속합니다. 다음 명령을 실행하여 worker 노드가 추가된 것을 볼 수 있고 STATUS가 READY로 나온다면 정상적으로 쿠버네티스 클러스터를 완성한 것입니다. (worker 노드가 정상적으로 클러스터에 추가되려면 시간이 조금 걸립니다.)
+worker 노드에서 설치가 완료된 이후에 worker 노드를 나와 다시 master 노드로 접속합니다. 다음 명령을 실행하여 worker 노드가 추가된 것을 볼 수 있고 `STATUS`가 `READY`로 나온다면 정상적으로 쿠버네티스 클러스터를 완성한 것입니다. (worker 노드가 정상적으로 클러스터에 추가되려면 시간이 조금 걸립니다.)
 
 ```bash
 kubectl get node
