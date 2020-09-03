@@ -9,6 +9,8 @@ image: /assets/images/k8s-cluster/landing02.png
 
 1. [VirtualBox편](/kubernetes/cluster/virtualbox/2020/08/31/k8s-virtualbox/)
 2. **Amazon EKS편**
+3. [GCP GKE편](/kubernetes/cluster/gke/2020/09/04/k8s-gke/)
+
 
 ## 안내 사항
 
@@ -182,7 +184,7 @@ eksctl delete cluster core-kubernetes
 
 ### 유저 삭제
 
-AWS 콘솔을 접속하여 유저를 꼭 삭제해줍니다.
+AWS 콘솔을 접속하여 유저를 꼭 삭제합니다.
 
 ![](/assets/images/k8s-cluster/02-04.png)
 

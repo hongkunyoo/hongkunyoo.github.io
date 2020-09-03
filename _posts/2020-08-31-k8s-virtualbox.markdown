@@ -9,6 +9,7 @@ image: /assets/images/k8s-cluster/landing.png
 
 1. **VirtualBox편**
 2. [Amazon EKS편](/kubernetes/cluster/eks/2020/09/03/k8s-eks/)
+3. [GCP GKE편](/kubernetes/cluster/gke/2020/09/04/k8s-gke/)
 
 클러스터 구축에 사용할 스택은 다음과 같습니다.
 
