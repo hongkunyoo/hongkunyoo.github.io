@@ -24,8 +24,13 @@ GCP 프로젝트에 유저를 등록하고 다음과 같은 역할을 부여합�
 
 ![](/assets/images/k8s-cluster/03-01.png)
 
-- `Kubernetes Engine Admin`
-- `Service Account User`
+- `IAM & Admin`
+- `ADD` 버튼 클릭
+- New Members: 등록할 유저 (gmail) 입력
+- Role
+  - `Kubernetes Engine Admin`
+  - `Service Account User`
+- `Save`
 
 ### 클러스터 생성
 
@@ -60,20 +65,9 @@ kubectl get node
 
 ```bash
 # GKE에는 기본적으로 metrics-server가 설치되어 있습니다.
-kubectl get pod -nkube-system
+kubectl get pod -nkube-system | grep metrics-server
 # NAME                                                        READY   STATUS    RESTARTS   AGE
-# event-exporter-v0.3.0-5cd6ccb7f7-p9869                      2/2     Running   0          6m31s
-# fluentd-gcp-scaler-6855f55bcc-x4whf                         1/1     Running   0          6m26s
-# fluentd-gcp-v3.1.1-vtw4j                                    2/2     Running   0          6m5s
-# heapster-gke-7785454f49-t5782                               3/3     Running   0          5m47s
-# kube-dns-5c446b66bd-q96j8                                   4/4     Running   0          6m32s
-# kube-dns-autoscaler-6b7f784798-zbjj5                        1/1     Running   0          6m27s
-# kube-proxy-gke-core-kubernetes-default-pool-b5dfd3f2-4f84   1/1     Running   0          6m23s
-# l7-default-backend-84c9fcfbb-cjgms                          1/1     Running   0          6m32s
 # metrics-server-v0.3.3-fdc67d4b6-vbfwt                       2/2     Running   0          6m11s
-# prometheus-to-sd-vxz6k                                      2/2     Running   0          6m23s
-# stackdriver-metadata-agent-cluster-level-5654d59f9-t4qdf    2/2     Running   0          5m54s
-
 
 cat << EOF | kubectl apply -f -
 # heavy-cal.yaml
@@ -113,8 +107,11 @@ spec:
     run: heavy-cal
 EOF
 
-# 별다른 설정 없이 바로 Pod의 개수를 늘려봅니다.
+# 바로 Pod의 개수를 늘려봅니다.
 kubectl scale deployment heavy-cal --replicas=50
+
+# GKE 워커 노드가 늘어나는지 확인해보시기 바랍니다.
+watch kubectl get node
 ```
 
 ### EKS 클러스터 삭제
@@ -129,4 +126,12 @@ gcloud container clusters delete $CLUSTER_NAME
 
 GCP 콘솔을 접속하여 유저를 꼭 삭제합니다.
 
+![](/assets/images/k8s-cluster/03-02.png)
+
+- `IAM & Admin`
+- 등록한 유저 checkbox 클릭
+- `REMOVE` 버튼 클릭
+
 ## 마치며
+
+쿠버네티스가 구글에서 나온 오픈소스 프로젝트인 만큼 GCP에서는 매우 밀접하게 쿠버네티스와 연결되어 있습니다. GCP를 이용하여 쿠버네티스를 구축하는 경우 클라우드 플랫폼 자체에서 많은 쿠버네티스 기능들을 지원합니다. 여러분들도 GKE를 활용하여 즐겁게 쿠버네티스를 맛보시길 바랍니다.
