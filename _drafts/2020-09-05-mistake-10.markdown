@@ -5,7 +5,9 @@ date:   2020-09-03 00:00:00
 categories: kubernetes mistake
 image: /assets/images/k8s-cluster/landing03.png
 ---
-번역 https://blog.pipetail.io/posts/2020-05-04-most-common-mistakes-k8s/
+번역 
+- https://blog.pipetail.io/posts/2020-05-04-most-common-mistakes-k8s/
+- https://medium.com/@bbau00/10-antipatterns-for-kubernetes-deployments-e97ce1199f2d
 
 
 
