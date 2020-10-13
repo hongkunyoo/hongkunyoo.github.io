@@ -1,12 +1,9 @@
-# Coffeewhale
+# 커피고래 블로그
 
 커피고래 노트
 > 술 좋아하면 술고래, 커피 좋아하면 커피고래.
 
-## blog posts
+![profile](assets/images/profile.png)
 
-[Blog posts](https://coffeewhale.com)
-
-## about me page
-
-[About me](https://coffeewhale.com/about)
+- [Blog Posts](https://coffeewhale.com)
+- [About Me](https://coffeewhale.com/about)
