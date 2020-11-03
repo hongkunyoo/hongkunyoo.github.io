@@ -5,14 +5,11 @@ date:   2020-10-12 00:00:00
 categories: kubernetes mistake
 image: /assets/images/k8s-cluster/landing03.png
 ---
-쿠버네티스를 사용하면서 쉽게 저지르는 10가지 실수에 대한 번역글입니다. [원글](https://blog.pipetail.io/posts/2020-05-04-most-common-mistakes-k8s)을 읽고 공감가는 부분이 많아 기록으로 남기고 공유하고자 번역하게 되었습니다.
+쿠버네티스를 사용하면서 쉽게 저지르는 10가지 실수에 대한 번역글입니다. [원글](https://blog.pipetail.io/posts/2020-05-04-most-common-mistakes-k8s)을 읽고 공감가는 부분이 많아 기록으로 남기고자 번역하였습니다.
 
 
 
 We had the chance to see quite a bit of clusters in our years of experience with kubernetes (both managed and unmanaged - on GCP, AWS and Azure), and we see some mistakes being repeated. No shame in that, we’ve done most of these too!
-
-I’ll try to show the ones we see very often and talk a bit about how to fix them.
-
 
 
 ### 리소스 설정 - requests and limits
