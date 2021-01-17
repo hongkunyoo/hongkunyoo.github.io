@@ -7,7 +7,7 @@ image: /assets/images/landing/nginx-oauth2.png
 ---
 Kubernetes-NGINX Ingress 사용 시, 간편하게 OAuth 인증을 설정하는 방법에 대해 정리한 내용입니다. 
 
-해당 내용은 다음 링크를 참고하여 공부하면서 정리한 내용입니다. 
+오늘은 지난번 [Kubernetes-NGINX Ingress 인증 - Basic Auth](https://coffeewhale.com/kubernetes/nginx-ingress/basic-auth/2020/03/21/basic-auth/)에서 살펴본 기본적인 Basic Authentication에 이어 OAuth2.0 기술을 이용하여 인증 메커니즘을 구축하는 방법에 대해서 살펴 봅니다. 주로 다음 링크를 참고하여 공부하면서 정리한 내용입니다.
 
 - [https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/)
 

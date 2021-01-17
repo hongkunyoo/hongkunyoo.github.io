@@ -1,10 +1,10 @@
 ---
 layout: post
-title:  "최소한의 보안인증 설정하기"
+title:  "Kubernetes-NGINX Ingress 인증 - Basic Auth"
 date:   2020-03-21 00:00:00
 categories: kubernetes nginx-ingress basic-auth
 ---
-(feat. NGINX Ingress Basic Auth)
+쿠버네티스 NGINX Ingress 사용 시, 기본적인 인증 메커니즘을 추가하는 방법에 대해서 알아봅니다.
 
 쿠버네티스 위에서 여러 서비스를 운영할 때 매번 각 서비스의 인증 체계를 구축하고 관리하는 일은 쉽지 않을 수 있습니다. 사실 대부분의 서비스들이 자체적인 인증 매커니즘을 가지고 있기 때문에 (jenkins, grafana, kibana, jupyterhub 등) helm 차트 설정만 잘해 준다면 개별 서비스 자체적으로 인증 시스템을 구축할 수 있습니다. 하지만 모든 서비스가 인증 체계를 가지진 않았고 여전히 바로 웹 페이지로 접근되는 서비스들도 많이 있습니다. 물론 그러한 서비스들도 보안 extension 패키지를 설치하거나 자체 개별을 통해 보안을 강화할 순 있지만 매번 일일이 이러한 것들을 챙기는 것은 번거로울 뿐만 아니라 지속적으로 관리하기가 힘듭니다. 이번 시간에는 최소한의 보안 인증 장치로 NGINX Ingress controller에서 제공하는 Basic Authentication에 대해서 알아보고 설정하는 방법에 대해 알아보도록 하겠습니다.
 
