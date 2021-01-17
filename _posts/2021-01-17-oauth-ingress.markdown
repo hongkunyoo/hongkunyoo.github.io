@@ -7,7 +7,10 @@ image: /assets/images/landing/nginx-oauth2.png
 ---
 Kubernetes-NGINX Ingress 사용 시, 간편하게 OAuth 인증을 설정하는 방법에 대해 정리한 내용입니다. 
 
-해당 내용은 다음 링크를 참고하여 공부하면서 정리한 내용입니다. [https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/)
+해당 내용은 다음 링크를 참고하여 공부하면서 정리한 내용입니다. 
+
+- [https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/)
+
 이번 포스트에서는 다음과 같은 내용들을 알아볼 예정입니다.
 
 1. NGINX에서 외부 인증을 설정하는 방법
@@ -23,7 +26,7 @@ Kubernetes-NGINX Ingress 사용 시, 간편하게 OAuth 인증을 설정하는 �
 
 ## OAuth2 Proxy
 
-`Ingress`가 외부인증을 요청할 때 직접 OAuth IdP(Identity Provider - 구글, 페이스, 깃헙과 같은 업체)에 OAuth 프로토콜을 이용하여 인증을 받는 것이 아니라 **다른 누군가**를 통하여 대리 인증을 받습니다. 그 누군가가 바로 [OAuth2 Proxy](https://oauth2-proxy.github.io/oauth2-proxy/)입니다.
+`Ingress`가 외부인증을 요청할 때 직접 OAuth IdP(Identity Provider: 구글, 페이스, 깃헙과 같은 업체)에 OAuth 프로토콜을 이용하여 인증을 받는 것이 아니라 **다른 누군가**를 통하여 대리 인증을 받습니다. 그 누군가가 바로 [OAuth2 Proxy](https://oauth2-proxy.github.io/oauth2-proxy/)입니다.
 
 ![그림1](/assets/images/nginx-auth/01.png)
 
@@ -47,11 +50,11 @@ Kubernetes-NGINX Ingress 사용 시, 간편하게 OAuth 인증을 설정하는 �
 
 우리의 목적은 NGINX Ingress를 이용하여 인증을 처리하는 것이기 때문에 사실 정확히는 OAuth가 아니라 OpenID Connect를 이용합니다. 자세한 둘의 관계는 제가 소개한 유투브 영상에서 자세하게 나오지만 간단하게 설명하자면, OpenID Connect는 사용자 인증을 위해 OAuth 2.0 기술을 활용합니다.
 
-![그림2](/assets/images/nginx-auth/02.png)
-
-OpenID Connect의 흐름을 간략하게 설명하면 다음과 같습니다. 이것도 간략화한 흐름도로 정확한 내용은 위의 유투브 영상을 통해 꼭 이해하시고 넘어가시길 추천 드립니다.
-
 ![그림3](/assets/images/nginx-auth/03.png)
+
+OpenID Connect의 흐름을 간략하게 설명하면 다음과 같습니다. 간략화한 흐름도로 정확한 내용은 위의 유투브 영상을 통해 꼭 이해하시고 넘어가시길 추천 드립니다.
+
+![그림2](/assets/images/nginx-auth/02.png)
 
 큰 흐름은 다음과 같습니다. 우리의 목표는 `ID token`을 획득하는 것입니다. 해당 token에는 사용자의 정보가 들어있습니다. `oauth2-proxy` 서버는 `ID token`에 들어있는 사용자의 정보를 기준으로 인증을 허가할지 말지 결정합니다.
 
@@ -73,12 +76,12 @@ OpenID Connect의 흐름을 간략하게 설명하면 다음과 같습니다. �
 
 [https://github.com/settings/developers](https://github.com/settings/developers)에 가셔서 새로운 OAuth 어플리케이션을 생성합니다.
 
+![그림4](/assets/images/nginx-auth/04.png)
+
 - `Applicatoin name`: 이름을 지정합니다. 예시에서는 `ingress-oauth2`로 설정했습니다.
 - `Homepage URL`: 어플리케이션의 URL을 설정합니다. 어떤 값을 입력하든 크게 상관없습니다. (`http://localhost`도 가능)
 - `Application description`: 간단한 어플리케이션 설명을 적습니다.
 - `Authorization callback URL`: **중요** 콜백할 URL을 지정합니다. Ingress에서 사용할 호스트 + `/oauth2`으로 설정합니다.
-
-![그림4](/assets/images/nginx-auth/04.png)
 
 예를 들어, 인증을 추가할 본래의 서비스 이름이 `http://abc.mydomain.com` 이라고 한다면 `http://abc.mydomain.com/oauth2`을 기입합니다. 예시에서는 `http://nginx.coffeewhale.com/oauth2`을 사용합니다. 생성 후, GitHub에서 제공하는 Client ID, Client secret을 복사해 놓습니다.
 
@@ -132,6 +135,7 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   annotations:
+    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/auth-url: "https://$host/oauth2/auth"
     nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
   name: external-auth-oauth2
@@ -228,6 +232,10 @@ spec:
 ```
 
 이로써 모든 설정이 완료되었습니다. 이제 `nginx.coffeewhale.com`을 방문하여 GitHub OAuth 인증을 진행해 보시기 바랍니다.
+
+![그림6](/assets/images/nginx-auth/06.png)
+
+![그림7](/assets/images/nginx-auth/07.png)
 
 ## 마치며
 
