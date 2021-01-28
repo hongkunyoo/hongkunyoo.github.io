@@ -1,11 +1,11 @@
 ---
 layout: post
 title:  "[번역] 데이터 과학자들은 쿠버네티스에 관심이 없습니다 - MLOps"
-date:   2021-01-26 00:00:00
+date:   2021-01-28 00:00:00
 categories: kubernetes mlops
-image: /assets/images/?
+image: https://determined.ai/assets/images/blogs/kubernetes-bad/kubeflow-unicorns.png
 ---
-이 글은 [다음 포스트](https://determined.ai/blog/data-scientists-dont-care-about-kubernetes)를 읽고 많은 MLOps 엔지니어들이 비슷한 고민을 하는 것을 공감하여 소개하고자 번역하였습니다.
+이 글은 [다음 포스트](https://determined.ai/blog/data-scientists-dont-care-about-kubernetes)를 읽고 공감하여 소개하고자 번역하였습니다. 머신러닝에서 쿠버네티스를 이용하면 효율적으로 모델을 학습 시킬 수 있습니다. 문제는 데이터 과학자들이 직접 쿠버네티스를 사용하기 불편하다는 점이 있습니다. 그 문제를 어떻게 해결하면 좋을까요?
 
 쿠버네티스는 지난 몇 십년간 나온 제품들 중 가장 중요한 소프트웨어이자 영향력있는 오픈소스입니다. 쿠버네티스는 어플리케이션이 어떻게 개발되고 운영환경에 배포가 되어야 하는지에 대해 혁신적인 변화를 이끌어 냈습니다.
 쿠버네티스의 폭발적인 성장으로 더 많은 하드웨어가 쿠버네티스에 의해 관리됩니다. 이 흐름은 딥러닝의 인기에 맞물려 같이 성장하고 있습니다. 딥러닝은 엄청 나게 많은 컴퓨팅 연산이 필요로 하는 기술로 데이터 과학자 한명이 여러 GPU 머신을 오랜 기간동안 차지합니다. 이러한 특징으로 인해 다음과 같은 개발 방법론들이 나타나기 시작했습니다.
@@ -103,9 +103,10 @@ Kubeflow의 다른 컴포넌트들을 살펴 보면 비슷한 철학을 가진 �
 
 > 역자 주: 마지막 부분은 해당 블로그를 포스팅한 Determined AI라는 회사의 제품을 소개하는 내용이라 간단하게 설명합니다.
 
-Determined AI에서 제안하는 해결책은 다음과 같습니다. 아래의 설정파일을 보면 알 수 있듯이 TFJob처럼 복잡한 쿠버네티스 설정값들을 전부 제거하고 모델링에 꼭 필요한 설정값들만 남아있는 것을 확인할 수 있습니다. 이로써 데이터 과학자들은 쿠버네티스의 세부 설정들에 대해서는 신경을 쓰지 않고도 쿠버네티스의 이점인 학습을 위한 여러 하드웨어 관리를 체계적으로 할 수 있게 만들었습니다. (The big difference is that this configuration is written in the language of data scientists, with complicated infrastructure concepts abstracted away)
+Determined AI에서 제안하는 해결책은 다음과 같습니다. 아래의 설정파일을 보면 알 수 있듯이 TFJob처럼 복잡한 쿠버네티스 설정값들을 전부 제거하고 모델링에 꼭 필요한 설정값들만 남아있는 것을 확인할 수 있습니다. 이로써 데이터 과학자들은 쿠버네티스의 세부 설정들에 대해서는 신경을 쓰지 않고도 쿠버네티스의 이점인 체계적인 하드웨어 관리를 학습에서 사용할 수 있게 되었습니다. (The big difference is that this configuration is written in the language of data scientists, with complicated infrastructure concepts abstracted away)
 
 ```yaml
+# 기계학습에 필요한 설정값만 노출
 description: cifar10_pytorch
 hyperparameters:
   learning_rate: 1e-4
@@ -126,4 +127,4 @@ entrypoint: model_def:CIFARTrial
 ## 마치며
 
 Determined AI에서 제시하는 해결책은 제가 생각하는 방법과 비교하여 추상화를 통해 데이터 과학자들이 직접 쿠버네티스를 조작하지 않고도 편리하게 머신러닝을 수행할 수 있는 방법이 필요하다는 점에서는 유사하나 구체적인 해결책으로 조금 다른 점이 있습니다.
-다음 포스트에서 제가 생각하는 해결 방법에 대해서 설명 드리겠습니다.
+다음 포스트에서는 제가 생각하는 해결 방법에 대해서 소개해 보고자 합니다.
