@@ -3,7 +3,7 @@ layout: post
 title:  "나도 LINE 개발자입니다."
 date:   2021-02-02 00:00:00
 categories: LINE career
-image: /assets/images/line-developer/landing.png
+image: /assets/images/line-developer/landing.jpg
 ---
 4년 간의 LG전자 MLOps 엔지니어로써의 업무를 마치고 처음으로 이직을 도전한 경험을 공유합니다.
 
@@ -135,7 +135,7 @@ LG전자에서 주로 다음과 같은 업무들을 수행했었습니다.
 
 ## 나도 LINE 개발자입니다.
 
-![라인](/assets/images/line-developer/landing.png)
+![라인](/assets/images/line-developer/landing.jpg)
 
 그래서 최종적으로 라인을 선택하였습니다. 사실 신입 취준생 시절, 운좋게도 [네이버에 최종합격(v)](/assets/images/line-developer/naver-sm.png)했었지만 그 당시 학업을 조금 더 이어가고자 대학원을 진학했었는데 돌고 돌아 다시 네이버(라인)로 돌아왔습니다.(네이버 라인 사랑해요)
 
