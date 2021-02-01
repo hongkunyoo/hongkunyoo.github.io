@@ -91,23 +91,86 @@ venv/bin/python train.py epoch=10 dropout=0.5
 - 머신러닝 소스코드: NAS 서버에 저장된 모델 소스코드
 - 모델 하이퍼파라미터: ML툴이 쿠버네티스로 전달
 
-만약 **어떤 ML툴**이 똑똑하게도 데이터 과학자의 요청에 따라 자동으로 현재 사용하고 있는 학습 실행환경을 파악하고 방금 작성한 머신러닝 소스코드를 찾아 모델 하이퍼파라미터를 조합하여 YAML 파일을 작성한 후 쿠버네티스에 전달한다면 처음 제안드린 것과 같이 컨테이너화 작업 없이 데이터 과학자의 ML 코드를 쿠버네티스 위에서 실행할 수 있게 됩니다.
+만약 **어떤 ML툴**이 충분히 똑똑하게도 데이터 과학자의 요청에 따라 자동으로 현재 사용하고 있는 학습 실행환경(주피터 노트북 컨테이너 이미지)을 파악하고 데이터 과학자가 작성한 머신러닝 소스코드를 찾아 모델 하이퍼파라미터와 조합하여 YAML 파일을 작성한 후 쿠버네티스에 전달한다면 처음 제안드린 것과 같이 컨테이너화 작업 없이 데이터 과학자의 ML 코드를 쿠버네티스 위에서 실행할 수 있게 됩니다. 정말 이런 ML툴이 존재할까요? 
 
-## JupyterFlow를 소개합니다.
+---
 
-정말 이런 ML툴이 존재할까요? 네, 여러분께 [JupyterFlow](https://jupyterflow.com)를 소개합니다.
+## JupyterFlow
 
-![jupyterflow](https://raw.githubusercontent.com/hongkunyoo/jupyterflow/main/docs/images/architecture.png)
+### JupyterFlow를 소개합니다.
 
-JupyterFlow는 편리한 머신러닝을 위한 CLI 툴로써 쿠버네티스용 주피터 노트북 서버에 실치만 하면 현재 데이터 과학자가 사용하고 있는 도커 이미지와 작성한 소스코드와 모델 하이퍼파라미터를 조합하여 쿠버네티스의 워크플로우로 생성해줍니다.
-주피터 노트북에서 `hello.py`와 `world.py` 파일을 마음대로 작성하여 다음과 같이 실행하면 자동으로 쿠버네티스 워크플로우(Argo Workflow)를 실행해 줍니다.
+여러분께 [JupyterFlow (https://jupyterflow.com)](https://jupyterflow.com)를 소개합니다.
+
+![jupyterflow](/assets/images/jupyterflow/side.png)
+
+JupyterFlow는 편리한 머신러닝을 위한 CLI 툴로써 쿠버네티스용 주피터 노트북에 `pip` 설치만 하면 현재 데이터 과학자가 사용하고 있는 도커 이미지와 작성한 소스코드와 모델 하이퍼파라미터를 조합하여 쿠버네티스의 워크플로우로 생성해줍니다.
+다음과 같이 주피터 노트북에서 `hello.py`와 `world.py` 파일을 마음대로 작성하여 `jupyterflow` CLI를 통해 실행하면 자동으로 쿠버네티스 위에서 학습 파이프라인(Argo Workflow)을 생성해 줍니다.
 
 ```bash
+# 여기서 `>>` 지시자는 output redirection이 아니라 프로세스간의 종속성을 나타냅니다.
+# 마치 Airflow처럼 말이죠
 jupyterflow run -c "python hello.py >> python world.py"
 ```
 
-![](https://raw.githubusercontent.com/hongkunyoo/jupyterflow/main/docs/images/intro.png)
+방금 보신 코드를 실행한 결과는 다음과 같습니다.
 
+![실행결과](https://raw.githubusercontent.com/hongkunyoo/jupyterflow/main/docs/images/intro.png)
+
+JupyterFlow를 사용하면 데이터 과학자의 모델 개발 사이클은 다음과 같이 간편해집니다.
+
+- 주피터 허브를 통해 노트북을 런칭한다.
+- 주피터 노트북에서 모델을 개발한다.
+- 주피터 노트북에서 `jupyterflow` CLI를 통해 모델을 실행한다.
+
+그러면 나머지는 JupyterFlow가 알아서 데이터 과학자의 코드를 쿠버네티스 위에 실행 시켜줍니다. 어떤가요, 꽤나 간편하지 않나요?
+
+### JupyterFlow Architecture
+
+JupyterFlow의 큰 그림은 다음과 같습니다.
+
+![jupyterflow Architecture](/assets/images/jupyterflow/architecture.png)
+
+쿠버네티스 위에 주피터 허브가 구축되어 있고 [Argo Workflow](https://argoproj.github.io/argo/)가 설치되어 있습니다. Argo Workflow는 쿠버네티스에서 컨테이너 간의 종속성을 부여하여 작업흐름(Workflow)을 구성할 수 있게 만들어주는 [커스텀 컨트롤러](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)입니다.
+Argo Workflow를 설치하면 `Workflow`라는 CRD(CustomResourceDefinition)를 사용할 수 있게 됩니다. 간단한 `Workflow`의 YAML 예시는 다음과 같습니다.
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: hello-world-
+spec:
+  entrypoint: whalesay
+  templates:
+  - name: whalesay
+    container:
+      image: docker/whalesay
+      command: [cowsay]
+      args: ["hello world"]
+      resources:
+        limits:
+          memory: 32Mi
+          cpu: 100m
+```
+
+JupyterFlow의 역할은 주피터 노트북의 정보(`Pod` 정보 - 이미지 주소, NFS volume 등)를 수집하여 최종적으로 예시와 비슷한 `Workflow` YAML 파일을 생성하여 쿠버네티스 마스터로 전달합니다. JupyterFlow는 자기가 실행되고 있는 `Pod`의 정보를 추출하여 쿠버네티스 마스터에게 YAML을 전달해야 하기 때문에 쿠버네티스용 주피터 허브 위에서만 돌아갑니다.
+
+더 자세한 JupyterFlow 사용법은 아래 링크를 참고하시기 바랍니다.
+
+- [JupyterFlow 설치 방법](https://jupyterflow.com/scratch/)
+- [JupyterFlow 동작 원리](https://jupyterflow.com/how-it-works/)
+- [JupyterFlow 예제](https://jupyterflow.com/examples/basic/)
+- [JupyterFlow 고급설정](https://jupyterflow.com/configuration/)
+
+---
+
+**이제 JupyterFlow만 있으면 데이터 과학자들은 본인이 작성한 코드를 _컨테이너화 작업 없이_ 주피터 노트북에서 곧바로 쿠버네티스로 학습 파이프라인을 실행할 수 있습니다. 얼마나 멋진 일인가요?**
+
+여러분도 한번 JupyterFlow의 강력한 능력을 체험해 보시기 바랍니다!
+
+---
 
 ## 마치며
 
+JupyterFlow는 제가 시작한 오픈소스 프로젝트입니다. 아직 초기 단계이며 완벽히 검증되지 않았습니다. 그럼에도 불구하고 JupyterFlow가 가지는 굉장한 가능성을 보고 계속해서 조금씩 투자하고 있습니다.
+제가 확인했을 때는 아직까지 이런 방식의 해결 방법이 나온 사례나 프로젝트는 없으며 여전히 MLOps 진영에서는 절대적 강자의 ML툴이 나오지 않은 상황입니다.
+여러분도 이 글을 보시고 관심이 가거나 조금 더 살펴보고 싶으시다면 주저하지 마시고 언제든지 저에게 다양한 채널로 연락 부탁드립니다. 다양한 의견, 피드백, 비판 환영합니다.
