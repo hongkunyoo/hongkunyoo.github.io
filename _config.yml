@@ -25,3 +25,11 @@ plugins:
 # Details for the RSS feed generator
 url:            'https://coffeewhale.com'
 author:         'hongkunyoo'
+
+defaults:
+  # Posts defaults
+  - scope:
+      path: "" # an empty string here means all files in the project
+      type: posts # Apply the default values below only to posts
+    values:
+      image: /assets/images/landing/coffeewhale.png

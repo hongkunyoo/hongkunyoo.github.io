@@ -5,7 +5,9 @@
     <script type="text/javascript" src="/assets/js/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
     <script type="text/javascript" src="/assets/js/index.js"></script>
-
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"
+  integrity="sha256-VAvG3sHdS5LqTT+5A/aeq/bZGa/Uj04xKxY8KM/w9EE="
+  crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -15,11 +17,15 @@
            msg = decodeURIComponent(msg);
            console.log(msg);
            var obj = {'text': msg };
-           var url = 'aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVDBROUsxVEVZL0JOWUNQRUFRSy9jSXAwN1BFb2NKdGM1T0xVTU1Bd0tXQmU='
+           var url = 'aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVDBROUsxVEVZL0IwMUxOTVNTVFNOL1lXRDZyc0N0STBlTkRXV1R4Y2U3dUNRag=='
            $.ajax({
                url: atob(url),
                type: "POST",
                crossDomain: true,
+               headers: {
+                  "Access-Control-Allow-Origin": "*",
+                  "Access-Control-Allow-Credentials": "true"
+               },
                xhrFields: {
                            withCredentials: true
                },
@@ -32,7 +38,7 @@
                },
                error: function (xhr, status) {
                    console.log("error");
-                   $( "#msg" ).html("sent");
+                   $( "#msg" ).html("error");
                }
            });
        });
@@ -44,3 +50,5 @@
     </div>
 </body>
 </html>
+
+
