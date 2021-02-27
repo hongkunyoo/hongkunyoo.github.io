@@ -55,13 +55,14 @@ I think, **"it is possible"**. Yet on **one condition**.
 
 ### Developing model inside the container in the first place
 
-Let me explain in more detail. Current problem is that data scientis should build their container **by themself**. Then, what if we make a container first and provide that containerized environment to data scientist? If data scientist  writes their code inside the container in the first place, it would be much easier to run this code on Kubernetes. But how?
+Let me explain in more detail. Current problem is that data scientis should build their container **by themself**. Then, what if we make a container first and provide that containerized environment to data scientist? If data scientist  writes their code inside the container in the first place, it would be much easier to run this code on Kubernetes. But there are serveral problems.
 
-**How can we provide a containerized environment easily to data scientist?**
+1. **How can we provide a containerized environment easily to data scientist?**
+2. **How can we run a container on Kubernetes with already executed container?**
 
 ### JupyterHub on Kubernetes
 
-I find out [JupyterHub](https://jupyterhub.readthedocs.io) is our solution. JupyterHub is a platform that each user can launch their own jupyter notebook server respectively. There are many methods to setup JupyterHub but my approach only works on [JupyterHub on Kubernetes](https://zero-to-jupyterhub.readthedocs.io/en/latest/#setup-jupyterhub). From now on, I wil refer to JupyterHub as JupyterHub on Kubernetes.
+The solution for the first problem is [JupyterHub](https://jupyterhub.readthedocs.io). JupyterHub is a platform that each user can launch their own jupyter notebook server respectively. There are many methods to setup JupyterHub but my approach only works on [JupyterHub on Kubernetes](https://zero-to-jupyterhub.readthedocs.io/en/latest/#setup-jupyterhub). From now on, I wil refer to JupyterHub as JupyterHub on Kubernetes.
 
 The architecture of JupyterHub is following.
 
@@ -72,9 +73,15 @@ It might look complicated but you only need to focus on `Spawners` and `Pod`. Ev
 - `Pod` == Jupyter notebook server
 - ML code location == Shared Storage(NAS server)
 
-### Kubernetes based ML tool
+Data scientist can write their ML code on this containerized Jupyter server.
 
-Let's take a further look at Kubernetes based ML tool. After finishing model development, now is the time to scale one's ML job on Kubernetes. There are three important parts to run the code. "Model execute environment, ML code, Model hyper-parameter"
+### Re-runnging a executed container
+
+We need to solve the second problem. Even if you can manage to write code inside the container, we need to run that container on Kubernetes for training job. How can we run a container on Kubernetes that is already initiated? Kubernetes runs containers with image, not with executed container. Do we have to build a image from Jupyter notebook server? Not at all. There is a way to run your ML code without re-building your container.
+
+Using Shared Storage simply solves the problem. Because the code data scientist wrote gets stored in Shared Storage(NAS), you only need the connect that Shared Storage volume when you run your ML code on Kubernetes.
+
+Let's take a look at the basics of running ML code. There are three main parts. "Model execute environment, ML code, Model hyper-parameter".
 
 ```bash
 venv/bin/python train.py epoch=10 dropout=0.5
