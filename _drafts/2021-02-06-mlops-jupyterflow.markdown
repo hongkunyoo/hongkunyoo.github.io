@@ -55,10 +55,10 @@ I think, **"it is possible"**. Yet on **one condition**.
 
 ### Developing model inside the container in the first place
 
-Let me explain in more detail. Current problem is that data scientis should build their container **by themself**. Then, what if we make a container first and provide that containerized environment to data scientist? If data scientist  writes their code inside the container in the first place, it would be much easier to run this code on Kubernetes. But there are serveral problems.
+Let me explain in more detail. Current problem is that data scientis should build their container **by themself**. Then, what if we make a container first and provide that containerized environment to data scientist? If data scientist  writes their code inside the container in the first place, it would be much easier to run this code on Kubernetes. But there are some problems.
 
 1. **How can we provide a containerized environment easily to data scientist?**
-2. **How can we run a container on Kubernetes with already executed container?**
+2. **How can we deliver the ML code written inside a container to Kubernetes?**
 
 ### JupyterHub on Kubernetes
 
@@ -75,27 +75,25 @@ It might look complicated but you only need to focus on `Spawners` and `Pod`. Ev
 
 Data scientist can write their ML code on this containerized Jupyter server.
 
-### Re-runnging a executed container
+### Delivering the code
 
-We need to solve the second problem. Even if you can manage to write code inside the container, we need to run that container on Kubernetes for training job. How can we run a container on Kubernetes that is already initiated? Kubernetes runs containers with image, not with executed container. Do we have to build a image from Jupyter notebook server? Not at all. There is a way to run your ML code without re-building your container.
+Next, we need to solve the second problem. Even if we manage to write a code inside a container, we still need to deliver that code to Kubernetes for scalable training job. Do we have to re-build an image from Jupyter notebook server? Not at all. There is a way to deliver the ML code without re-building the container.
 
-Using Shared Storage simply solves the problem. Because the code data scientist wrote gets stored in Shared Storage(NAS), you only need the connect that Shared Storage volume when you run your ML code on Kubernetes.
+Using Shared Storage simply solves the problem. Because the code data scientist wrote gets stored in Shared Storage(NAS), you only need to connect that same Shared Storage volume when you run the code on Kubernetes.
 
-Let's take a look at the basics of running ML code. There are three main parts. "Model execute environment, ML code, Model hyper-parameter".
+Let's take a look at the basics of running ML code. There are three main parts. "Execution environment, ML code, Model hyper-parameter".
 
 ```bash
 venv/bin/python train.py epoch=10 dropout=0.5
 ```
 
-In this script, the three parts are followings:
-
-- Model execute env: `virtualenv` python environment(`venv`)
+- Execution Env: `virtualenv` python environment(`venv`)
 - ML code: `train.py`
 - Model H.P.: `epoch=10 dropout=0.5`
 
 If we could send these information to Kubernetes, data scientist can use k8s without any hard works. Suprisingly, you can get all these information on JupyterHub. Using the meta data of jupyter notebook `Pod` is the key.
 
-- Model execute env: jupyter notebook container image (`Pod.spec.containers.image`)
+- Execution Env: jupyter notebook container image (`Pod.spec.containers.image`)
 - ML code: ML code located on Shared volume (`Pod.spec.volumes`)
 - Model H.P.: parameter passed to ML tool
 
