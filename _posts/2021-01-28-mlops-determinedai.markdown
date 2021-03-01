@@ -127,4 +127,4 @@ entrypoint: model_def:CIFARTrial
 ## 마치며
 
 Determined AI에서 제시하는 해결책은 제가 생각하는 방법과 비교하여 추상화를 통해 데이터 과학자들이 직접 쿠버네티스를 조작하지 않고도 편리하게 머신러닝을 수행할 수 있는 방법이 필요하다는 점에서는 유사하나 구체적인 해결책으로 조금 다른 점이 있습니다.
-[다음 포스트](https://coffeewhale.com/kubernetes/mlops/2021/02/04/mlops-jupyterflow)에서는 제가 생각하는 해결 방법에 대해서 소개해 보고자 합니다.
+[다음 포스트](https://coffeewhale.com/kubernetes/mlops/2021/03/02/mlops-jupyterflow)에서는 제가 생각하는 해결 방법에 대해서 소개해 보고자 합니다.

@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "JupyterFlow - Better way to scale your ML job"
-date:   2021-02-06 00:00:00
+date:   2021-03-02 00:00:00
 categories: kubernetes mlops
 image: /assets/images/jupyterflow/landing.png
 ---
@@ -77,9 +77,9 @@ Data scientist can write their ML code on this containerized Jupyter server.
 
 ### Delivering the code
 
-Next, we need to solve the second problem. Even if we manage to write a code inside a container, we still need to deliver that code to Kubernetes for scalable training job. Do we have to re-build an image from Jupyter notebook server? Not at all. There is a way to deliver the ML code without re-building the container.
+Next, we need to solve the second problem. Even if we manage to write a code inside a container, we still need to deliver that code to Kubernetes to run a job. Do we have to re-build an image from Jupyter notebook server? Not at all. There is a way to deliver the ML code without re-building the container.
 
-Using Shared Storage simply solves the problem. Because the code data scientist wrote gets stored in Shared Storage(NAS), you only need to connect that same Shared Storage volume when you run the code on Kubernetes.
+Using Shared Storage simply solves the problem. Because the code, data scientist wrote, gets stored in Shared Storage(NAS), you only need to connect that same Shared Storage volume when you run a job on Kubernetes.
 
 Let's take a look at the basics of running ML code. There are three main parts. "Execution environment, ML code, Model hyper-parameter".
 
@@ -91,7 +91,7 @@ venv/bin/python train.py epoch=10 dropout=0.5
 - ML code: `train.py`
 - Model H.P.: `epoch=10 dropout=0.5`
 
-If we could send these information to Kubernetes, data scientist can use k8s without any hard works. Suprisingly, you can get all these information on JupyterHub. Using the meta data of jupyter notebook `Pod` is the key.
+If we could send these information to Kubernetes, data scientist can use k8s without any hard works. Suprisingly, you can get all these information from JupyterHub. Using the metadata of jupyter notebook `Pod` is the key.
 
 - Execution Env: jupyter notebook container image (`Pod.spec.containers.image`)
 - ML code: ML code located on Shared volume (`Pod.spec.volumes`)
@@ -99,7 +99,7 @@ If we could send these information to Kubernetes, data scientist can use k8s wit
 
 ![JupyterHub](/assets/images/jupyterflow/newpod.png)
 
-What if there is a ML tool which is smart enough to find the container image, ML code and H.P. from jupyter notebook `Pod` and constructs a Kubernetes manifest file and send it to k8s master, data scientist can run their ML code without **containerization job & writing k8s manifest**.
+What if there is a ML tool which is smart enough to find the container image, ML code and H.P. from jupyter notebook `Pod` and constructs a Kubernetes manifest file and send it to k8s master, then data scientist can run their ML code without **containerization job & writing k8s manifest**.
 
 **Is there really such a tool that can do this?**
 
@@ -212,7 +212,7 @@ Now with **JupyterFlow**, data scientist can write their code, run **right away*
 
 ## Wrap up
 
-JupyterFlow is my personal open source project. It is still in its early stage development which is imperfect and has some bugs. However, I believe JupyterFlow has its own great strengh and opportunity to change the ML tool field.
+JupyterFlow is my personal open source project. It is still in its early stage of development which is imperfect and has some bugs. However, I believe JupyterFlow has its own great strengh and opportunity to change the ML tool field.
 I have found out that there is no other similar appoach like JupyterFlow and the market still has no "De facto standard" ML tools. I am keep investing my spare time to improve this project.
 If you are interesting about this project, feel free to contact me by any means.
 

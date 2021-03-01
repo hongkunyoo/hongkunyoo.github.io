@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "데이터 과학자를 위한 ML툴"
-date:   2021-02-04 00:00:00
+date:   2021-03-02 00:00:00
 categories: kubernetes mlops
 image: /assets/images/jupyterflow/landing.png
 ---
