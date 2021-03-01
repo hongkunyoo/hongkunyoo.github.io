@@ -5,7 +5,7 @@ date:   2021-03-02 00:00:00
 categories: kubernetes mlops
 image: /assets/images/jupyterflow/landing.png
 ---
-지난 포스트 ["데이터 과학자들은 쿠버네티스에 관심이 없습니다"](https://coffeewhale.com/kubernetes/mlops/2021/01/28/mlops-determinedai)에 이어 제가 생각하는 좋은 해결책은 어떤 것인지에 대해 살펴 보도록 하겠습니다.
+지난 포스트 ["데이터 과학자들은 쿠버네티스에 관심이 없습니다"](https://coffeewhale.com/kubernetes/mlops/2021/01/28/mlops-determinedai)에 이어 제가 생각하는 좋은 툴은 어떤 것인지에 대해 살펴 보도록 하겠습니다.
 
 이전 포스트의 내용을 정리하자면 다음과 같습니다.
 
@@ -17,12 +17,12 @@ image: /assets/images/jupyterflow/landing.png
 
 ## 쿠버네티스 기반의 ML 툴을 사용하기 어려운 이유
 
-지난 포스트에서도 다뤘지만 다시 한번 짚고 넘어가자면 쿠버네티스 기반의 ML툴, 대표적으로 Kubeflow와 같은 프레임워크를 사용할 때 데이터 과학자가 느끼는 장벽은 크게 두가지입니다.
+앞선 포스트에서도 다뤘지만 다시 한번 짚고 넘어가자면 쿠버네티스 기반의 ML툴, 대표적으로 Kubeflow와 같은 프레임워크를 사용할 때 데이터 과학자가 느끼는 장벽은 크게 두가지입니다.
 
 - 자신의 코드를 **컨테이너화** 시키는 부분(도커 이미지 빌드 과정 및 실행)
 - 쿠버네티스 **매니페스트(manifest: YAML 파일)를 작성**하는 부분
 
-먼저 컨테이너화 시키는 부분부터 살펴 봅시다. 주피터 노트북에서든, Rstudio에서든, VS code에서든 자신의 모델을 코드로 작성하는 일은 데이터 과학자 누구나 잘하는 일입니다. 문제는 자신의 코드를 학습서버 / 운영서버 위로 배포할 때 발생합니다. 쿠버네티스 기반의 플랫폼 위로 본인의 코드를 올리기 위해서는 컨테이너화라는 작업이 필요하게 되는데 이것은 개발자를 위한 과정이지 데이터 과학자를 위한 과정은 아닙니다. 그렇기 때문에 데이터 과학자 입장에서는 이러한 작업이 어색하게 느껴질 수 있습니다. 쿠버네티스 매니페스트를 작성하는 것도 마찬가지입니다. 데이터 과학자가 굳이 신경 쓸 필요 없는 세부적인 인프라 설정 정보들을 입력해야 하고 규칙에 맞게 매니페스트 파일을 작성해야 합니다. 이를 해결하기 위해서 몇가지 방법들이 있습니다.
+먼저 컨테이너화 시키는 부분부터 살펴 봅시다. 자신의 모델을 코드로 작성하는 일은 데이터 과학자 누구나 잘하는 일입니다. 문제는 자신의 코드를 학습서버 / 운영서버 위로 배포할 때 발생합니다. 쿠버네티스 기반의 플랫폼 위로 본인의 코드를 올리기 위해서는 컨테이너화라는 작업이 필요하게 되는데 이것은 개발자를 위한 과정이지 데이터 과학자를 위한 과정은 아닙니다. 그렇기 때문에 데이터 과학자 입장에서는 이러한 작업이 어색하게 느껴질 수 있습니다. 쿠버네티스 매니페스트를 작성하는 것도 마찬가지입니다. 데이터 과학자가 굳이 신경 쓸 필요 없는 세부적인 인프라 설정 정보들을 입력해야 하고 규칙에 맞게 매니페스트 파일을 작성해야 합니다. 이를 해결하기 위해서 몇가지 방법들이 있습니다.
 
 ## 해결책
 
@@ -79,9 +79,9 @@ image: /assets/images/jupyterflow/landing.png
 
 2번째 문제가 남았습니다. 컨테이너 속에 데이터 과학자의 코드를 넣는 것까진 해결을 하였지만 이것을 어떻게 다시 쿠버네티스 위로 올릴 수 있을까요? 쿠버네티스는 기본적으로 빌드된 이미지를 실행할 뿐이지, 한번 실행된 컨테이너를 다시 실행하진 않습니다. 그렇다면 지금까지 사용한 컨테이너(주피터 노트북 서버)를 다시 이미지로 빌드해야 할까요? 그렇지 않습니다. 다시 이미지를 빌드하지 않고도 컨테이너 안에서 작성한 코드를 쿠버네티스로 전달할 수 있습니다.
 
-앞에서 언급한 Shared Storage를 사용하면 간단하게 해결됩니다. 데이터 과학자가 작성한 ML 코드는 Shared Storage(NAS)에 저장되기 때문에 새로운 Job을 실행 시킬 때 주피터 노트북에서 사용한 Shared Storage를 다시 Volume으로 연결 시키기만 하면 변경된 ML 코드를 그대로 사용할 수 있습니다.
+앞에서 언급한 Shared Storage를 사용하면 간단하게 해결됩니다. 데이터 과학자가 작성한 ML 코드는 Shared Storage(NAS)에 저장되기 때문에 쿠버네티스에 새로운 Job을 실행 시킬 때 주피터 노트북에서 사용한 Shared Storage를 다시 Volume으로 연결 시키기만 하면 변경된 ML 코드를 그대로 사용할 수 있습니다.
 
-다음 학습 스크립트를 살펴 봅시다. 머신러닝 코드를 실행할 때 필요한 정보는 크게 3가지 입니다. "모델 실행환경, 머신러닝 소스코드, 모델 하이퍼파라미터" 입니다.
+다음 학습 스크립트를 살펴 봅시다. 머신러닝 코드를 실행할 때 필요한 정보는 크게 3가지 입니다. 그것은 "모델 실행환경, 머신러닝 소스코드, 모델 하이퍼파라미터" 입니다.
 
 ```bash
 venv/bin/python train.py epoch=10 dropout=0.5
@@ -91,7 +91,7 @@ venv/bin/python train.py epoch=10 dropout=0.5
 - 머신러닝 소스코드: `train.py`
 - 모델 하이퍼파라미터: `epoch=10 dropout=0.5`
 
-이러한 정보들을 어떻게든 쿠버네티스에게 전달할 수만 있다면 별도의 이미지 빌드 작업 없이 바로 ML Job을 scalable하게 실행할 수 있을 것입니다. 재밌게도 주피터 허브를 활용하면 이러한 정보들을 손쉽게 알 수 있습니다. 주피터 노트북 `Pod`에 묻어나오는 메타데이터를 추출하면 됩니다.
+이러한 정보들을 어떻게든 쿠버네티스에게 전달할 수만 있다면 별도의 이미지 빌드 작업 없이 바로 ML Job을 scalable하게 쿠버네티스에서 실행할 수 있을 것입니다. 재밌게도 주피터 허브를 활용하면 이러한 정보들을 손쉽게 알 수 있습니다. 주피터 노트북 `Pod`에 묻어나오는 메타데이터를 추출하면 됩니다.
 
 - 모델 실행환경: 주피터 노트북 서버에서 사용한 이미지 (`Pod.spec.containers.image`)
 - 머신러닝 소스코드: 모델 소스코드가 저장된 Shared 볼륨 (`Pod.spec.volumes`)
@@ -160,7 +160,7 @@ JupyterFlow의 큰 그림은 다음과 같습니다.
 
 ![jupyterflow Architecture](/assets/images/jupyterflow/architecture.png)
 
-JupyterFlow를 사용하려면 두가지 컴포넌트가 필요합니다. 주피터 허브와 [Argo Workflow](https://argoproj.github.io/argo/)가 필요합니다. Argo Workflow는 쿠버네티스에서 컨테이너 간의 종속성을 부여하여 작업흐름(Workflow)을 구성할 수 있게 만들어주는 [커스텀 컨트롤러](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)입니다.
+JupyterFlow를 사용하려면 두가지 컴포넌트가 필요합니다. 주피터 허브와 [Argo Workflow](https://argoproj.github.io/argo-workflows/)가 필요합니다. Argo Workflow는 쿠버네티스에서 컨테이너 간의 종속성을 부여하여 작업흐름(Workflow)을 구성할 수 있게 만들어주는 [커스텀 컨트롤러](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)입니다.
 Argo Workflow를 설치하면 `Workflow`라는 CRD(CustomResourceDefinition)를 사용할 수 있게 됩니다. 간단한 `Workflow`의 YAML 예시는 다음과 같습니다.
 
 ```yaml
@@ -204,7 +204,7 @@ JupyterFlow의 역할은 주피터 노트북의 정보(`Pod` 메타정보 - 이�
 
 더 자세한 JupyterFlow에 대한 설명은 JupyterFlow Docs를 참고해 주시기 바랍니다.
 
-- [JupyterFlow 설치 방법](https://jupyterflow.com/scratch/)
+- [JupyterFlow 설치 방법](https://jupyterflow.com/jupyterhub/)
 - [JupyterFlow 동작 원리](https://jupyterflow.com/how-it-works/)
 - [JupyterFlow 예제](https://jupyterflow.com/examples/basic/)
 - [JupyterFlow 고급설정](https://jupyterflow.com/configuration/)

@@ -158,7 +158,7 @@ This is the architecture of JupyterFlow.
 
 ![jupyterflow Architecture](/assets/images/jupyterflow/architecture.png)
 
-To use JupyterFlow, you need two main components. JupyterHub and [Argo Workflow](https://argoproj.github.io/argo). Argo Workflow is a [custom controller](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources) which let user to define dependencies between containers to make a workflow. You can use a new CRD(CustomResourceDefinition) called `Workflow` when you install Argo Workflow. Simple `Workflow` example looks like this:
+To use JupyterFlow, you need two main components. JupyterHub and [Argo Workflow](https://argoproj.github.io/argo-workflows). Argo Workflow is a [custom controller](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources) which let user to define dependencies between containers to make a workflow. You can use a new CRD(CustomResourceDefinition) called `Workflow` when you install Argo Workflow. Simple `Workflow` example looks like this:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -201,7 +201,7 @@ If there is a difference, Zeppelin & Spark has its own job submitting mechanism(
 
 For more details, please refer to the following JupyterFlow documentations.
 
-- [JupyterFlow Installation](https://jupyterflow.com/scratch/)
+- [JupyterFlow Installation](https://jupyterflow.com/jupyterhub/)
 - [JupyterFlow How it works](https://jupyterflow.com/how-it-works/)
 - [JupyterFlow Examples](https://jupyterflow.com/examples/basic/)
 - [JupyterFlow Configuration](https://jupyterflow.com/configuration/)
