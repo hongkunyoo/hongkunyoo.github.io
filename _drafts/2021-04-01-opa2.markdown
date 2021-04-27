@@ -1,0 +1,25 @@
+---
+layout: post
+title:  "쿠버네티스 Admission Control #2 - Open Policy Agent"
+date:   2021-04-01 00:00:00
+categories: kubernetes opa
+image: /assets/images/?
+---
+지난 블로그 포스트에서는 쿠버네티스의 전반적인 [Authentication](https://coffeewhale.com/kubernetes/authentication/x509/2020/05/02/auth01/)에 대해서 살펴 보았습니다. 이번에는 쿠버네티스의 Admission Control에 대한 내용을 다뤄볼까 합니다.
+이번 포스트에서는 Admission Controller가 무엇인지 알아보고 직접 custom webhook을 구현해 보는 시간을 가져보겠습니다.
+
+
+## Open Policy Agent
+
+OPA는 admin에게 체계적이고 세밀한(fine-graded) 권한관리를 손쉽게 할 수 있게 Policy를 제공하는 오픈소스입니다. OPA는 쿠버네티스 뿐만 아니라 OPA 엔진을 수용하는 어떠한 플랫폼 위에서 동작합니다. OPA는 실제로 요청을 막는 메커니즘은 구현되어 있지 않습니다. 그것은 각 플랫폼마다 다르기 때문에 그 플랫폼의 메커니즘을 그대로 사용합니다. 대신 OPA는 사용자가 작성한 Policy를 읽고 해당 요청을 허용할지 반려할지를 마킹합니다. 실제 플랫폼에서는 마킹된 내용을 기반하여 실제 동작을 수행합니다.
+
+앞서 살펴본 flask webhook을 살펴 보겠습니다. 해당 webhook도 쿠버네티스(플랫폼)에게 단지 들어온 요청을 반려할지 말지를 마킹만(`response.allowed`) 하였고 실제 동작은 쿠버네티스에서 일어났습니다. 이와 마찬가지로 OPA도 사용자가 작성한 Policy를 기반하여 플랫폼에게 Admission Control의 결과를 마킹합니다. OPA는 다양한 플랫폼에서 동작한다고 설명하였는데 이 포스트에서는 쿠버네티스에서의 사용을 위주로 설명드립니다.
+
+### Rego Language
+
+OPA의 역할은 사용자의 Policy를 읽어들여 그 정책에 맞게 통과시킬지 반려할지를 결정한다고 하였습니다. OPA에서는 사용자의 정책을 Rego라는 query language를 이용하여 표현합니다. Rego는 일반적인 imperative 언어와는 조금 다르게 동작합니다. 선언적으로 표현되기 때문에 초기 Rego 언어를 이해하는데 조금 시간이 걸립니다. OPA에서는 편리하게 자신이 만든 Policy를 검증해 볼 수 있게 [Rego Playground](https://play.openpolicyagent.org)라는 온라인 Query 테스트기를 제공합니다.
+
+![](rego-playground.png)
+
+좌측 패널은 사용자가 직접 Policy를 작성해 볼 수 있는 editor 공간입니다. 우측 상단은 input으로 들어올 JSON 객체를 정의합니다. 마지막으로 우측 하단은 `Evaluate`이라는 버튼을 눌렀을 때 Policy의 결과가 나오는 output 패널입니다.
+

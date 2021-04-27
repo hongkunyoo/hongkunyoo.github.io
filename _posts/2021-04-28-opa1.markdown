@@ -1,0 +1,365 @@
+---
+layout: post
+title:  "쿠버네티스 Admission Control #1"
+date:   2021-04-28 00:00:00
+categories: kubernetes admission-control
+image: /assets/images/opa/landing-ac.png
+---
+지난 블로그 포스트에서는 쿠버네티스의 전반적인 [Authentication](https://coffeewhale.com/kubernetes/authentication/x509/2020/05/02/auth01/)에 대해서 살펴 보았습니다. 이번에는 쿠버네티스의 Admission Control에 대한 내용을 다뤄볼까 합니다.
+이번 포스트에서는 Admission Controller가 무엇인지 알아보고 직접 custom webhook을 구현해 보는 시간을 가져보겠습니다.
+
+## Admission Control란?
+
+쿠버네티스 접근제어에는 크게 3단계가 있습니다.
+
+![](https://coffeewhale.com/assets/images/k8s-auth/01-01.png)
+
+- Authentication: 접속한 사람의 신분을 시스템이 인증하는 단계입니다. (신분증 확인)
+- Authorization: 누가 어떤 권한을 가지고 어떤 행동을 할 수 있는지 확인하는 단계입니다. (view권한, create권한 등)
+- Admission Control: 인증과 권한확인 이후에 추가적으로 요청 내용에 대한 검증이나 요청 내용을 강제로 변경할 때 사용합니다.
+
+언뜻 살펴보면 Authorization과 Admission Control 단계가 크게 다르지 않게 보입니다. 쿠버네티스에 Authorization 단계가 존재한다면 굳이 Admission Control을 수행하는 이유는 무엇일까요?
+
+Authorization 단계는 말그대로 사용자가 특정 작업을 수행할 때 어떤 권한이 있는지를 확인하는 단계입니다. 반대로 Admission Control은 권한이 있는 사용자에 한해서 관리자(Admin)가 추가로 특정 행동을 제한(validate) 혹은 변경(mutate)하는 작업입니다. 예를 들어, 어떤 사람이 미술 전시관을 관람한다고 생각해 봅시다. 그 사람은 전시관 입구에서 신원확인(Authentication)을 받은 후 표 검사를 통해 입장할 수 있는 허가(Authorization)를 받습니다. 그렇다고 해서 그 사람이 전시품을 마음대로 만지거나 훼손할 수 있는 것은 아니기에 전시장에서 전시품을 만지는 행동을 제한(validating admission control) 받거나 목소리를 낮추도록(mutating admission control) 요구 받습니다. 이것이 Admission Control입니다. 관리자의 정책에 따라 세부적인 작업을 제한하거나 변경 시키는 것입니다. 쉽게 생각해서 Authorization은 큰 단위의 권한 체계, Admission Control은 그 안에서의 세부 지침 사항이라고 이해하면 좋겠습니다.
+
+### Admission Controller Plugins
+
+Admission Controller란 관리자의 특정 정책을 수행하는 주체, 다시 말해 Admission Control을 수행하는 주체입니다. 쿠버네티스에는 다양한 Admission Controller들이 존재하는데요. 쿠버네티스 버전마다 조금씩 default로 설정된 Admission Controller들이 다릅니다. 대표적인 것이 `LimitRange`와 `ResourceQuota` 등이 있습니다. 관리자에 의해 정해진 리소스를 초과하는 경우(관리자의 특정 정책) `Pod` 생성을 막아버리는 기능(작업 제한)이라 볼 수 있습니다. 그 외에 다양한 Admission Controller들을 [다음 페이지에서 확인](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/)해 보시기 바랍니다.
+
+### Dynamic Admission Controller
+
+쿠버네티스의 많은 컴포넌트들이 그렇듯이 Admission Control도 Webhook으로 사용자에게 API가 열려 있습니다. 쿠버네티스가 정의한 인터페이스만 잘 맞춘다면 사용자는 자신만의 Admission Controller를 구현할 수 있습니다. 쿠버네티스에서는 이것을 Dynamic Admission Controller 라고 부르고 크게 `MutatingWebhook`과 `ValidatingWebhook`으로 나뉩니다.
+
+![](/assets/images/opa/admission-controller-phases.png)
+출처: https://kubernetes.io/blog/2019/03/21/a-guide-to-kubernetes-admission-controllers
+
+- `MutatingWebhook`은 사용자가 요청한 request에 대해서 관리자가 임의로 값을 변경하는 작업입니다. 예를 들어, 사용자가 아무리 다른 `ServiceAccount`를 사용하더라도 무조건 default `ServiceAccount`를 사용하게끔 강제하는 경우 사용할 수 있습니다. resource 설정도 마찬가지입니다. 사용자의 요청과는 무관하게 관리자가 임의로 정의해 놓은 사용량으로 resource를 강제할 수 있습니다.
+- `ValidatingWebhook`은 사용자가 요청한 request에 대해서 관리자기 허용을 막는 작업입니다. 예를 들어, 사용자가 default `ServiceAccount`를 사용하지 않는 경우 에러 메세지와 함께 요청을 반려하고 싶은 경우 사용할 수 있습니다. 혹은 관리자가 제공하는 도커 이미지 레포지토리 이외에 외부 저장소의 이미지를 사용하는 경우 관리자가 임의로 요청을 반려할 수도 있습니다.
+
+Dynamic Admission Controller의 순서는 위와 같습니다. 먼저 관리자의 정책대로 요청을 변경한 이후 이것이 쿠버네티스 리소스 요청에 부합한지를 먼저 체크합니다. 그 이후에 validating admission 과정에서 최종적으로 요청한 request가 유효(valid)한지 검증합니다. validating admission까지 전부 통과한 request에 대해서는 etcd로 요청이 저장되어 이후에 controller에 의해 후속 작업이 진행됩니다.
+
+Webhook(Dynamic Admission Controller)을 구현하기 전에 intput/output 인터페이스를 잠깐 살펴 봅시다.
+
+#### Input 인터페이스
+
+`MutatingWebhook`과 `ValidatingWebhook`의 Input은 다음과 같이 동일합니다.
+
+사용자가 새로운 `Pod`를 하나 생성하게 되면 아래와 같은 `AdmissionReview`라는 `json` 객체가 Dynamic Admission Controller로 전달이 됩니다.
+
+```json
+{
+  "kind": "AdmissionReview",
+  "apiVersion": "admission.k8s.io/v1beta1",
+  "request": {
+    "kind": {
+      "group": "",
+      "version": "v1",
+      "kind": "Pod"
+    },
+    "resource": {
+      "group": "",
+      "version": "v1",
+      "resource": "pods"
+    },
+    "namespace": "default",
+    "operation": "CREATE",
+    "userInfo": {
+      "username": "system:serviceaccount:default:default",
+      "uid": "439dea65-3e4e-4fa8-b5f8-8fdc4bc7cf53",
+      "groups": [
+        "system:serviceaccounts",
+        "system:serviceaccounts:default",
+        "system:authenticated"
+      ]
+    },
+    "object": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "creationTimestamp": "2019-08-13T16:01:54Z",
+        "generateName": "nginx-7bb7cd8db5-",
+        "name": "nginx-7bb7cd8db5-dbplk",
+        "namespace": "default",
+      },
+      "spec": {
+        "containers": [
+          {
+            "image": "nginx",
+            "imagePullPolicy": "Always",
+            "name": "nginx",
+          }
+        ]
+      },
+      "status": {
+        "phase": "Pending",
+        "qosClass": "BestEffort"
+      }
+    },
+    "oldObject": null
+  }
+}
+```
+
+여기서 눈여겨 볼 property는 다음과 같습니다.
+
+- `request`: 사용자가 요청한 전체 스펙
+    - `kind`: 요청한 쿠버네티스 리소스 종류 (예시에서는 `Pod`를 요청함)
+    - `operation`: Create / Read / Update / Delete 등 연산 내용
+    - `userInfo`: 요청한 사용자의 정보
+    - `object`: 실제 리소스 스펙 (`Pod` 상세 스펙)
+
+사용자는 Webhook의 파라미터로 전달되는 `AdmissionReview` 객체의 전체 요청사항을 파악하여 적절하게 판단(mutate or validate)을 합니다. 판단이 완료되면 다시 쿠버네티스쪽으로 Admission Control의 결과를 반환해야 합니다.
+리턴값도 동일하게 `AdmissionReview` 객체를 전달하게 됩니다.
+
+#### Validating Admission Output
+
+Validating admission의 리턴값은 간단합니다. 파라미터로 전달된 `AdmissionReview` 객체를 보고 최종적으로 허가를 할지 반려할지는 `response.allowed` 값을 설정하기만 하면 됩니다.
+
+```json
+{
+  "apiVersion": "admission.k8s.io/v1",
+  "kind": "AdmissionReview",
+  "response": {
+    "allowed": true,
+  }
+}
+```
+
+`allowed`값이 `true`로 반환이 되면 정상적으로 허용이 되는 것이고 반대로 `false`면 반려가 됩니다.
+
+#### Mutating Admission Output
+
+Mutating admission에서는 한가지만 더 추가하면 되는데요. 변경(mutating)하려는 정보를 JSONPath 형식의 `json`을 base64로 인코딩하여 `patch`라는 property에 추가하면 됩니다.
+
+```json
+{
+  "apiVersion": "admission.k8s.io/v1",
+  "kind": "AdmissionReview",
+  "response": {
+    "allowed": true,
+    "patchType": "JSONPatch",
+    "patch": "W3sib3AiOiAiYWRkIiwgInBhdGgiOiAiL3NwZWMvcmVwbGljYXMiLCAidmFsdWUiOiAzfV0="
+  }
+}
+```
+
+위의 리턴값은 `metadata.annotations.foo`라는 위치에 `bar`이라는 값으로 변경(mutate)하게 만듭니다. 실제로 위의 patch값을 base64로 디코딩하면 다음과 같은 정보가 출력됩니다.
+
+```bash
+echo -ne W3sib3AiOiAiYWRkIiwgInBhdGgiOiAiL3NwZWMvcmVwbGljYXMiLCAidmFsdWUiOiAzfV0= | base64 -d
+# {"op": "add", "path": "/metadata/annotations/foo", "value": "bar"}
+```
+
+### Example
+
+그럼 직접 Webhook을 구현해 봅시다. Dynamic Admission Controller는 서비스 형태로 존재합니다. 그래서 간단한 웹서버를 만들어야 합니다. 한가지 특징은 통신이 HTTPS로 동작합니다. 이를 위해 자체적인 Certificate을 생성합니다.
+
+#### Self-signed Certificate
+
+다음과 같은 명령을 이용하여 Self-signed Certificate을 만듭니다. 여기서 중요한 것은 Server Certificate의 `CN`의 값이 `webhook.default.svc`라는 것입니다. 나중에 쿠버네티스 `Servie`를 생성할 때 도메인 이름을 이와 동일하게 맞춰줘야 합니다. (`default` 네임스페이스의 `webhook`이라는 Service 생성)
+
+```bash
+openssl genrsa -out ca.key 2048
+openssl req -x509 -new -nodes -key ca.key -days 100000 -out ca.crt -subj "/CN=admission_ca"  # 이것은 Certificate Authority의 CN입니다.
+
+# Server Certificate을 만들기 위한 설정 파일을 생성합니다. 여기서 CN이 webhook.default.svc인 것을 확인할 수 있습니다.
+cat >server.conf <<EOF
+[req]
+req_extensions = v3_req
+distinguished_name = req_distinguished_name
+prompt = no
+[req_distinguished_name]
+CN = webhook.default.svc
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = clientAuth, serverAuth
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = webhook.default.svc
+EOF
+
+openssl genrsa -out server.key 2048
+openssl req -new -key server.key -out server.csr -config server.conf
+openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 100000 -extensions v3_req -extfile server.conf
+```
+
+#### Webhook handler
+
+파이썬 flask를 이용하여 간단한 웹 서비스를 만듭니다. 
+
+- URI: `/`
+- Method: `POST`
+
+input값으로 위에서 살펴본 `AdmissionReview` json 객체가 들어옵니다. 예시에서는 동작 여부를 빠르게 확인해 보기 위해 모든 `Pod` 생성을 반려하도록 구성하였습니다.
+HTTPS 통신을 위한 TLS 설정도 추가하였습니다.
+
+```python
+from flask import Flask, request
+import ssl
+
+
+app = Flask(__name__)
+
+@app.route('/', methods=['POST'])
+def webhook():    
+    # validate from INPUT data
+    result = validate(request.json)
+ 
+    return {
+      "kind": "AdmissionReview",
+      "apiVersion": "admission.k8s.io/v1beta1",
+      "response": {
+        "allowed": result,
+        "status": {
+          "reason": "Pod create not allowed"
+        }
+      }
+}
+
+
+def validate(review):
+    # denying Pod creating
+    if (review['request']['object']['kind'] == 'Pod') and \
+        (review['request']['operation'] == 'CREATE'):
+        return False  # Deny
+    return True       # Accept
+
+
+##################################
+# Webhook needs to serve TLS
+##################################
+context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+context.load_verify_locations('./ca.crt')
+context.load_cert_chain('./server.crt', './server.key')
+
+app.run(host='0.0.0.0', debug=True, ssl_context=context)
+```
+
+이제 쿠버네티스 위에서 `Service` 형태로 만들기 위해 도커 이미지를 생성합니다. 간단하게 flask를 설치하고 flask 스크립트와 필요한 X.509 파일들을 추가합니다.
+
+```Dockerfile
+FROM python:3.7
+
+RUN pip install flask
+
+ADD main.py .
+ADD server.key .
+ADD server.crt .
+ADD ca.crt .
+
+
+CMD ["python", "-u", "main.py"]
+```
+
+```bash
+docker build . -t <YOUR_WEBHOOK_IMAGE>
+docker push <YOUR_WEBHOOK_IMAGE>
+```
+
+생성한 webhook 이미지를 쿠버네티스에 배포합니다. 이때 중요한 것은 `Service`의 정보입니다. 앞에서 정의한 `CN`과 동일하게 `default` 네임스페이스의 `webhook` 이름으로 생성합니다.
+
+```yaml
+# webhook.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: webhook
+  namespace: default
+spec:
+  selector:
+    app: webhook
+  ports:
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 5000
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: webhook
+  labels:
+    app: webhook
+spec:
+  containers:
+  - name: webhook
+    image: <YOUR_WEBHOOK_IMAGE>
+```
+
+```bash
+kubectl apply -f webhook.yaml
+```
+
+#### `ValidatingWebhookConfiguration`
+
+쿠버네티스로 들어오는 요청들을 방금 생성한 `Service`로 전달해주기 위해 `WebhookConfiguration`을 설정합니다. 크게 4가지 정보를 합니다.
+
+- `name`: webhook의 이름을 정의합니다.
+- `namespaceSelector`: 특정 네임스페이스에 대해서는 validation을 수행하지 않게 만듭니다.
+- `rules`: 어떤 리소스에 대해서 validation할지 정의합니다.
+- `clientConfig`: 어떤 webhook 서버로 보낼지 지정합니다. 자체 인증한(self-signed) 인증서이기 때문에 CA(Certificate Authority) certificate을 지정해 줍니다.
+
+```yaml
+# validatingwebhook.yaml
+kind: ValidatingWebhookConfiguration
+apiVersion: admissionregistration.k8s.io/v1beta1
+metadata:
+  name: val-webhook
+webhooks:
+  - name: val-webhook.coffeewhale.com
+    namespaceSelector:
+      matchExpressions:
+      - key: openpolicyagent.org/webhook
+        operator: NotIn
+        values:
+        - ignore
+    rules:
+      - operations: ["CREATE"]
+        apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+    clientConfig:
+      caBundle: $(cat ca.crt | base64 | tr -d '\n')
+      service:
+        namespace: default
+        name: webhook
+```
+
+```bash
+kubectl apply -f validatingwebhook.yaml
+```
+
+`kube-system`에서 발생하는 요청에 대해서는 validation을 수행하지 않게 적절한 라벨을 네임스페이스 부여합니다.
+
+```bash
+kubectl label ns kube-system openpolicyagent.org/webhook=ignore
+```
+
+`ValidatingWebhook`을 테스트해 봅니다. 간단한 nginx `Pod`를 생성하였을 때 어떻게 되는지 확인해 봅시다.
+
+```bash
+kubectl run mynginx --image nginx --restart Never
+# 
+```
+
+예상대로 모든 `Pod` 생성에 대한 요청이 반려되는 것을 확인할 수 있습니다. 이번에는 `kube-system`에 동일한 `Pod`를 생성해 봅니다.
+
+```bash
+kubectl run mynginx --image nginx --restart Never -n kube-system
+# 
+```
+
+이전과는 다르게 `Pod`가 정상적으로 실행되는 것을 확인할 수 있습니다. `kube-system`에서는 validation이 동작하지 않도록 설정하였기 때문입니다.
+
+### Cleanup
+
+```bash
+kubectl delete -f validatingwebhook.yaml
+kubectl delete -f webhook.yaml
+kubectl delete pod mynginx -nkube-system
+```
+
+## 마치며
+
+지금까지 직접 Validating Webhook 서버를 구현해 보면서 쿠버네티스의 Dynamic Admission Control이 어떤 방식으로 동작하는지 살펴 보았습니다. 사용자가 직접 Webhook을 구현하면 장단점이 있습니다. 장점으로는 사용자가 원하는대로 validation을 체크할 수 있습니다. 내부 DB를 사용해도 되고 외부 리소스를 호출하여 활용할 수도 있습니다. 반대로 단점은 간단한 validation 체크를 위해 직접 웹 서버를 구축해야하고 매번 빌드를 하여 적용해야 합니다. Open Policy Agent(이하 OPA)는 이러한 단점을 보완하고 체계적으로 사용자 권한을 관리하고자 만들어진 CNCF graduated 오픈소스 프로젝트입니다. 다음 포스트에서는 Open Policy Agent를 통해서 효율적으로 Admission Control을 수행하는 방법에 대해서 살펴보도록 하겠습니다.
