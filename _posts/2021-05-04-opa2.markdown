@@ -1,11 +1,16 @@
 ---
 layout: post
 title:  "쿠버네티스 Admission Control #2 - Open Policy Agent"
-date:   2021-05-01 00:00:00
+date:   2021-05-04 00:00:00
 categories: kubernetes admission-control
 image: /assets/images/opa/landing-ac.png
 ---
 [지난 쿠버네티스 Admission Control #1](https://coffeewhale.com/kubernetes/admission-control/2021/04/28/opa1/)에서는 Admission Control의 개념에 대해 알아보았고 직접 Custom Admission Control을 만들어 봤습니다. 이번 시간에는 General Policy Controller인 Open Policy Agent(OPA)에 대해서 알아보고 OPA Policy를 이용하여 사용자의 세부 사용성을 관리해 보겠습니다.
+
+쿠버네티스 Admission Control 시리즈
+1. [사용자 Webhook](https://coffeewhale.com/kubernetes/admission-control/2021/04/28/opa1/): 사용자가 직접 webhook을 구현함으로써 세밀한 접근관리를 수행합니다.
+2. Open Policy Agent: OPA의 개념과 그 Query 언어인 Rego에 대해서 살펴 봅니다.
+3. Open Policy Agent 적용: OPA를 직접 쿠버네티스에 적용해 봅니다.
 
 ## Open Policy Agent란?
 
@@ -22,7 +27,7 @@ Policy를 Admission enforcement로부터 분리(decouping)했을 때의 이점�
 - 정책을 정의하고 유지보수하는 작업을 줄일 수 있습니다.
 
 ![](/assets/images/opa/opa.png)
-출처: https://www.openpolicyagent.org/docs/latest
+*출처: [https://www.openpolicyagent.org/docs/latest](https://www.openpolicyagent.org/docs/latest)*
 
 OPA의 전반적인 모습은 위와 같습니다. `Service`라고 표현되어 있는 부분이 OPA를 사용하는 플랫폼입니다. 여기서는 쿠버네티스가 되겠죠. Service는 OPA 엔진에게 요청에 대해서 허용 여부를 질의합니다. 이때 사용되는 인터페이스는 JSON 객체입니다. (Part#1에서 살펴 본 webhook의 input, output 인터페이스를 생각하면 됩니다.) 질의를 요청 받은 OPA는 저장된 Policy를 불러와서 요청에 대해 평가(evaluate)하고 그 결과를 다시 JSON 형식으로 Service에 반환합니다.
 

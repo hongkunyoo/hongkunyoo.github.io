@@ -8,6 +8,12 @@ image: /assets/images/opa/landing-ac.png
 지난 블로그 포스트에서는 쿠버네티스의 전반적인 [Authentication](https://coffeewhale.com/kubernetes/authentication/x509/2020/05/02/auth01/)에 대해서 살펴 보았습니다. 이번에는 쿠버네티스의 Admission Control에 대한 내용을 다뤄볼까 합니다.
 이번 포스트에서는 Admission Controller가 무엇인지 알아보고 직접 custom webhook을 구현해 보는 시간을 가져보겠습니다.
 
+쿠버네티스 Admission Control 시리즈
+1. 사용자 Webhook: 사용자가 직접 webhook을 구현함으로써 세밀한 접근관리를 수행합니다.
+2. [Open Policy Agent](https://coffeewhale.com/kubernetes/admission-control/2021/05/04/opa2/): OPA의 개념과 그 Query 언어인 Rego에 대해서 살펴 봅니다.
+3. Open Policy Agent 적용: OPA를 직접 쿠버네티스에 적용해 봅니다.
+
+
 ## Admission Control란?
 
 쿠버네티스 접근제어에는 크게 3단계가 있습니다.
@@ -31,7 +37,7 @@ Admission Controller란 관리자의 특정 정책을 수행하는 주체, 다�
 쿠버네티스의 많은 컴포넌트들이 그렇듯이 Admission Control도 Webhook으로 사용자에게 API가 열려 있습니다. 쿠버네티스가 정의한 인터페이스만 잘 맞춘다면 사용자는 자신만의 Admission Controller를 구현할 수 있습니다. 쿠버네티스에서는 이것을 Dynamic Admission Controller 라고 부르고 크게 `MutatingWebhook`과 `ValidatingWebhook`으로 나뉩니다.
 
 ![](/assets/images/opa/admission-controller-phases.png)
-출처: https://kubernetes.io/blog/2019/03/21/a-guide-to-kubernetes-admission-controllers
+*출처: [https://kubernetes.io/blog/2019/03/21/a-guide-to-kubernetes-admission-controllers](https://kubernetes.io/blog/2019/03/21/a-guide-to-kubernetes-admission-controllers)*
 
 - `MutatingWebhook`은 사용자가 요청한 request에 대해서 관리자가 임의로 값을 변경하는 작업입니다. 예를 들어, 사용자가 아무리 다른 `ServiceAccount`를 사용하더라도 무조건 default `ServiceAccount`를 사용하게끔 강제하는 경우 사용할 수 있습니다. resource 설정도 마찬가지입니다. 사용자의 요청과는 무관하게 관리자가 임의로 정의해 놓은 사용량으로 resource를 강제할 수 있습니다.
 - `ValidatingWebhook`은 사용자가 요청한 request에 대해서 관리자기 허용을 막는 작업입니다. 예를 들어, 사용자가 default `ServiceAccount`를 사용하지 않는 경우 에러 메세지와 함께 요청을 반려하고 싶은 경우 사용할 수 있습니다. 혹은 관리자가 제공하는 도커 이미지 레포지토리 이외에 외부 저장소의 이미지를 사용하는 경우 관리자가 임의로 요청을 반려할 수도 있습니다.
@@ -365,4 +371,4 @@ kubectl delete pod mynginx -n kube-system
 
 ## 마치며
 
-지금까지 직접 Validating Webhook 서버를 구현해 보면서 쿠버네티스의 Dynamic Admission Control이 어떤 방식으로 동작하는지 살펴 보았습니다. 사용자가 직접 Webhook을 구현하면 장단점이 있습니다. 장점으로는 사용자가 원하는대로 세밀하게 validation을 체크할 수 있습니다. 내부 DB를 사용해도 되고 외부 리소스를 호출하여 활용할 수도 있습니다. 반대로 단점은 간단한 validation 체크를 위해 직접 웹 서버를 구축해야하고 매번 빌드하여 적용해야 합니다. Open Policy Agent(이하 OPA)는 이러한 단점을 보완하고 체계적으로 admission을 관리하고자 만들어진 CNCF graduated 프로젝트입니다. 다음 포스트에서는 Open Policy Agent를 통해서 효율적으로 Admission Control을 수행하는 방법에 대해서 살펴보도록 하겠습니다.
+지금까지 직접 Validating Webhook 서버를 구현해 보면서 쿠버네티스의 Dynamic Admission Control이 어떤 방식으로 동작하는지 살펴 보았습니다. 사용자가 직접 Webhook을 구현하면 장단점이 있습니다. 장점으로는 사용자가 원하는대로 세밀하게 validation을 체크할 수 있습니다. 내부 DB를 사용해도 되고 외부 리소스를 호출하여 활용할 수도 있습니다. 반대로 단점은 간단한 validation 체크를 위해 직접 웹 서버를 구축해야하고 매번 빌드하여 적용해야 합니다. Open Policy Agent(이하 OPA)는 이러한 단점을 보완하고 체계적으로 admission을 관리하고자 만들어진 CNCF graduated 프로젝트입니다. [다음 포스트](https://coffeewhale.com/kubernetes/admission-control/2021/05/04/opa2/)에서는 Open Policy Agent를 통해서 효율적으로 Admission Control을 수행하는 방법에 대해서 살펴보도록 하겠습니다.
