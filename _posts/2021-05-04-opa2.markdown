@@ -63,6 +63,8 @@ dict := {
 
 여기까지는 여느 언어와 비슷하게 보입니다. 다음으로 Rule이라는 개념에 대해서 소개합니다. Rule은 일반적인 imperative 언어와는 조금 다르기 때문에 처음 봤을 때부터 이해하기에 조금 어려울 수도 있습니다. 필자도 처음 Rule이라는 개념을 처음 접했을 때 이해하는데 시간이 걸렸고 솔직히 지금도 완벽하게 이해하였다고 말하기 힘들 것 같습니다. 그렇다고 너무 겁 먹으실 필요는 없습니다. 기본개념 자체는 간단합니다. 단지 익숙하지 않을 뿐입니다.
 
+### Rule
+
 Rule은 Rego 언어에서의 기본 평가 단위입니다. 먼저 아래 표현식을 살펴 봅시다.
 
 ```bash
@@ -348,7 +350,7 @@ is_in_myset {
 
 ### Build-in keyword
 
-Playground에서 직접 테스트를 진행해 보기 전에 한가지 내용만 더 설명드리겠습니다. OPA에는 Build-in keyword가 몇가지 있는데 그중에 `input`이라는 녀석이 존재합니다. 해당 document는 사용자로부터 들어오는 input JSON 객체를 의미합니다.
+Playground에서 직접 테스트를 진행해 보기 전에 한 가지 내용만 더 설명 드리겠습니다. OPA에는 Build-in keyword가 몇 가지 있는데 그 중에 `input`이라는 녀석이 존재합니다. 해당 키워드는 사용자로부터 들어오는 input JSON 객체를 의미합니다.
 
 ```bash
 # 예를 들어 다음과 같은 JSON 객체가 OPA로 들어 올때,
@@ -364,7 +366,9 @@ hello {
 # true
 ```
 
-여기까지 살펴 보았다면 Playgroun에 가서 직접 테스트해 봅시다!
+`input` JSON 객체가 사전형 자료구조로 입력되고 `message` property를 변수 `m`에 assign하고 그것을 평가합니다.
+
+이제 Playgroun으로 가서 직접 테스트해 봅시다!
 
 ## Playground
 
@@ -402,7 +406,7 @@ hello {
 
 ### Example: Hello World
 
-그럼 이제 `The Rego Playground` 제목 옆에 있는 `Examples` dropdown 메뉴를 눌러서 `Kubernetes > Hello World`를 클릭해 봅시다. 다음과 같은 Policy가 나옵니다. 너무 겁 먹을 필요 없이 하나씩 차근차근 살펴 봅시다. 먼저 우측 상단 input 패널에 보이는 JSON 객체는 Part#1에서 Webhook으로 들어오는 input JSON 객체와 100% 동일합니다. 이것은 쿠버네티스가 Webhook이든 OPA든 동일한 input JSON을 전달해주기 때문입니다.
+그럼 이제 `The Rego Playground` 제목 옆에 있는 `Examples` dropdown 메뉴를 눌러서 `Kubernetes > Hello World`를 클릭해 봅시다. 다음과 같은 Policy가 나옵니다. 우측 상단 input 패널에 보이는 JSON 객체는 Part#1에서 Webhook으로 들어오는 input JSON 객체와 100% 동일합니다. 이것은 쿠버네티스가 Webhook이든 OPA든 동일한 input JSON을 전달해주기 때문입니다.
 
 ```bash
 package kubernetes.validating.label
@@ -420,7 +424,8 @@ deny[msg] {
 예시의 Rego Policy가 달성하고자 하는 정책을 미리 말씀 드리자면, 요청하는 쿠버네티스 리소스 객체에서 `costcenter`라는 라벨의 값이 `cccode-`로 시작하지 않으면 반려하라는 의미를 갖습니다.
 
 먼저 `deny`라는 Set을 정의하고 그 안에 msg라는 item의 값을 assign합니다. 만약 deny Set rule 끝까지 true가 평가되면 msg에 특정 값(여기서는 문자열 값)이 assign되고 중간에 false가 evaluate되면 deny에 빈 Set이 정의됩니다. (`deny: []`)
-첫번째 expression은 요청하는 객체의 label에 `costcenter`라는 라벨의 값을 `value`에 assign합니다. 그리고 해당 `value`의 값이 `cccode-`로 시작하는지 확인합니다. 만약 `cccode-`로 시작하지 않는다면 결과적올 true로 선언되어(`not startswith`) 최종적으로 `msg` item이 선언됩니다. `msg`에는 대략 다음과 같은 메세지가 assign될 것입니다. `deny: [Costcenter code must start with 'cccode-'; found fakecode]` 해당 rule(Set)의 결과가 다시 쿠버네티스로 전달되어 최종적으로 사용자의 요청이 반려(deny)됩니다.
+첫번째 expression은 요청하는 객체의 label에 `costcenter`라는 라벨의 값을 `value`에 assign합니다. 그리고 해당 `value`의 값이 `cccode-`로 시작하는지 확인합니다. 만약 `cccode-`로 시작하지 않는다면 결과적올 true로 선언되어(`not startswith`) 최종적으로 `msg` item에 값이 부여됩니다. 
+`msg`에는 대략 다음과 같은 문자열이 들어갈 것입니다: `deny: [Costcenter code must start with 'cccode-'; found fakecode]` OPA는 해당 rule(Set)의 결과를 쿠버네티스로 전달하여 최종적으로 쿠버네티스가 사용자의 요청을 반려(deny)하게 됩니다.
 
 이번에 input JSON 객체에서 `costcenter`의 값을 `cccode-fakecode`로 수정하고 다시 Evaluate 버튼을 눌러 봅시다.
 
@@ -451,8 +456,7 @@ deny[msg] {
 }
 ```
 
-앞서 살펴 본 `some` 키워드를 사용하여 모든 이미지를 순회합니다. 이때 사용자의 요청이 `Pod`인지(`input.request.kind.kind`)를 확인하여 해당 `Pod`에 존재하는 모든 컨테이너의 이미지를 `image`라는 변수에 저장합니다. 그리고 난 뒤 각 이미지가 `hooli.com`으로 시작하는지를 확인하여 그렇지 않다면 최종적으로 `msg`를 정의합니다. 이때 `some` 키워드를 사용하지 않고 `_`를 이용하여 표현하자면 다음과 같이 수정할 수 있습니다.
-
+앞서 살펴 본 `some` 키워드를 사용하여 모든 이미지를 순회합니다. 이때 사용자의 요청이 `Pod`인지(`input.request.kind.kind`)를 확인하여 해당 `Pod`에 존재하는 모든 컨테이너의 이미지를 `image`라는 변수에 저장합니다. 그리고 난 뒤 각 이미지가 `hooli.com`으로 시작하는지를 확인하여 그렇지 않다면 최종적으로 `msg`에 값이 부여됩니다. 이때 `some` 키워드를 사용하지 않고 `_`를 이용하여 표현하자면 다음과 같이 수정할 수 있습니다.
 
 ```bash
 package kubernetes.validating.images
@@ -465,7 +469,7 @@ deny[msg] {
 }
 ```
 
-우측 상단의 input 패널에서 두번째 `mysql-backed` 컨테이너의 이미지를 `hooli.com/mysql`로 수정하여 다시 Evaluate해 봅시다. 이번에는 deny 메세지 없이 정상적으로 통과하는 것을 확인할 수 있습니다.
+우측 상단의 input 패널에서 두번째 `mysql-backed` 컨테이너의 이미지를 `hooli.com/mysql`로 수정하여 다시 Evaluate해 봅시다. 이번에는 `deny` 메세지 없이 정상적으로 통과하는 것을 확인할 수 있습니다.
 
 어떤가요? 쿠버네티스의 기본적인 Authorization으로는 불가능했던 정책들이 Rego를 통해서는 몇줄 되지 않지만 엄청나게 강력하게 사용할 수 있지 않나요? Rego의 input으로 쿠버네티스 리소스의 전체 spec이 넘어오기 때문에 생각할 수 있는 거의 모든 정책들을 세밀하게 설정할 수 있습니다.
 
