@@ -18,7 +18,7 @@ OPA는 플랫폼 관리자에게 체계적이고 세밀한(fine-graded) 권한�
 
 Part#1에서 살펴본 flask webhook을 살펴 보겠습니다. 해당 webhook도 단지 들어 온 요청을 반려할지 말지만을 판단(`response.allowed`) 하였고 실제 동작은 쿠버네티스에서 수행하였습니다. 이와 마찬가지로 OPA도 관리자가 작성한 Policy를 기반하여 플랫폼에게 Admission Control의 결과를 전달합니다. 해당 포스트에서는 쿠버네티스 플랫폼 위에서의 OPA 사용을 중심으로 설명드립니다.
 
-혹자는 OPA의 역할이 너무 제한적이지 않는가에 대해 의문을 가질 수도 있습니다. 실제 Admission을 수행하는 메커니즘(enforcement)은 없고 정책(Policy)만을 판단하는 엔진은 마치 집행력이 없는 사법부와 같은 느낌을 줍니다. 이에 대한 [OPA만의 철학으로 Policy Decoupling의 중요성]((https://www.openpolicyagent.org/docs/latest/philosophy/)을 얘기합니다. 간단하게 정리하자면 다음과 같습니다.
+혹자는 OPA의 역할이 너무 제한적이지 않는가에 대해 의문을 가질 수도 있습니다. 실제 Admission을 수행하는 메커니즘(enforcement)은 없고 정책(Policy)만을 판단하는 엔진은 마치 집행력이 없는 사법부와 같은 느낌을 줍니다. 이에 대한 [OPA만의 철학으로 Policy Decoupling의 중요성](https://www.openpolicyagent.org/docs/latest/philosophy/)을 얘기합니다. 간단하게 정리하자면 다음과 같습니다.
 
 Policy를 Admission enforcement로부터 분리(decouping)했을 때의 이점으로,
 
