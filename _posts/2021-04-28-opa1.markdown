@@ -9,9 +9,9 @@ image: /assets/images/opa/landing-ac.png
 이번 포스트에서는 Admission Controller가 무엇인지 알아보고 직접 custom webhook을 구현해 보는 시간을 가져보겠습니다.
 
 쿠버네티스 Admission Control 시리즈
-1. 사용자 Webhook: 사용자가 직접 webhook을 구현함으로써 세밀한 접근관리를 수행합니다.
-2. [Open Policy Agent](https://coffeewhale.com/kubernetes/admission-control/2021/05/04/opa2/): OPA의 개념과 그 Query 언어인 Rego에 대해서 살펴 봅니다.
-3. Open Policy Agent 적용: OPA를 직접 쿠버네티스에 적용해 봅니다.
+1. **사용자 Webhook**: 사용자가 직접 webhook을 구현함으로써 세밀한 접근관리를 수행합니다.
+2. [Open Policy Agent](/kubernetes/admission-control/2021/05/04/opa2/): OPA의 개념과 그 Query 언어인 Rego에 대해서 살펴 봅니다.
+3. [Open Policy Agent 적용](/opa3): OPA를 직접 쿠버네티스에 적용해 봅니다.
 
 
 ## Admission Control란?

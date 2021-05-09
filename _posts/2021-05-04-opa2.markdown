@@ -5,12 +5,12 @@ date:   2021-05-04 00:00:00
 categories: kubernetes admission-control
 image: /assets/images/opa/landing-ac.png
 ---
-[지난 쿠버네티스 Admission Control #1](https://coffeewhale.com/kubernetes/admission-control/2021/04/28/opa1/)에서는 Admission Control의 개념에 대해 알아보았고 직접 Custom Admission Control을 만들어 봤습니다. 이번 시간에는 General Policy Controller인 Open Policy Agent(OPA)에 대해서 알아보고 OPA Policy를 이용하여 사용자의 세부 사용성을 관리해 보겠습니다.
+[지난 쿠버네티스 Admission Control #1](https://coffeewhale.com/kubernetes/admission-control/2021/04/28/opa1/)에서는 Admission Control의 개념에 대해 알아보았고 직접 Custom Admission Controller을 만들어 봤습니다. 이번 시간에는 General Policy Controller인 Open Policy Agent(OPA)에 대해서 알아보고 OPA Policy를 이용하여 사용자의 세부 사용성을 관리해 보겠습니다.
 
 쿠버네티스 Admission Control 시리즈
-1. [사용자 Webhook](https://coffeewhale.com/kubernetes/admission-control/2021/04/28/opa1/): 사용자가 직접 webhook을 구현함으로써 세밀한 접근관리를 수행합니다.
-2. Open Policy Agent: OPA의 개념과 그 Query 언어인 Rego에 대해서 살펴 봅니다.
-3. Open Policy Agent 적용: OPA를 직접 쿠버네티스에 적용해 봅니다.
+1. [사용자 Webhook](/kubernetes/admission-control/2021/04/28/opa1/): 사용자가 직접 webhook을 구현함으로써 세밀한 접근관리를 수행합니다.
+2. **Open Policy Agent**: OPA의 개념과 그 Query 언어인 Rego에 대해서 살펴 봅니다.
+3. [Open Policy Agent 적용](/opa3): OPA를 직접 쿠버네티스에 적용해 봅니다.
 
 ## Open Policy Agent란?
 
