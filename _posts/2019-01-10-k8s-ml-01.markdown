@@ -85,4 +85,4 @@ categories: kubernetes ml k8s docker machine-learning
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/egv2TlfLL1Y" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-* 발표 자료: https://www.slideshare.net/awskorea/amazon-eks-lg-aws-summit-seoul-2019
+* 발표 자료: [https://www.slideshare.net/awskorea/amazon-eks-lg-aws-summit-seoul-2019](https://www.slideshare.net/awskorea/amazon-eks-lg-aws-summit-seoul-2019)
