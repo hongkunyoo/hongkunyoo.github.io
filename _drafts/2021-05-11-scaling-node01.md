@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "[번역] 쿠버네티스 2,500개 노드 운영하기"
-date:   2021-05-01 00:00:00
+title:  "[번역] 쿠버네티스 2,500대 노드 운영하기"
+date:   2021-05-11 00:00:00
 categories: kubernetes scale
-image: /assets/images/?
+image: /assets/images/scalenode/landing.png
+permalink: /:title
 ---
-[다음 블로그 포스트](https://openai.com/blog/scaling-kubernetes-to-2500-nodes/)를 통해 많은 내용들을 배웠고 일부는 공감하여 기록으로 남기고자 번역하였습니다. 해당 포스트는 2018년에 나온 글로 현재 시점에서 이미 문제가 해결되었거나 개선된 점이 있어 동일한 방법을 이용하여 문제를 해결할 필요는 없지만 그 과정에서 배울 점들이 분명 있어 보이기에 여전히 의미 있는 글이라고 생각합니다. 주된 내용으로 OpenAI에서 딥러닝 연구 플랫폼으로 쿠버네티스를 사용하면서 노드를 늘렸을 때 발생할 수 있는 문제에 대해서 해결한 과정을 상세히 설명합니다.
+[다음 OpenAI 블로그](https://openai.com/blog/scaling-kubernetes-to-2500-nodes/)를 읽고 많은 내용들을 배우고 공감하여 기록으로 남기고자 번역하였습니다. 해당 포스트는 2018년에 나온 글로 현재 시점에서 이미 문제가 해결되었거나 개선된 점이 있어 동일한 방법을 이용하여 문제를 해결할 필요는 없지만 그 과정에서 배울 점들이 분명 있어 보이기에 여전히 의미 있는 글이라고 생각합니다. 주된 내용으로 OpenAI에서 딥러닝 연구 플랫폼으로 쿠버네티스를 사용하면서 노드를 늘렸을 때 발생할 수 있는 문제에 대해서 해결한 과정을 상세히 설명합니다.
 
 우리는 2년 동안 딥러닝 연구용으로 쿠버네티스를 사용해 왔습니다. 우리의 가장 큰 작업(workload)은 클라우드에서 VM을 직접 사용하지만 쿠버네티스는 빠른 개발 주기를 제공하고 합리적인 확장성 그리고 적은 공수로 학습 작업을 수행할 수 있어 우리가 사용하는 대부분의 딥러닝 실험에 적합합니다. 현재는 몇몇의 클러스터를 운영하고 있고(어떤 것은 클라우드에서, 어떤 것은 베어메탈에서 운영합니다.) 가장 큰 클러스터는 2500대의 노드를 가지고 있습니다. 이 클러스터는 Azure 위에서 D15v2와 NC24 VM으로 이루어져있습니다.
 
 이 정도의 클러스터로 규모를 키우기까지 많은 시스템 컴포논트에서 장애가 발생하였습니다. etcd, kube master, 도커 이미지 pull, 네트워크 KubeDSN 그리고 호스트서버의 ARP cache에서도 문제가 발생했습니다. 우리가 경험한 이슈들과 해결 방법들이 많은 이들에게 도움이 될 것 같아 내용을 공유하고자 합니다.
-
 
 ## etcd
 
@@ -76,6 +76,9 @@ affinity:
      topologyKey: kubernetes.io/hostname
 ```
 
+**역자주**: 쿠버네티스 기본 scheduler의 스케줄링 정책을 직접 바꾸는 것은 예상치 못한 부작용이 발생할 수도 있습니다. `schedulerName` property를 이용하여 특정 `Pod`에 대해서 명시적으로 [다른 스케줄러를 사용](https://kubernetes.io/docs/tasks/extend-kubernetes/configure-multiple-schedulers/)하는 것을 고려해 보시기 바랍니다.
+
+
 ## 도커 이미지 pulls
 
 [Dota 프로젝트](https://openai.com/blog/more-on-dota-2/)는 쿠버네티스 위에서 진행되었습니다. 노드의 개수가 증가함에 따라 `Pod`가 `Pending` 상태로 머물러 있는 것을 발견하였습니다. 게임의 이미지가 17GB가 넘었기에 새로운 노드에 이미지를 다운로드하기 위해서는 약 30분이 걸리곤 하였습니다. Dota 이미지는 컸기 때문에 해당 상황에 대해서 이해하고 있었습니다. 하지만 다른 컨테이너에서도 동일한 현상이 발생하였습니다. 자세히 조사해 본 결과 `kubelet`에는 `--serialize-image-pulls`라는 옵션이 기본값으로 `true`로 설정되어 있는 것을 알게 되었습니다. 이 설정 때문에 Dota 이미지가 다른 컨테이너들의 이미지 pulling을 막고 있었던 것입니다. 해당 설정을 `false`로 변경하기 위해서는 도커 스토리지 드라이버가 AUFS가 아닌 overlay2로 설정되어야 합니다. 또한 이미지 pull 속도를 올리기 위해서 도커 root 디렉토리도 etcd 디렉토리처럼 직접 로컬 디바이스로 연결된 SSD 아래로 옮겼습니다.
@@ -88,13 +91,11 @@ pull 속도를 개선한 이후에도 다음과 같은 이상한 에러 메세�
 
 ## 네트워킹
 
-As our experiments grow larger, they also become increasingly complex distributed systems which rely heavily on the network for their operation. When we first started running distributed experiments, it became immediately obvious that our networking wasn’t configured well. Directly between machines we got 10-15Gbit/s of throughput, but our Kube pods using Flannel were maxing out at ~2Gbit/s. Machine Zone’s public benchmarks show similar numbers, meaning the issue wasn’t likely to just be bad config, but instead something inherent to our environment. (By contrast, Flannel does not add this overhead on our physical machines.)
-To work around this, users can add two different settings to disable Flannel for their pod: hostNetwork: true and dnsPolicy: ClusterFirstWithHostNet. (Though read the warnings in the Kubernetes documentation before doing this.)
-
+클러스터의 크기가 커질수록 클러스터 내부의 네트워크 통신이 엄청 많아지는 것을 알게 되었습니다. 분산학습을 처음 실행하였을 때, 네트워크 설정이 제대로 세팅되지 않은 것을 깨닫게 되었습니다. 서버간의 throughput이 10 ~ 15Gbit/s 가 나왔지만 Flannel을 사용하는 Pod들은 최대 2Gbit/s까지 밖에 나오지 않았습니다. [Machine Zone의 밴치마크](http://machinezone.github.io/research/networking-solutions-for-kubernetes/)도 비슷한 숫자가 나와서 단순히 잘못 설정된 값 때문이 아니라 내부환경으로부터 기인한 것이라 판단하였습니다.(반대로, flannel은 서버에 추가적인 오버헤드를 발생시키지 않았습니다.) 이 문제의 차선책으로 Pod를 생성할 때, 사용자에게 두가지 옵션을 제공하였습니다. `hostNetwork: ture`와 `dnsPolicy: ClusterFirstWithHostNet`이 그것입니다.(단, 이 옵션을 사용하기 전에 [주의사항](https://kubernetes.io/docs/concepts/configuration/overview/)에 대해 미리 숙지하시기 바랍니다.)
 
 ## ARP Cache
 
-Despite our DNS tuning, we still saw intermittent issues with DNS resolution. One day an engineer reported that nc -v to their Redis server was taking over 30 seconds to print that the connection was established. We tracked the issue to the kernel’s ARP stack. Initial investigation of the Redis pod’s host showed something seriously wrong with the network: communication on any port was hanging for multiple seconds, and no DNS names could be resolved via the local dnsmasq daemon, with dig just printing a cryptic failure message: socket.c:1915: internal_send: 127.0.0.1#53: Invalid argument. The dmesg log was more informative: neighbor table overflow! which meant that the ARP cache had run out of space. ARP is used for mapping a network address such as an IPv4 address, to a physical address, such as a MAC address. Fortunately, this was easy to fix by setting a few options in /etc/sysctl.conf:
+DNS를 튜닝했음에도 불구하고 DNS resolution 이슈가 간헐적으로 발생하였습니다. 어느날 한 엔지니어가 Redis 서버로의 `nc -v` 명령의 결과가 최소 30초 이상 걸린다는 것을 보고하였습니다. 우리는 문제의 원인을 찾아 들어갔고 커널의 ARP stack까지 도달하게 되었습니다. 그 결과 Redis Pod가 실행되고 있는 호스트의 네트워크가 굉장히 이상하게 동작하는 것을 발견하게 되었습니다: 어떤 포트를 이용하더라도 통신하는데 최소 수 초가 걸리고 로컬 `dnsmasq` 데몬을 통해 DNS 질의가 되지 않고 `dig` 명령에 다음과 같은 에러 메세지만 출력하였습니다. `socket.c:1915: internal_send: 127.0.0.1#53: Invalid argument`. `dmesg` 로그에는 조금 더 자세한 내용이 포함되었는데 `neighbor table overflow`라는 메세지가 발견되었습니다. 이 뜻은 ARP cache 공간이 부족해졌다는 것을 의미하였습니다. ARP table은 IP 주소가 물리 주소(MAC주소)로 매핑되는 정보를 들고 있는 테이블입니다. 다행히도 이 문제를 해결하는 방법은 쉬웠습니다. `/etc/sysctl.conf`에 있는 kernel 파라미터를 수정하기만 하면 되었습니다.
 
 ```bash
 net.ipv4.neigh.default.gc_thresh1 = 80000
@@ -102,6 +103,8 @@ net.ipv4.neigh.default.gc_thresh2 = 90000
 net.ipv4.neigh.default.gc_thresh3 = 100000
 ```
 
-It’s common to tune this setting in HPC clusters, and is particularly relevant in Kubernetes clusters since every pod has its own IP address which consumes space in the ARP cache.
+HPC(High Performance Computing) 클러스터에서는 해당 파라미터를 수정하는 것은 흔한 일입니다. 특히나 쿠버네티스에서는 각각의 `Pod`들이 자기 IP를 들고 있기 때문에 ARP cache 공간을 확보하는 것이 필요합니다.
 
-Our Kubernetes clusters have been incident-free for about 3 months now, and we’re planning to scale to even larger clusters in 2018. We recently upgraded to version 1.8.4, and are excited to see that it now officially supports 5,000. If you’re interested in building large scale compute clusters.
+---
+
+이러한 설정 후 지금까지 약 3개월 동안 아무 문제 없이 클러스터를 운영하였습니다. 앞으로는 더 많은 노드를 추가할 예정입니다.
