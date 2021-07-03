@@ -9,9 +9,6 @@ markdown: kramdown
 permalink: pretty
 timezone: Asia/Seoul
 highlighter: rouge
-# logo: /assets/images/profile.png
-logo: /assets/images/landing/coffeewhale.png
-image: /assets/images/landing/coffeewhale.png
 host: 0.0.0.0
 port: 80
 paginate: 10
