@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "데이터 과학자를 위한 ML툴"
+title:  "데이터 과학자를 위한 ML툴 - JupyterFlow"
 date:   2021-03-02 00:00:00
 categories: kubernetes mlops
 image: /assets/images/jupyterflow/landing.png
