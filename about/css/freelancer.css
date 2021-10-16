@@ -462,10 +462,10 @@ footer .footer-below {
 }*/
 
 .navbar-brand div {
-background-image: url("img/star_30_white.png");
+background-image: url("/about/img/star_30_white.png");
 }
 .navbar-brand div:hover {
-background-image: url("img/star_30_white_hover.png");
+background-image: url("/about/img/star_30_white_hover.png");
 }
 
 .btn-green {

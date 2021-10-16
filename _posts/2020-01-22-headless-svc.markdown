@@ -54,7 +54,7 @@ categories: kubernetes service
 
 ![](/assets/images/headless-svc/04.png)
 
-다시 1번으로 돌아와 정말 namespace A Ingress에서 namespace B 서비스로 연결하는 방법이 없을까 고민하던 도중 [다음과 같은 곳]([https://github.com/kubernetes/kubernetes/issues/17088](https://github.com/kubernetes/kubernetes/issues/17088))에서 저와 비슷한 고민을 하는 것을 발견했고 Headless Service의 ExternalName을 이용한 해결책이 있다는 것을 확인했습니다. 방법은 다음과 같습니다.
+다시 1번으로 돌아와 정말 namespace A Ingress에서 namespace B 서비스로 연결하는 방법이 없을까 고민하던 도중 [다음과 같은 곳](https://github.com/kubernetes/kubernetes/issues/17088)에서 저와 비슷한 고민을 하는 것을 발견했고 Headless Service의 ExternalName을 이용한 해결책이 있다는 것을 확인했습니다. 방법은 다음과 같습니다.
 
 1. namespace A에서 namespace B의 서비스를 가르키는 Headless Service를 namespace A에 생성
 2. namespace A Ingress에서 namespace A의 Headless service 참조

@@ -42,9 +42,10 @@ categories: certificate gcp
 	- [Security & Identity Fundamentals](https://www.qwiklabs.com/quests/40)
 	- [Cloud Engineering](https://www.qwiklabs.com/quests/66)
 	- [Kubernetes in the Google Cloud](https://www.qwiklabs.com/quests/29)
-- [A Cloud Guru](https://www.udemy.com/course/google-certified-associate-cloud-engineer/): 해당 강의는 제가 [AWS CSAA 자격증 취득 때](/certificate/aws/2019/06/02/csaa/) 도움을 많이 받은 교육 기관의 GCP ver. 강의입니다. AWS 강의 만큼 엄청 도움이 많이 된 것은 아니지만 가격 대비 성과는 나쁘지 않습니다. 특히 강의의 절반이 쿠버네티스에 대한 내용이 들어있는데 저 같은 경우 쿠버네티스를 따로 공부하여 강의의 절반은 skip하였습니다만 그럼에도 불구하고 나머지 강의들은 GCP 자격증을 따는데에 많은 도움이 되었다고 생각합니다.
+
+- ~~A Cloud Guru~~(강의 종료됨): 해당 강의는 제가 [AWS CSAA 자격증 취득 때](/certificate/aws/2019/06/02/csaa/) 도움을 많이 받은 교육 기관의 GCP ver. 강의입니다. AWS 강의 만큼 엄청 도움이 많이 된 것은 아니지만 가격 대비 성과는 나쁘지 않습니다. 특히 강의의 절반이 쿠버네티스에 대한 내용이 들어있는데 저 같은 경우 쿠버네티스를 따로 공부하여 강의의 절반은 skip하였습니다만 그럼에도 불구하고 나머지 강의들은 GCP 자격증을 따는데에 많은 도움이 되었다고 생각합니다.
 - [Official Practice Exam](https://cloud.google.com/certification/practice-exam/cloud-engineer): Google Cloud에서 공식적으로 제공하는 Practice 시험입니다. 무료이고 계속해서 응시할 수 있습니다. 하지만 매번 같은 문제가 나오므로 공부를 다하고 시험치기 마지막 직전 점검용으로 응시해보시면 좋을 것 같습니다.
-- [Udemy Practice Exam](https://www.udemy.com/google-cloud-platform-associate-cloud-engineer-practice-test/): Udemy에서 판매하는 GCP 연습문제입니다. Quality가 그리 높다고는 말할 순 없지만 현재 Udemy에 나와있는 GCP 연습문제들이 그렇게 많지가 않아서 그 중에서 그나마 리뷰가 가장 높은 것을 골랐습니다. 그래도 연습 시험을 보지 않는 것보다는 보는 것이 합격에 조금 더 도움이 되지 않을까 생각합니다.
+- ~~Udemy Practice Exam~~(강의 종료됨): Udemy에서 판매하는 GCP 연습문제입니다. Quality가 그리 높다고는 말할 순 없지만 현재 Udemy에 나와있는 GCP 연습문제들이 그렇게 많지가 않아서 그 중에서 그나마 리뷰가 가장 높은 것을 골랐습니다. 그래도 연습 시험을 보지 않는 것보다는 보는 것이 합격에 조금 더 도움이 되지 않을까 생각합니다.
 
 ---
 

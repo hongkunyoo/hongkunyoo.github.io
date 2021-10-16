@@ -75,7 +75,7 @@ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/st
 ```
 Ingress 설정 및 비밀번호 설정 등은 공식 홈페이지에서 참고 하시기 바랍니다.
 
-[https://argoproj.github.io/argo-cd/getting_started/](https://argoproj.github.io/argo-cd/getting_started/)
+[https://argo-cd.readthedocs.io/en/stable/getting_started/](https://argo-cd.readthedocs.io/en/stable/getting_started/)
 
 ### ArgoCD 둘러보기
 

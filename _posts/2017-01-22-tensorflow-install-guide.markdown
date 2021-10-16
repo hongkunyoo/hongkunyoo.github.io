@@ -37,7 +37,8 @@ sudo shutdown -r now
 ```
 ----------------------------------------------------
 ###### NVIDA Develop site에 들어가셔서 CUDA 설치 파일을 받아줍니다.
-https://developer.nvidia.com/cuda-downloads
+
+[https://developer.nvidia.com/cuda-downloads](https://developer.nvidia.com/cuda-downloads)
 
 이때 Installer Type으로 꼭 **runfile (local)**을 다운 받습니다. 그 이유로는 runfile을 통해 설치해야 자동으로 NVIDIA Driver까지 알아서 설치 되기 때문입니다. (그렇지 않은 경우, 직접 서로 버전이 호환되는 NVIDIA Driver를 설치해야합니다.)
 
@@ -73,7 +74,8 @@ sudo sh cuda_8.0.44_linux.run
 
 ----------------------------------------------------
 ###### 이번에는 NVIDIA Developer site에 가셔서 CuDNN 라이브러리를 다운 받습니다.
-https://developer.nvidia.com/cudnn
+
+[https://developer.nvidia.com/cudnn](https://developer.nvidia.com/cudnn)
 
 Download > login > Download cuDNN v5.1 (August 10, 2016), for CUDA 8.0 > cuDNN v5.1 Library for Linux)
 
@@ -113,20 +115,22 @@ GPU에 관한 status가 나온다면 제대로 설치 완료!!
 
 여기 까지 오셨으면 거의 다했습니다. 이제 anaconda 및 tensorflow를 설치해 보겠습니다.
 
-###### Anaconda 다운받기 (Optional)
+##### Anaconda 다운받기 (Optional)
 아나콘다 설치는 하셔도 되고 생략하셔도 무방합니다.
 다만 시스템 path에 텐서플로우를 설치하였는데 나중에 버전 문제로 꼬이게 되면 머리가 아프기 때문에 저는 애초에 아나콘다를 설치하겠습니다.
 
-아나콘다 공식 사이트에 가셔서 다운을 받습니다. https://www.continuum.io/downloads
+아나콘다 공식 사이트에 가셔서 다운을 받습니다. [https://www.anaconda.com/products/individual](https://www.anaconda.com/products/individual)
 
 파이썬2 혹은 파이썬3 아무거나 다운 받으셔도 상관 없습니다.
 저는 파이썬3 64비트를 사용합니다.
-```
+
+```bash
 # wget으로 받으시려면 (python3, 64bit)
 wget https://repo.continuum.io/archive/Anaconda3-4.2.0-Linux-x86_64.sh
 ```
 다운 받으신 이후에, 실행을 시켜줍니다.
-```
+
+```bash
 # path/to/downloaded/anaconda_install_file
 bash Anaconda3-4.2.0-Linux-x86_64.sh
 ```
@@ -134,13 +138,17 @@ bash Anaconda3-4.2.0-Linux-x86_64.sh
 아나콘다 설치 마지막에 `~/.bashrc`에 아나콘다를 사용자 path에 삽입할 건지 묻는 질문에 `yes`를 해줍니다. 그리고
 `source ~/.bashrc`를 입력하셔서 path를 업데이트 시켜주시고
 마지막으로 tensorflow를 설치합니다.
-```
+
+```bash
 pip install tensorflow-gpu
 ```
+
 설치가 완료되면 tensorflow가 제대로 설치되었는지 import 시켜봅니다.
-```
+
+```bash
 python -c 'import tensorflow'
 ```
+
 `successfully opened CUDA library` 와 같은 문구가 뜬다면 설치 성공!
 
 이제 즐겁게 딥러닝을 시작해 봅시다!

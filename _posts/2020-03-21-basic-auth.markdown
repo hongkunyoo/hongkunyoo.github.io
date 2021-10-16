@@ -17,6 +17,7 @@ Basic Authentication은 쿠버네티스나 NGINX의 기능이 아니라 단순�
 ```bash
 Authorization: Basic *$base64(user:password)
 ```
+
 예를 들어, `https://httpbin.org/basic-auth/myuser/mypass` 라는 사이트는 user를 `myuser` 비밀번호를 `mypass`로 인증하는 페이지라고 한다면 아래와 같이 HTTP헤더를 보내게 되면 인증이 됩니다.
 
 ```bash
@@ -41,6 +42,7 @@ Static User 방식은 미리 basic auth로 인증할 유저 리스트를 생성�
 #### 1. auth 파일 생성
 
 먼저 `htpasswd`를 통해 basic auth 사용자 파일을 생성합니다.
+
 ```bash
 sudo apt-get install apache2-utils
 # htpasswd 설치
@@ -55,6 +57,7 @@ $ ls
 #### 2. auth 파일을 이용한 Secret 생성
 
 그러한 다음 그 값을 `basic-auth`라는 `secert`에 저장합니다.
+
 ```bash
 # basic-auth라는 secret을 하나 생성합니다.
 $ kubectl create secret generic basic-auth --from-file=auth
@@ -74,6 +77,7 @@ $ kubectl get secret basic-auth -o yaml
 #### 3. Ingress 생성시 basic auth 관련 annotation 추가
 
 마지막으로 특정 서비스의 `Ingress` 설정시 `annotations` 프로퍼티에 다음과 같은 설정을 하면 됩니다.
+
 ```yaml
 # auth-ingress.yaml
 apiVersion: networking.k8s.io/v1beta1
@@ -102,13 +106,12 @@ spec:
 
 앞서 살펴본 Basic Auth 파일을 통한 인증이 아닌 외부 Basic Auth 서비스를 이용하여 인증을 하는 방식입니다. 사용자가 직접 custom authentication 서버를 개발할 수도 있고 외부 LDAP 서버를 통하여 인증 체계를 구성할 수도 있는 유연함을 가질 수 있습니다.
 
-참고 [https://kubernetes.github.io/ingress-nginx/examples/auth/external-auth/](https://kubernetes.github.io/ingress-nginx/examples/auth/external-auth/)
+참고: [https://kubernetes.github.io/ingress-nginx/examples/auth/external-auth/](https://kubernetes.github.io/ingress-nginx/examples/auth/external-auth/)
 
 #### 1. Ingress 생성시 external basic auth 관련 annotation 추가
 
-외부 basic auth 설정은 오히려 더 간단합니다. 외부 authentication 서버 URL을 설정하는 것이 전부입니다. 그럼 실제 외부 auth 서버를 설정하는 방법에 대해 살펴 보겠습니다. 예시에서는 간단하게 유저가 `myuser`이고 비밀번호가 `mypass`인 사용자를 가지는 외부 서비스입니다.
+외부 basic auth 설정은 오히려 더 간단합니다. 외부 authentication 서버 URL을 설정하는 것이 전부입니다. 그럼 실제 외부 auth 서버를 설정하는 방법에 대해 살펴 보겠습니다. 예시에서는 간단하게 유저가 `myuser`이고 비밀번호가 `mypass`인 사용자를 가지는 외부 서비스입니다. (`https://httpbin.org/basic-auth/<user>/<password>`)
 
-(https://httpbin.org/basic-auth/<user>/<password>)
 ```yaml
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
@@ -137,6 +140,7 @@ spec:
 #### 2. 외부 auth 서비스 개발
 
 아래와 같이 LDAP서버로 인증을 하는 간단한 웹서버를 개발합니다.
+
 ```python
 import os
 import traceback
@@ -173,6 +177,7 @@ if __name__ == '__main__':
 ```
 
 인증서버 구축이 완료 되면 Ingress의 annotation 설정 `nginx.ingress.kubernetes.io/auth-url` 을 해당 인증서버 주소로 수정하면 됩니다.
+
 ```bash
 curl -H "Authorization: Basic $(echo -n $LDAP_USER:$LDAP_PW | base64)" http://external-auth-01.sample.com
 ```

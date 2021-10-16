@@ -204,6 +204,5 @@ $$\underset{\theta}{\arg\min} \sum_1^n(y_i - \hat{y_i})^2 + \frac{\sigma^2}{\tau
 
 - [An Introduction to Statistical Learning](http://www-bcf.usc.edu/~gareth/ISL/getbook.html) by James, Witten, Hastie and Tibshirani
 - [Gaussian Processes for Machine Learning](http://www.gaussianprocess.org/gpml/)  by Rasmussen and Williams.
-- Kevin Murphy’s  [Machine Learning - a Probabilistic Approach](https://www.amazon.com/Machine-Learning-Probabilistic-Perspective-Computation/dp/0262018020)
+- Kevin Murphy’s  [Machine Learning - a Probabilistic Approach](https://probml.github.io/pml-book/book0.html)
 - Cameron Davidson-Pilon’s  [Probabilistic Programming & Bayesian Methods for Hackers](https://camdavidsonpilon.github.io/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers/)
-
