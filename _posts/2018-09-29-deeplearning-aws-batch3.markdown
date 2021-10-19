@@ -4,6 +4,7 @@ title:  "AWS Batch를 이용한 분산 병렬 딥러닝 학습 #3"
 description: "개별 host에서 학습한 모델 파일을 효율적으로 관리할 수 있는 방법에 대해 알아보겠습니다."
 date:   2018-09-29 19:21:00
 categories: deep-learning AWS Batch docker
+image: /assets/images/aws_batch/landing.png
 ---
 개별 host에서 학습한 모델 파일을 통합적으로 관리할 수 있는 방법에 대해 알아보겠습니다.
 

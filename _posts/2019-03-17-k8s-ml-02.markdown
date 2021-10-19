@@ -3,6 +3,7 @@ layout: post
 title:  "kubernetes와 MLOps #2"
 date:   2019-03-17 23:51:00
 categories: kubernetes ml k8s docker machine-learning
+image: /assets/images/k8s_ml/landing.png
 ---
 이번 포스트에서는 쿠버네티스 환경을 구축해보고 직접 여러 개의 모델을 훈련시켜 보아 기존 방법에 비해 어떤 부분들이 더 좋은지 알아보도록 하겠습니다.
 

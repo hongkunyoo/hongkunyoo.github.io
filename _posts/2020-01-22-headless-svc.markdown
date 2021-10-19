@@ -3,6 +3,7 @@ layout: post
 title:  "Headless Service를 이용하여 네임스페이스가 다른 서비스에 Ingress 연결하기"
 date:   2020-01-22 00:00:00
 categories: kubernetes service
+image: /assets/images/headless-svc/landing.png
 ---
 본 글은 네임스페이스가 다른 Ingress에서 또다른 네임스페이스의 서비스로 연결해야 방법에 대하여 포스팅하였습니다. 제목에서 알 수 있듯이 Headless Service의 ExternalName을 이용하면 간단하게 해결할 수 있습니다.
 

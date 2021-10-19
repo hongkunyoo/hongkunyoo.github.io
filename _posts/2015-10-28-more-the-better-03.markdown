@@ -3,6 +3,7 @@ layout: post
 title:  "[번역] 더 많은 데이터가 더 좋은 알고리즘을 이긴다 #3"
 date:   2015-10-30 21:14:00
 categories: bigdata
+image: /assets/images/bigdata-landing.png
 ---
 저의 블로그의 독자라면 저의 믿음인, [더 많은 데이터가 보통 더 좋은 알고리즘을 이긴다](/bigdata/2015/10/28/more-the-better-01/)는 사실에 대해서 잘 알고 계실 것입니다. 여기에 또 다른 증거가 될 만한 자료가 있습니다.
 

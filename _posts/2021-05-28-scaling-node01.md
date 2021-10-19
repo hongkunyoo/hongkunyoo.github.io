@@ -3,7 +3,7 @@ layout: post
 title:  "[번역] 쿠버네티스 2,500대 노드 운영하기"
 date:   2021-05-28 00:00:00
 categories: kubernetes scale
-image: /assets/images/scalenode/landing.png
+image: /assets/images/scalenode/landing01.png
 permalink: /:title
 ---
 [다음 OpenAI 블로그](https://openai.com/blog/scaling-kubernetes-to-2500-nodes/)를 읽고 많은 내용들을 배우고 공감하여 기록으로 남기고자 번역하였습니다. 해당 포스트는 2018년에 나온 글로 현재 시점에서 이미 문제가 해결되었거나 개선된 점이 있어 동일한 방법을 이용하여 문제를 해결할 필요는 없지만 문제의 원인을 찾아 해결하는 과정에서 배울 점들이 분명 있어 보이기에 여전히 의미 있는 글이라고 생각합니다. OpenAI에서 딥러닝 연구 플랫폼으로 쿠버네티스를 사용하면서 노드를 늘렸을 때 발생할 수 있는 문제에 대해서 해결한 과정을 설명합니다.

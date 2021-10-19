@@ -3,7 +3,7 @@ layout: post
 title:  "쿠버네티스 Admission Control #1"
 date:   2021-04-28 00:00:00
 categories: kubernetes admission-control
-image: /assets/images/opa/landing-ac.png
+image: /assets/images/opa/landing-ac01.png
 ---
 지난 블로그 포스트에서는 쿠버네티스의 전반적인 [Authentication](https://coffeewhale.com/kubernetes/authentication/x509/2020/05/02/auth01/)에 대해서 살펴 보았습니다. 이번에는 쿠버네티스의 Admission Control에 대한 내용을 다뤄볼까 합니다.
 이번 포스트에서는 Admission Controller가 무엇인지 알아보고 직접 custom webhook을 구현해 보는 시간을 가져보겠습니다.

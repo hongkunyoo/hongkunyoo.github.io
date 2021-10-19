@@ -4,6 +4,7 @@ title:  "kubernetes와 MLOps #3"
 date:   2019-04-13 21:20:00
 categories: kubernetes eks cluster-autoscaler
 tags: 머신러닝 쿠버네티스 eks
+image: /assets/images/k8s_ml/landing.png
 ---
 오늘은 AWS에서 제공하는 Kubernetes managed 서비스인 EKS에서 요청량에 따라 자동으로 worker 노드들을 늘렸다가 줄여주는 Cluster Autoscaler를 설정하는 방법에 대해서 공유하고자 합니다.
 

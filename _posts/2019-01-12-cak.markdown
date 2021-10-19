@@ -3,6 +3,7 @@ layout: post
 title:  Certified Kubernetes Administrator 취득 후기
 date:   2019-01-12 22:00:00
 categories: kubernetes cka
+image: /assets/images/certificates/landing-cka.png
 ---
 2018년 12월 19일 고대하던 CKA 자격증을 취득하였습니다. 자랑겸, 정보 공유겸 취득 후기 포스트를 작성합니다.
 

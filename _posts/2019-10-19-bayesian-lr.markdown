@@ -3,9 +3,12 @@ layout: post
 title:  "[번역] 선형 회귀 모델 Bayesians vs Frequentists"
 date:   2019-10-19 00:00:00
 categories: bayesian linear regression
+image: /assets/images/bayesian_linear/landing.png
 ---
 이번 포스트는 다음 글 [From both sides now: the math of linear regression](http://katbailey.github.io/post/from-both-sides-now-the-math-of-linear-regression/)을 읽고 frequentist와 bayesian 관점에서의 선형 회귀모델을 잘 정리한 것 같아 번역해 보았습니다.
 대학원 때 MLE를 구하는 방법으로, 미분의 해로 구하는 방법, Gradient Decent 방법으로 푸는 방법, 선형대수의 Project Matrix를 통해 구하는 방법 등 참 여러가지 방법으로 선형 회귀 모델에 대해서 이해하고 배웠던 점이 무척 재밌었습니다. 이번에는 모수를 추정하는 다른 두 관점에서 선형 회귀을 설명한 글을 읽게 되어 복습하는 마음에서 번역해 보았습니다.
+
+<script type="text/javascript" defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 ---
 

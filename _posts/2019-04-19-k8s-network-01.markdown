@@ -3,6 +3,7 @@ layout: post
 title:  "[번역] 쿠버네티스 네트워킹 이해하기#1: Pods"
 date:   2019-04-19 00:00:00
 categories: k8s network
+image: /assets/images/k8s_network/landing01.png
 ---
 [해당 포스트](https://medium.com/google-cloud/understanding-kubernetes-networking-pods-7117dd28727)는 제가 [CKA 자격증 취득](/kubernetes/cka/2019/01/13/cak)을 위해 쿠버네티스 network에 대해 공부할 때 굉장히 도움이 되었던 글로써, 많은 분들이 쿠버네티스를 공부하는데에 도움이 되길 바라는 마음에서 번역해 보았습니다.
 

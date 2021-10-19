@@ -1,34 +1,69 @@
-name: 커피고래의 노트
-title: 커피고래의 노트
-encoding: utf-8
+name: "커피고래의 노트"
+title: "커피고래의 노트"
 description: "술 좋아하면 술고래, 커피 좋아하면 커피고래"
 repository: hongkunyoo/hongkunyoo.github.io
 meta_description: "술 좋아하면 술고래, 커피 좋아하면 커피고래"
-
-markdown: kramdown
-permalink: pretty
+email: hongkunyoo@gmail.com
 timezone: Asia/Seoul
-highlighter: rouge
-host: 0.0.0.0
-port: 80
-paginate: 10
-baseurl: /
+# baseurl: 
 domain_name: 'https://coffeewhale.com'
-google_analytics: 'UA-63572991-1'
-plugins:
-  - jekyll-paginate
-  - jekyll-sitemap
-  - jekyll-seo-tag
-  - jekyll-feed
-
-# Details for the RSS feed generator
-url:            'https://coffeewhale.com'
-author:         'hongkunyoo'
-
+url: 'https://coffeewhale.com'
+permalink: pretty
+logo: 'assets/images/logo.png'
+favicon: 'assets/images/favicon.png'
+author: hongkunyoo
+paginate: 12
+encoding: utf-8
+locale: en_us
+lang: en_us
+feed_items: 5
+# feed_update_period: daily
+# feed_update_frequency: 1
+highlighter: rouge
+markdown: kramdown
+kramdown:
+  input: GFM
+  auto_ids: true
+  syntax_highlighter: rouge
 defaults:
   # Posts defaults
   - scope:
       path: "" # an empty string here means all files in the project
       type: posts # Apply the default values below only to posts
     values:
-      image: /assets/images/landing/coffeewhale.png
+      image: /assets/images/landing/landing.png
+  - scope:
+      path: "about/**/*.pdf"
+    values:
+      sitemap: false
+  - scope:
+      path: "about/item.html"
+    values:
+      sitemap: false
+sass:
+  sass_dir: _sass
+  style: :compressed
+ganalytics: UA-63572991-1
+
+# Authors
+authors:
+  hongkunyoo:
+    name: hongkunyoo
+    display_name: hongkunyoo
+    email: hongkunyoo@gmail.com
+    web: https://coffeewhale.com
+    description: "커피고래"
+
+# Social
+# social:
+#   instagram: https://www.instagram.com/bootstrapstarter/
+#   facebook: https://www.facebook.com/bootstrapstartercom-346329609045284
+#   twitter: https://twitter.com/bstartercom
+
+# Plugins
+plugins: 
+- jekyll-paginate
+- jekyll-sitemap
+- jekyll-feed
+- jekyll-seo-tag
+- jekyll-archives

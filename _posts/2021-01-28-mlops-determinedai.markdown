@@ -3,7 +3,7 @@ layout: post
 title:  "[번역] 데이터 과학자들은 쿠버네티스에 관심이 없습니다 - MLOps"
 date:   2021-01-28 00:00:00
 categories: kubernetes mlops
-image: https://determined.ai/assets/images/blogs/kubernetes-bad/kubeflow-unicorns.png
+image: /assets/images/mlops/unicorns.png
 ---
 이 글은 [다음 포스트](https://determined.ai/blog/data-scientists-dont-care-about-kubernetes)를 읽고 공감하여 소개하고자 번역하였습니다. 머신러닝에서 쿠버네티스를 이용하면 효율적으로 모델을 학습 시킬 수 있습니다. 문제는 데이터 과학자들이 직접 쿠버네티스를 사용하기 불편하다는 점이 있습니다. 그 문제를 어떻게 해결하면 좋을까요?
 

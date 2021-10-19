@@ -3,6 +3,7 @@ layout: post
 title:  "GitHub Actions & Package Registry 사용기"
 date:   2019-10-14 00:00:00
 categories: cicd github
+image: /assets/images/github-action/landing.png
 ---
 얼마 전에 깃허브에서 자체적으로 CI/CD 플랫폼인 GitHub Actions를 Beta 공개하였죠. 그 동안 GitHub는 "나는 소스코드만 신경써서 관리해줄꺼야" 라는 입장을 취해왔는데 MS사가 깃허브를 인수한 이후로 조금 더 공격적으로 오픈소스 생태계를 장악하려고 하는게 아닌가 생각이 됩니다. 그것을 잘 보여주는 사례로 CI/CD 플랫폼 제공뿐만 아니라 소스코드를 빌드하고 난 artifact들을 저장하고 관리하고 배포할 수 있는 GitHub Package Registry라는 저장소까지 제공하기 시작했습니다. 이번 포스트에서 GitHub Actions & Package Registry가 어떤 서비스이고 어떻게 사용하는지 살펴보도록 하겠습니다.
 

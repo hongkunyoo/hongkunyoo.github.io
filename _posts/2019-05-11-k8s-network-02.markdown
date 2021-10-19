@@ -3,6 +3,7 @@ layout: post
 title:  "[번역] 쿠버네티스 네트워킹 이해하기#2: Services"
 date:   2019-05-11 00:00:00
 categories: k8s network
+image: /assets/images/k8s_network/landing02.png
 ---
 쿠버네티스 네트워킹 이해하기 시리즈 중 [첫번째 포스트](/k8s/network/2019/04/19/k8s-network-01)에서는 쿠버네티스가 가상 네트워크 device와 라우팅 규칙을 이용하여 한 Pod가 다른 Pod와 어떻게 통신하는지 알아봤습니다. 이번 글에서는 `Service`라는 리소스에 대해 알아보고 한 Pod가 어떻게 `Service`와 통신을 할 수 있는지 알아보도록 하겠습니다.
 

@@ -4,6 +4,7 @@ title:  "[기계학습] Slack을 이용한 Training 완료 알람 시계 만들�
 description: "slack을 이용하여 모델 학습 종료 알람을 받아봅시다"
 date:   2016-03-24 18:18:00
 categories: machine-learning ml slack
+image: /assets/images/slack_alarm.png
 ---
 
 slack을 이용하여 모델학습이 끝난 이후에 알람을 받도록 해봅시다.

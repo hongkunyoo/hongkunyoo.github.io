@@ -3,6 +3,7 @@ layout: post
 title:  "쿠버네티스 Argo workflow 소개"
 date:   2020-02-14 00:00:00
 categories: kubernetes workflow argo
+image: /assets/images/argo_wf/landing.png
 ---
 이번 포스트에서는 쿠버네티스 위에서 동작하는 workflow engine인 Argo workflow에 대해 소개하고 어떻게 활용할 수 있는지에 대해서 살펴보도록 하겠습니다.
 

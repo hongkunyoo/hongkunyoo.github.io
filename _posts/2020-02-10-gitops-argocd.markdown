@@ -3,6 +3,7 @@ layout: post
 title:  "GitOps와 ArgoCD"
 date:   2020-02-10 00:00:00
 categories: kubernetes gitops argocd
+image: /assets/images/gitops-argocd/landing.png
 ---
 오늘은 GitOps가 무엇인가에 대해서 알아보고 그 구현체인 ArgoCD에 대해서 살펴보는 시간을 가져보겠습니다.
 

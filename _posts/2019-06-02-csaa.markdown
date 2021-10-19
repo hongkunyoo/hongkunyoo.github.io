@@ -3,6 +3,7 @@ layout: post
 title:  "AWS Solutions Architect - Associate 취득 후기"
 date:   2019-06-02 00:00:00
 categories: certificate aws
+image: /assets/images/certificates/landing-aws.png
 ---
 회사에서 AWS 클라우드 플랫폼을 많이 이용하는데 막상 자격증은 가지고 있지 않았습니다. 이번 기회에 AWS 제품에 대해 완벽히 이해하고 공인된 자격증을 얻고자 공부하여 취득한 내용을 공유하고자 합니다.
 

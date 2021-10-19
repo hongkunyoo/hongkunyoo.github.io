@@ -3,6 +3,7 @@ layout: post
 title:  "Kubernetes-NGINX Ingress 인증 - Basic Auth"
 date:   2020-03-21 00:00:00
 categories: kubernetes nginx-ingress basic-auth
+image: /assets/images/basic_auth/landing.png
 ---
 쿠버네티스 NGINX Ingress 사용 시, 기본적인 인증 메커니즘을 추가하는 방법에 대해서 알아봅니다.
 

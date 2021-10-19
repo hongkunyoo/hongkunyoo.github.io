@@ -3,6 +3,7 @@ layout: post
 title:  "Kubernetes와 MLOps #1"
 date:   2019-01-10 21:30:00
 categories: kubernetes ml k8s docker machine-learning
+image: /assets/images/k8s_ml/landing.png
 ---
 저는 오늘 kubernetes에 대해 소개하고자 합니다. 사실 이미 인터넷상에는 kubernetes에 대해서 소개하는 글과 동영상들이 많이 있습니다. 또한 쿠버네티스를 이용하여 웹 서비스를 구축하는 예제도 많습니다. 저는 이와는 조금 다르게 기계학습 관점에서 쿠버네티스를 어떻게 활용할 수 있는지 소개하려 합니다.
 

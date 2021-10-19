@@ -3,6 +3,7 @@ layout: post
 title:  "[번역] 더 많은 데이터가 더 좋은 알고리즘을 이긴다 #2"
 date:   2015-10-29 20:00:00
 categories: bigdata
+image: /assets/images/bigdata-landing.png
 ---
 제가 적은 블로그 포스트 ['더 많은 데이터가 더 좋은 알고리즘을 이긴다'](http://anand.typepad.com/datawocky/2008/03/more-data-usual.html)가 많은 사람들의 관심을 이끌었습니다. 많은 의견들을 개인적으로 다 대답하기 힘들기 때문에, 몇몇은 여기 이 포스트에 남깁니다.
 
