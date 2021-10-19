@@ -103,7 +103,7 @@ qq {
 }
 
 .author-meta {
-    margin: 1.6rem 0;
+    margin: 0.6rem 0;
 }
 /* Location, website, and link */
 .author-profile .author-meta {
@@ -114,7 +114,7 @@ qq {
 }
 .author-meta span {
     display: inline-block;
-    margin: 0 2rem 1rem 0;
+    margin: 0 0.3rem 0rem 0;
     word-wrap: break-word;
 }
 .author-meta a {

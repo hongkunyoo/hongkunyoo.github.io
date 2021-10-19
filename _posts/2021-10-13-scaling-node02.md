@@ -5,7 +5,6 @@ date:   2021-10-13 00:00:00
 categories: kubernetes scale
 image: /assets/images/scalenode/landing02.png
 permalink: /:title
-# featured: true
 ---
 지난 포스트 ["[번역] 쿠버네티스 2,500대 노드 운영하기"](/scaling-node01)에 이어 OpenAI에서 7,500대의 노드를 운영한 경험을 공유한 글을 번역하였습니다.
 

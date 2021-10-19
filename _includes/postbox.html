@@ -1,21 +1,36 @@
 <!-- begin post -->
 {% assign author = site.authors[post.author] %}
+
+
+
 <div class="card">
-    <a href="{{ post.url | absolute_url }}">
-        {% if post.image %} <img class="rounded mb-4" src="{{ site.baseurl }}{{ post.image }}" alt="{{ post.title }}"> {% endif %}
-    </a>
-    <div class="card-block">
-        <h2 class="card-title h4 serif-font"><a href="{{ post.url | absolute_url }}">{{ post.title }}</a></h2>
-        <p class="card-text text-muted">{{ post.excerpt | strip_html | truncatewords:15 }}</p>
-        <div class="metafooter">
-            <div class="wrapfooter small d-flex align-items-center">
-                <span class="author-meta">
-                By  <span class="post-name"> {% if post.author %}{{ author.display_name }}{% else %}{{ site.author }}{% endif %}, </span>             
-                on <span class="post-date">{{ post.date | date_to_string }}</span>
-                </span>               
-                <div class="clearfix"></div>
+    <div class="row no-gutters m-2">
+        <div class="col-sm-5 p-2">
+            <a href="{{ post.url | absolute_url }}">
+                {% if post.image %} <img class="rounded" src="{{ site.baseurl }}{{ post.image }}" alt="{{ post.title }}"> {% endif %}
+            </a>
+        </div>
+        <!-- <div class="col-sm-1">
+        </div> -->
+        <div class="col-sm-7 d-flex flex-column">
+            <div class="card-body d-flex flex-column">
+                <a href="{{ post.url | absolute_url }}">
+                <h2 class="card-title h4 serif-font">{{ post.title }}</h2>
+                <p class="card-text text-muted">{{ post.excerpt | strip_html | truncatewords:20 }}</p>
+                </a>
+                <div class="metafooter _align-self-end mt-auto">
+                    <div class="wrapfooter small d-flex align-items-center">
+                        <span class="author-meta">
+                        <a href="/about"><span class="post-name"> {% if post.author %}{{ author.display_name }}{% else %}{{ site.author }}{% endif %}, </span></a>
+                        <span class="post-date">{{ post.date | date: "%Y-%m-%d" }}</span>
+                        </span>               
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+<hr/>
 </div>
 <!-- end post -->

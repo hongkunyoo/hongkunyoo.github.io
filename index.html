@@ -41,7 +41,7 @@ background: '/img/bg-index.jpg'
     <div class="row">
       {% for post in paginator.posts %}
       {% unless post.featured == true %}
-      <div class="col-md-6 mb-5">
+      <div class="col-md-12">
         {% include postbox.html %}
       </div>
       {% endunless %}
