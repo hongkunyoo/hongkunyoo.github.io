@@ -21,6 +21,6 @@ docs:
     url: /categories/#certificate
   - title: GitOps
     url: /categories/#gitops
-  - title: Authentication
+  - title: AuthN
     url: /categories/#authentication
     
