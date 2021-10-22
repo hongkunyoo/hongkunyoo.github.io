@@ -11,6 +11,9 @@ body {
 	color: #dee2e6;
 }
 
+.subitem {
+    margin-left: 20px;
+}
 /*.huge {
     font-size: 2em;
 }*/

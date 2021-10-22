@@ -1,0 +1,26 @@
+docs_list_title: 커피고래
+docs:
+
+- title: Home
+  url: /
+
+- title: About
+  url: /about
+
+- title: Categories
+  subitems: 
+  - title: K8s
+    url: /categories/#kubernetes
+  - title: MLOps
+    url: /categories/#mlops
+  - title: Machine Learning
+    url: /categories/#machine-learning
+  - title: Network
+    url: /categories/#network
+  - title: Certificate
+    url: /categories/#certificate
+  - title: GitOps
+    url: /categories/#gitops
+  - title: Authentication
+    url: /categories/#authentication
+    

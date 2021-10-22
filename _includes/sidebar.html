@@ -1,10 +1,22 @@
-<div class="sidebar sticky-top">        
+<div class="sidebar sticky-top">
     <div class="sidebar-section">
-        <h5><span>Newsletter</span></h5>
-        {% include newsletter.html %}
-    </div>
-    <div class="sidebar-section">
-        <h5><span>Your Ad Here</span></h5>
-        <img src="{{site.baseurl}}/assets/images/ad.png">
+        <h2>{{ site.data.navigation.docs_list_title }}</h2>
+        <ul>
+           {% for item in site.data.navigation.docs %}
+              {% if item["subitems"] %}
+                <li>
+                   <ul>
+                     <a href="#">{{ item["title"] }}</a>
+                     {% for subitem in item["subitems"] %}
+                        <li class="subitem"><a href="{{ subitem.url }}">{{ subitem.title }}</a></li>
+                     {% endfor %}
+                   </ul>
+                </li>
+              {% else %}
+                <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+              {% endif %}
+           {% endfor %}
+        </ul>
+
     </div>
 </div>

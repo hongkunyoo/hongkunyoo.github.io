@@ -13,6 +13,7 @@
 
 <!-- custom CSS - Remove this if you don't use it or choose to customize the stylesheet with sass-->
 <link href="{{ site.baseurl }}/assets/css/custom.css" rel="stylesheet">
+
 <!-- custom CSS end-->
     
 {% if jekyll.environment == "production" %}       
@@ -98,10 +99,12 @@ gtag('config', '{{site.ganalytics}}');
       </nav>
     </div>  
 
+
+
     
 <!-- Container
 ================================================== -->    
-<main class="container" style="margin-top: 40px">
+<main class="container-fluid" style="margin-top: 40px">
       {{ content }}  
 </main>
 
@@ -126,7 +129,6 @@ gtag('config', '{{site.ganalytics}}');
 <script src="{{ site.baseurl }}/assets/js/jquery.min.js"></script>
 <script src="{{ site.baseurl }}/assets/js/bootstrap.min.js"></script>
 <script src="{{ site.baseurl }}/assets/js/theme.js"></script>
-
     
 </body>
     
