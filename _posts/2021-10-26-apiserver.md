@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "kube-apiserver는 정말 그냥 API서버라구욧"
-date:   2021-10-21 00:00:00
+title:  "쿠버네티스 API서버는 정말 그냥 API서버라구욧"
+date:   2021-10-26 00:00:00
 categories: kubernetes
 image: /assets/images/apiserver/landing.png
 permalink: /:title
@@ -100,7 +100,7 @@ curl -k https://10.0.0.1:6443
 
 ### JWT
 
-일반적으로 어떤 서버의 security를 설정하기 위해 간단하면서도 손쉬운 방법으로 JWT를 사용할 수 있습니다. JWT란 서버가 서명한 JSON object로써 JWT를 가지고 있다는 말은 서버가 인증한 비밀번호 같은 것을 가지고 있다는 것을 의미할 수 있습니다. 더 자세한 내용은 [커피고래의 JWT](https://coffeewhale.com/kubernetes/authentication/http-auth/2020/05/03/auth02#json-web-token-jwt) 부분을 참고하시기 바랍니다.
+일반적으로 어떤 서버의 security를 설정하기 위해 간단하면서도 손쉬운 방법으로 JWT를 사용할 수 있습니다. JWT란 서버가 서명한 JSON object로써, JWT를 가지고 있다는 말은 서버가 인증한 비밀번호 같은 것을 가지고 있다는 것을 의미할 수 있습니다. 더 자세한 내용은 [커피고래의 JWT](https://coffeewhale.com/kubernetes/authentication/http-auth/2020/05/03/auth02#json-web-token-jwt) 부분을 참고하시기 바랍니다.
 
 JWT를 이용하여 서버에 호출하는 방법은 간단합니다. "Authorization" 헤더에 JWT 값을 넣으면 됩니다.
 
@@ -187,7 +187,9 @@ curl -k -H "Authorization: Bearer $TOKEN" https://10.0.0.1:6443
 `Pod`를 먼저 생성해 보겠습니다. `Pod` 생성 URL을 확인하기 위해 `--dry-run` 옵션과 함께 `verbose`를 8로 설정하여 호출해 봅니다.
 
 ```bash
+# Pod YAML 파일을 먼저 하나 만듭니다: mynginx.yaml
 kubectl run mynginx --image nginx --restart Never --dry-run=client -oyaml > mynginx.yaml
+# URL 정보를 확인하기 위해 verbosity를 8로 설정합니다. 실제로 생성하지 않기 위해 --dry-run 옵션을 사용합니다.
 kubectl apply -f mynginx.yaml -v 8 --dry-run=client
 # ...
 # ...
@@ -243,10 +245,11 @@ curl -v -k \
 
 ### Pod 리스트
 
-`default` 네임스페이스의 모든 `Pod`를 리스팅합니다.
+`default` 네임스페이스의 모든 `Pod`를 리스팅합니다. 아까와 동일한 URL에 이번에는 GET Method를 사용합니다.
 
 ```bash
 curl -v -k \
+        -X GET \
         -H "Authorization: Bearer $TOKEN" \
         https://10.0.0.1:6443/api/v1/namespaces/default/pods
 ```
@@ -259,6 +262,7 @@ curl -v -k \
 
 ```bash
 curl -v -k \
+        -X GET \
         -H "Authorization: Bearer $TOKEN" \
         https://10.0.0.1:6443/api/v1/namespaces/default/pods?watch=true
 ```
@@ -269,6 +273,7 @@ curl -v -k \
 
 ```bash
 curl -v -k \
+        -X GET \
         -H "Authorization: Bearer $TOKEN" \
         https://10.0.0.1:6443/api/v1/namespaces/default/pods/mynginx
 ```
@@ -279,13 +284,14 @@ curl -v -k \
 
 ```bash
 curl -v -k \
+        -X GET \
         -H "Authorization: Bearer $TOKEN" \
         https://10.0.0.1:6443/api/v1/namespaces/default/pods/mynginx/log
 ```
 
 ### Pod 삭제
 
-생성한 `Pod`를 삭제합니다.
+생성한 `Pod`를 삭제합니다. 이번에는 DELETE Method으로 호출합니다.
 
 ```bash
 curl -v -k \
@@ -297,10 +303,11 @@ curl -v -k \
 
 ### Node 리스트
 
-`Pod` 리소스 뿐만 아니라 다른 리소스도 동일하게 API로 호출할 수 있습니다. 예시에서는 노드 리스트를 가져오는 API입니다.
+`Pod` 리소스 뿐만 아니라 다른 리소스도 동일하게 API로 호출할 수 있습니다. 예시는 노드 리스트를 가져오는 API입니다.
 
 ```bash
 curl -v -k \
+        -X GET \
         -H "Authorization: Bearer $TOKEN" \
         https://10.0.0.1:6443/api/v1/nodes
 ```
@@ -328,14 +335,14 @@ kubectl get service -v 9
 
 ## OpenAPI V2 API 스펙 문서
 
-일반적으로 API는 API 스펙 문서를 제공합니다. 쿠버네티스도 OpenAPI V2 형식의 API 문서를 제공합니다. 그래서 이론상 `kubectl` 툴이 없다하더라도 이 API 스펙 문서만으로도 kube-apiserver를 전부 다룰 수 있습니다. (물론 간단하지는 않겠지만요.)
+일반적으로 API는 API 스펙 문서를 제공합니다. 쿠버네티스도 OpenAPI V2 형식의 API 스펙 문서를 제공합니다. 그래서 이론상 `kubectl` 툴이 없다하더라도 이 API 스펙 문서만으로도 kube-apiserver를 전부 다룰 수 있습니다. (물론 간단하지는 않겠지만요.)
 
 ```bash
 curl -k -H "Authorization: Bearer $TOKEN" https://10.0.0.1:6443/openapi/v2
 # 엄청나게 긴 json 파일 출력
 ```
 
-해당 json 파일을 저장하여 [OpenAPI Editor](https://editor.swagger.io)에 로드하면 kube-apiserver의 모든 API 명세를 다 볼 수 있습니다.(워낙 API가 많기 때문에 로딩하는데 시간이 굉장히 오래 걸리거나 브라우저가 죽을 수도 있습니다. API 스펙이 약 144000줄 정도 됩니다...)
+해당 json 객체를 파일로 저장하여 [OpenAPI Editor](https://editor.swagger.io)에 로드하면 kube-apiserver의 모든 API 명세를 다 볼 수 있습니다.(워낙 API가 많기 때문에 로딩하는데 시간이 굉장히 오래 걸리거나 브라우저가 죽을 수도 있습니다. API 스펙이 약 144000줄 정도 됩니다...)
 
 ![](/assets/images/kube-apiserver/openapi.png)
 
