@@ -38,6 +38,7 @@ https://srcco.de/posts/web-service-on-kubernetes-production-checklist-2019.html
 - All relevant code is instrumented with OpenTracing or OpenTelemetry
 - OpenTracing/OpenTelemetry semantic conventions are followed (incl. additional company conventions)
 - All outgoing HTTP calls have a defined timeout
+
 - HTTP connection pools are configured with sane values according to expected traffic
 - Thread pools and/or non-blocking async code is correctly implemented/configured
 - Database connection pools are sized correctly
