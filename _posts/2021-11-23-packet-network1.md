@@ -83,25 +83,28 @@ master# ip netns list
 
 네트워크 namespace를 연결하기 위해 `veth` 페어를 생성합니다. `veth` 페어는 두개의 장비를 이어주는 네트워크 케이블라고 생각하시면 이해하기 쉽습니다.
 
-
+{% raw %}
 ```bash
 master# ip link add veth-client type veth peer name veth-server
 master# ip link list | grep veth
 # 4: veth-server@veth-client: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
 # 5: veth-client@veth-server: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
 ```
+{% endraw %}
 
 ![](/assets/images/packet-life/03.png)
 
 
 `vetch` 페어 (케이블)은 호스트 네트워크 namespace에 존재합니다. 이것을 각 namespace(`client`와 `server`)로 옮깁니다.
 
+{% raw %}
 ```bash
 master# ip link set veth-client netns client
 master# ip link set veth-server netns server
 # 호스트 네트워크에는 더이상 veth이 보이지 않습니다.
 master# ip link list | grep veth
 ```
+{% endraw %}
 
 ![](/assets/images/packet-life/04.png)
 
@@ -109,6 +112,7 @@ Let’s verify the `veth` ends actually exist in the namespaces. We’ll start w
 
 `veth`가 각 namespace에 존재하는지 확인해 봅시다. `client` namespace부터 확인합니다.
 
+{% raw %}
 ```bash
 master# ip netns exec client ip link
 # 1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1
@@ -116,9 +120,11 @@ master# ip netns exec client ip link
 # 5: veth-client@if4: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
 #    link/ether ca:e8:30:2e:f9:d2 brd ff:ff:ff:ff:ff:ff link-netnsid 1
 ```
+{% endraw %}
 
 이번에는 `server` namespace를 확인합니다.
 
+{% raw %}
 ```bash
 master# ip netns exec server ip link
 # 1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1
@@ -126,9 +132,11 @@ master# ip netns exec server ip link
 # 4: veth-server@if5: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
 #    link/ether 42:96:f0:ae:f0:c5 brd ff:ff:ff:ff:ff:ff link-netnsid 0
 ```
+{% endraw %}
 
 이제 이 네트워크 인터페이스들에 IP를 할당하고 동작(up) 시킵니다.
 
+{% raw %}
 ```bash
 master# ip netns exec client ip address add 10.0.0.11/24 dev veth-client
 master# ip netns exec client ip link set veth-client up
@@ -155,11 +163,13 @@ master# ip netns exec server ip addr
 #    inet6 fe80::4096:f0ff:feae:f0c5/64 scope link
 #       valid_lft forever preferred_lft forever
 ```
+{% endraw %}
 
 ![](/assets/images/packet-life/05.png)
 
 ping 명령을 이용하여 두개의 네트워크 namespace가 연결되어 접근이 되는지 확인합니다.
 
+{% raw %}
 ```bash
 master# ip netns exec client ping 10.0.0.12
 # PING 10.0.0.12 (10.0.0.12) 56(84) bytes of data.
@@ -169,11 +179,13 @@ master# ip netns exec client ping 10.0.0.12
 # 64 bytes from 10.0.0.12: icmp_seq=4 ttl=64 time=0.077 ms
 # 64 bytes from 10.0.0.12: icmp_seq=5 ttl=64 time=0.079 ms
 ```
+{% endraw %}
 
 지금까지 두개의 서로 다른 네트워크 namespace를 연결해 보았습니다. namespace가 두개 밖에 없는 경우에는 큰 문제가 아니지만 매번 네트워크 namespace가 늘어날때 마다 이런 방식을 사용하는 것은 확장성 관점에서 비효율적입니다. namespace가 늘어나는 만큼 모든 namespace를 연결하기 위한 조합이 기하급수적으로 늘어나기 때문입니다.(`n*(n-1)/2`) 대신 리눅스 bridge를 만들어서 모든 네트워크 namespace들을 전부 이 bridge에 연결할 수 있습니다. 이것이 바로 도커가 같은 호스트에서 컨테이너 네트워크를 연결하는 방식입니다.
 
 이번에는 namespace들을 만들어서 bridge에 연결해 봅시다.
 
+{% raw %}
 ```bash
 # All in one
 BR=bridge1
@@ -199,13 +211,13 @@ ip addr add 172.30.0.1/24 dev $BR
 ip netns exec client1 ping 172.30.0.12 -c 5
 ip netns exec client1 ping 172.30.0.1 -c 5
 ```
+{% endraw %}
 
 ![](/assets/images/packet-life/06.png)
 
-Using the ping command, we can verify the two network namespaces have been connected and are reachable,
-
 bridge를 이용한 방법도 동일하게 두개의 namespace가 연결된 것을 확인할 수 있습니다.
 
+{% raw %}
 ```bash
 controlplane $ ip netns exec client1 ping 172.30.0.12 -c 5
 # PING 172.30.0.12 (172.30.0.12) 56(84) bytes of data.
@@ -215,18 +227,20 @@ controlplane $ ip netns exec client1 ping 172.30.0.12 -c 5
 # 64 bytes from 172.30.0.12: icmp_seq=4 ttl=64 time=0.070 ms
 # 64 bytes from 172.30.0.12: icmp_seq=5 ttl=64 time=0.107 ms
 ```
-
-Let’s ping the HOST_IP from the namespace,
+{% endraw %}
 
 `client1` namespace에서 호스트로 ping을 날려 봅시다.
 
+{% raw %}
 ```bash
 controlplane $ ip netns exec client1 ping $HOST_IP -c 2
 # connect: Network is unreachable
 ```
+{% endraw %}
 
 `Network is unreachable`라고 나오는데요, 이것은 정상입니다. 왜냐하면 새롭게 생성한 namespace에는 라우팅 정보가 설정되어 있지 않기 때문입니다. 기본 라우팅 정보를 입력합니다.
 
+{% raw %}
 ```bash
 # default G/W를 bridge로 향하게 합니다.
 controlplane $ ip netns exec client1 ip route add default via 172.30.0.1
@@ -242,11 +256,11 @@ controlplane $ ip netns exec client1 ping $HOST_IP -c 5
 # 5 packets transmitted, 5 received, 0% packet loss, time 3999ms
 # rtt min/avg/max/mdev = 0.053/0.100/0.129/0.029 ms
 ```
-
-Now the **'default'** route to reach the external network is the bridge, hence the namespaces can consume any external network services,
+{% endraw %}
 
 외부로 나가는 기본 라우팅 정보를 bridge로 향하게 만들었습니다. 그렇기 때문에 이제 각 namespace들이 외부로 연결이 가능하게 되었습니다.
 
+{% raw %}
 ```bash
 controlplane $ ping 8.8.8.8 -c 2
 # PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
@@ -256,11 +270,13 @@ controlplane $ ping 8.8.8.8 -c 2
 # 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
 # rtt min/avg/max/mdev = 3.403/3.610/3.817/0.207 ms
 ```
+{% endraw %}
 
 #### 외부에서 내부 네트워크로 접근하는 방법
 
 이제부터는 docker가 호스트에 이미 설치되어 있다고 가정하고 진행합니다. 보시다시피 아래와 같이 호스트에는 `docker0`이라는 bridge가 있습니다. 이 도커 bridge를 이용하여 앞으로의 데모를 진행하도록 하겠습니다.
 
+{% raw %}
 ```bash
 docker0   Link encap:Ethernet  HWaddr 02:42:e2:44:07:39
           inet addr:172.18.0.1  Bcast:172.18.0.255  Mask:255.255.255.0
@@ -270,24 +286,27 @@ docker0   Link encap:Ethernet  HWaddr 02:42:e2:44:07:39
           collisions:0 txqueuelen:0
           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
 ```
+{% endraw %}
 
 간단한 nginx 컨테이너를 실행하고 몇가지 정보를 추출합니다.
 
+{% raw %}
 ```bash
 controlplane $ docker run -d --name web --rm nginx
 # efff2d2c98f94671f69cddc5cc88bb7a0a5a2ea15dc3c98d911e39bf2764a556
 controlplane $ WEB_IP=`docker inspect -f "{{ .NetworkSettings.IPAddress }}" web`
-controlplane $ docker inspect web --format '{{ .NetworkSettings.SandboxKey }}'
+controlplane $ docker inspect web --format "{{ .NetworkSettings.SandboxKey }}"
 # /var/run/docker/netns/c009f2a4be71
 ```
+{% endraw %}
+
 
 도커는 `netns`를 기본 디렉토리 위치에 생성하지 않기 때문에 `ip netns list` 명령으로는 도커 생성한 네트워크 namespace를 볼 수 없습니다. (역자주: `netns` 명령을 사용하면 내부적으로 특정 디렉토리 위치에 관련 메터 정보를 저장합니다. 도커의 경우, 기본 디렉토리가 아닌 도커만의 다른 위치를 사용하기 때문에 기본 `ip netns list` 명령으로도 namespace를 볼 수 있도록 심볼릭 링크를 생성해야 합니다.) 이를 해결하기 위해 심볼릭 링크를 생성해 봅시다.
 
-Since Docker doesn’t create the `netns` in the default location, `ip netns list` doesn’t show this network namespace. We can create a symlink to the expected location to overcome that limitation.
-
+{% raw %}
 ```bash
 controlplane $ container_id=web
-controlplane $ container_netns=$(docker inspect ${container_id} --format '{{ .NetworkSettings.SandboxKey }}')
+controlplane $ container_netns=$(docker inspect ${container_id} --format "{{ .NetworkSettings.SandboxKey }}")
 controlplane $ mkdir -p /var/run/netns
 controlplane $ rm -f /var/run/netns/${container_id}
 controlplane $ ln -sv ${container_netns} /var/run/netns/${container_id}
@@ -297,11 +316,11 @@ controlplane $ ip netns list
 # server1 (id: 1)
 # client1 (id: 0)
 ```
-
-Let’s check the IP address in the **web** namespace,
+{% endraw %}
 
 **web** namespace안에서의 IP주소를 확인해 봅시다.
 
+{% raw %}
 ```bash
 controlplane $ ip netns exec web ip addr
 # 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1
@@ -313,19 +332,21 @@ controlplane $ ip netns exec web ip addr
 #     inet 172.18.0.3/24 brd 172.18.0.255 scope global eth0
 #       valid_lft forever preferred_lft forever
 ```
+{% endraw %}
 
 이번에는 도커 컨테이너의 IP주소를 확인합니다.
 
+{% raw %}
 ```bash
 controlplane $ WEB_IP=`docker inspect -f "{{ .NetworkSettings.IPAddress }}" web`
 controlplane $ echo $WEB_IP
 # 172.18.0.3
 ```
-
-It is very clear that the docker uses all the Linux namespaces and isolates things from the host. Let’s try to reach the WebApp that runs in the **web** network namespace from the HOST server.
+{% endraw %}
 
 이를 통해 도커가 리눅스 namespace를 이용하여 호스트 서버로부터 컨테이너의 네트워크를 격리한다는 것을 알 수 있습니다. 이제 호스트 서버에서 **web** namespace 안에서 실행되고 있는 nginx에 접근해 보겠습니다.
 
+{% raw %}
 ```bash
 controlplane $ curl $WEB_IP
 # <!DOCTYPE html>
@@ -352,18 +373,22 @@ controlplane $ curl $WEB_IP
 # </body>
 # </html>
 ```
+{% endraw %}
 
 정상적으로 접근이 되는 것을 확인했습니다. 그렇다면 이번에는 같은 호스트 서버가 아닌 외부에서 컨테이너 안에 있는 nginx로 접근이 가능할까요? 네, 가능합니다. 바로 포트포워딩 방식을 이용해서 말이죠.
 
+{% raw %}
 ```bash
 # 호스트 서버 80포트로 들어오는 트래픽을 nginx의 80포트로 포워딩합니다.
 controlplane $ iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination $WEB_IP:80
 controlplane $ echo $HOST_IP
 # $ 172.17.0.23
 ```
+{% endraw %}
 
 다른 서버에서 원래 호스트 IP로 웹서버를 접근해 봅시다.
 
+{% raw %}
 ```bash
 node01 $ curl 172.17.0.23
 # <!DOCTYPE html>
@@ -390,6 +415,7 @@ node01 $ curl 172.17.0.23
 # </body>
 # </html>
 ```
+{% endraw %}
 
 ![](/assets/images/packet-life/07.png)
 
@@ -426,6 +452,7 @@ CNCF에 정의된 CNI의 명세는 다음과 같습니다: [https://github.com/c
 
 #### 1단계: CNI plugin을 다운로드 받습니다.
 
+{% raw %}
 ```bash
 controlplane $ mkdir cni
 controlplane $ cd cni
@@ -448,9 +475,11 @@ controlplane $ tar -xvf cni-amd64-v0.4.0.tgz
 # ./cnitool
 # ./flannel
 ```
+{% endraw %}
 
 #### 2단계: CNI 설정 파일을 JSON 형식으로 정의합니다.
 
+{% raw %}
 ```bash
 cat > /tmp/00-demo.conf <<"EOF"
 {
@@ -471,6 +500,7 @@ cat > /tmp/00-demo.conf <<"EOF"
 }
 EOF
 ```
+{% endraw %}
 
 여기서 몇 가지 살펴 볼 CNI 설정들은 다음과 같습니다.
 
@@ -496,6 +526,7 @@ EOF
 
 아무 이미지를 사용해도 무방하나 쿠버네티스를 흉내내기 위해 `pause` 이미지를 사용합니다.
 
+{% raw %}
 ```bash
 controlplane $ container_id=pause_demo
 controlplane $ docker run --name $container_id -d --rm --network none kubernetes/pause
@@ -506,7 +537,7 @@ controlplane $ docker run --name $container_id -d --rm --network none kubernetes
 # Digest: sha256:b31bfb4d0213f254d361e0079deaaebefa4f82ba7aa76ef82e90b4935ad5b105
 # Status: Downloaded newer image for kubernetes/pause:latest
 # 763d3ef7d3e943907a1f01f01e13c7cb6c389b1a16857141e7eac0ac10a6fe82
-controlplane $ container_netns=$(docker inspect ${container_id} --format '{{ .NetworkSettings.SandboxKey }}')
+controlplane $ container_netns=$(docker inspect ${container_id} --format "{{ .NetworkSettings.SandboxKey }}")
 controlplane $ mkdir -p /var/run/netns
 controlplane $ rm -f /var/run/netns/${container_id}
 controlplane $ ln -sv ${container_netns} /var/run/netns/${container_id}
@@ -522,11 +553,13 @@ controlplane $ ip netns exec $container_id ifconfig
 #           collisions:0 txqueuelen:1
 #           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
 ```
+{% endraw %}
 
 Step 4: Invoke the CNI plugin with the CNI configuration file.
 
 #### 4단계: CNI 설정 파일과 함께 CNI plugin을 실행합니다.
 
+{% raw %}
 ```bash
 controlplane $ CNI_CONTAINERID=$container_id CNI_IFNAME=eth10 CNI_COMMAND=ADD CNI_NETNS=/var/run/netns/$container_id CNI_PATH=`pwd` ./bridge </tmp/00-demo.conf
 # 2020/10/17 17:32:37 Error retriving last reserved ip: Failed to retrieve last reserved ip: open /var/lib/cni/networks/demo_br/last_reserved_ip: no such file or directory
@@ -546,6 +579,7 @@ controlplane $ CNI_CONTAINERID=$container_id CNI_IFNAME=eth10 CNI_COMMAND=ADD CN
 #     },
 #     "dns": {}
 ```
+{% endraw %}
 
 - `CNI_COMMAND=ADD`: 실행동작 (`ADD/DEL/CHECK`)
 - `CNI_CONTAINER=pause_demo`: CNI에게 사용할 network namespace 이름을 전달
@@ -563,6 +597,7 @@ controlplane $ CNI_CONTAINERID=$container_id CNI_IFNAME=eth10 CNI_COMMAND=ADD CN
 
 직접 컨테이너의 내부 네트워크 설정을 확인해 봅시다.
 
+{% raw %}
 ```bash
 controlplane $ ip netns exec pause_demo ifconfig
 # eth10     Link encap:Ethernet  HWaddr 0a:58:0a:00:0a:02
@@ -584,9 +619,11 @@ controlplane $ ip netns exec pause_demo ip route
 # 1.1.1.1 via 10.0.10.1 dev eth10
 # 10.0.10.0/24 dev eth10  proto kernel  scope link  src 10.0.10.2
 ```
+{% endraw %}
 
 CNI가 bridge를 생성하고 앞서 정의한 대로 설정값들을 대신 세팅해 줬습니다.
 
+{% raw %}
 ```bash
 controlplane $ ifconfig
 # cni_net0  Link encap:Ethernet  HWaddr 0a:58:0a:00:0a:01
@@ -598,16 +635,20 @@ controlplane $ ifconfig
 #           collisions:0 txqueuelen:1000
 #           RX bytes:1174 (1.1 KB)  TX bytes:1545 (1.5 KB)
 ```
+{% endraw %}
 
 #### 6단계: 웹 서버를 실행하고 **`pause`** 컨테이너와 네트워크를 공유합니다.
 
+{% raw %}
 ```bash
 controlplane $ docker run --name web_demo -d --rm --network container:$container_id nginx
 # 8fadcf2925b779de6781b4215534b32231685b8515f998b2a66a3c7e38333e30
 ```
+{% endraw %}
 
 #### 7단계: pause 컨테이너 IP주소를 이용하여 웹 페이지를 요청합니다.
 
+{% raw %}
 ```bash
 controlplane $ curl `cat /var/lib/cni/networks/demo_br/last_reserved_ip`
 # <!DOCTYPE html>
@@ -634,6 +675,7 @@ controlplane $ curl `cat /var/lib/cni/networks/demo_br/last_reserved_ip`
 # </body>
 # </html>
 ```
+{% endraw %}
 
 이제 Pod의 정의에 대해서 살펴 봅시다.
 
