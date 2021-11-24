@@ -43,38 +43,40 @@ Calico는 다양한 플랫폼들을 지원합니다. 쿠버네티스, 오픈시�
 
 라우팅 테이블을 살펴 보면, 각각의 라우팅 테이블의 라우트 정보가 완벽하기 때문에 `Pod`가 특별한 지원 없이 L3 네트워크를 타고 서로 통신할 수 있다는 것을 확인할 수 있습니다. 어떤 모듈이 이런 라우팅 정보를 각 라우팅 테이블에 삽입하는 책임을 가졌을까요? 그리고 더 중요한 것은 어떻게 다른 노드에 들어 있는 라우팅 정보를 알아서 삽입할 수 있을까요? 마지막으로 디폴트 라우트는 왜 `169.254.1.1`라는 IP를 가진 G/W로 설정되어 있을까요? 하나씩 확인해 봅시다.
 
-The core components of Calico are Bird, Felix, ConfD, Etcd, and Kubernetes API Server. The data-store is used to store the config information(ip-pools, endpoints info, network policies, etc.). In our example, we will use Kubernetes as a Calico data store.
+먼저 Calico의 핵심 컴포넌트들은 다음과 같습니다: Bird, Felix, ConfD, Etcd 그리고 쿠버네티스 API서버입니다. Calico의 데이터 저장소는 ip-pools, endpoint 정보, 네트워크 정책 정보들을 저장하는데 사용합니다. Calico의 데이터 저장소로 직접 외부 Etcd를 구성하거나 쿠버네티스를 데이터 저장소로 활용할 수 있습니다. 이번 예시에서는 쿠버네티스를 Calico의 데이터 저장소로 사용하겠습니다.
 
 ## Calico 모듈과 그 기능들
 
 ### BIRD (BGP)
 
-The bird is a per-node BGP daemon that exchanges route information with BGP daemons running on other nodes. The common topology could be node-to-node mesh, where each BGP peers with every other.
+BIRD는 각 노드마다 존재하는 BGP 데몬입니다. 이 데몬은 다른 노드에 있는 BGP 데몬들과 라우팅 정보를 교환합니다. 대표적인 네트워크 구성(topology)으로는 노드별 full mesh가 있습니다. 이 구성은 각 노드끼리 모두 BGP peer를 가집니다.
 
 ![](/assets/images/packet-life/02-02.png)
 
-For large scale deployments, this can get messy. There are Route Reflectors for completing the route propagation (Certain BGP nodes can be configured as Route Reflectors) to reduce the number of BGP-BGP connections. Rather than each BGP system having to peer with every other BGP system with the AS, each BGP speaker instead peers with a router reflector. Routing advertisements sent to the route reflector are then reflected out to all of the other BGP speakers. For more information, please refer to the RFC4456.
+더 큰 규모의 클러스터에서는 이러한 방법에 한계를 가집니다. 그런 경우에는 Route Reflector 방법을 사용하여 일부 노드에서만 라우팅 정보를 전파하는 방법을 사용할 수 있습니다. 모든 노드끼리 peer를 구성하는게 아니라 특정 노드만 Route Reflector(RR)로 구성하여 RR로 설정된 노드와만 통신하여 라우팅 정보를 주고 받는 것입니다. 라우팅 정보를 전파해야 하는 경우 RR로만 전달하면 RR이 자신과 peer를 맺고 있는 BGP로 전파를 합니다. 더 자세한 내용은 RFC4456 문서를 참고하시기 바랍니다.
 
 ![](/assets/images/packet-life/02-03.png)
 
-The BIRD instance is responsible for propagating the routes to other BIRD instances. The default configuration is ‘BGP Mesh,’ and this can be used for small deployments. In large-scale deployments, it is recommended to use a Route reflector to avoid issues. There can be more than one RR to have high availability. Also, external rack RRs can be used instead of BIRD.
+BIRD 데몬은 다른 BIRD 데몬에 라우팅 정보를 전파하는 책임을 가집니다. 그리고 가장 기본적인 설정이 BGP full mesh입니다. 이것은 작은 규모의 클러스터에 적합합니다. 더 큰 규모의 클러스터에서는 Route Reflector 모드로 구성하는 것을 추천드립니다. 한개 이상의 RR을 두어서 가용성을 높힐 수 있고 BIRD 데몬 대신에 외부 물리 장비를 이용하는 방법도 있습니다. (역자주: 외부 물리 장비란, BGB 프로토콜을 수행하는 일반적인 라우터 장비를 의미합니다. 이것을 소프트웨어로 구현한 것이 BIRD라고 생각할 수 있습니다.)
 
 ### ConfD
 
-ConfD is a simple configuration management tool that runs in the Calico node container. It reads values (BIRD configuration for Calico) from etcd, and writes them to disk files. It loops through pools (networks and subnetworks) to apply configuration data (CIDR keys), and assembles them in a way that BIRD can use. So whenever there is a change in the network, BIRD can detect and propagate routes to other nodes.
+ConfD는 calico-node 컨테이너 안에서 동작하는 간단한 설정관리 툴입니다. 데이터 저장소로부터 BIRD 설정값을 읽어들이고 디스크 파일로 쓰기 작업도 수행합니다. 네트워크와 서브네트워크에 설정값을 반영하고(CIDR 값) BIRD 데몬이 이해할 수 있도록 설정값들을 변환합니다. 그래서 네트워크에 어떠한 변화가 생겼을 때, BIRD가 그 변화를 감지하여 라우팅 정보를 다른 peer로 전파할 수 있는 것입니다.
 
 ### Felix
 
-The Calico Felix daemon runs in the Calico node container and brings the solution together by taking several actions:
+Felix 데몬도 calico-node 컨테이너 안에서 동작하며 다음과 같은 동작을 수행합니다:
 
-- Reads information from the Kubernetes etcd
-- Builds the routing table
-- Configures the IPTables (kube-proxy mode IPTables)
-- Configures IPVS (kube-proxy mode IPVS)
+- 쿠버네티스 etcd로부터 정보를 읽습니다.
+- 라우팅 테이블을 만듭니다.
+- iptable을 조작합니다.(kube-proxy가 iptables 모드인 경우)
+- ipvs을 조작합니다.(kube-proxy가 ipvs 모드인 경우)
 
-Let’s look at the cluster with all Calico modules,
+이번에는 Calico 모듈들과 함께 앞서 살펴 본 클러스터 네트워크를 확인해 봅시다.
 
 ![](/assets/images/packet-life/02-04.png)
+
+**이번에는 뭔가 다른게 보이나요?**
 
 
 Something looks different? Yes, the one end of the veth is dangling, not connected anywhere; It is in kernel space.
