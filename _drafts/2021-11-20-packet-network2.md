@@ -76,78 +76,70 @@ Felix 데몬도 calico-node 컨테이너 안에서 동작하며 다음과 같은
 
 ![](/assets/images/packet-life/02-04.png)
 
-**이번에는 뭔가 다른게 보이나요?**
+**뭔가 이상한게 보이시나요?** 네, 맞습니다. veth(`cali123`)이 어디에도 연결되어 있지 않습니다(dangling). 커널공간(kernel space)에 있습니다.
 
+그렇다면 패킷이 어떻게 다른 노드로 라우팅이 될까요?
 
-Something looks different? Yes, the one end of the veth is dangling, not connected anywhere; It is in kernel space.
+1. 마스터 노드(왼쪽)에 있는 `Pod`가 `10.0.2.11`로 ping을 시도해 봅니다.
+2. `Pod`가 ARP 요청을 gateway로 보냅니다.
+3. 이를 통해 MAC 주소와 함께 ARP 응답을 받습니다.
+4. 잠깐만요, 누가 ARP 응답을 `Pod`로 보내나요?
 
-How the packet gets routed to the peer node?
+도대체 어떻게 된 일인가요? 어떻게 있지도 않는 IP에 대해서 패킷을 전송할 수 있는 것인가요?(역자주: 마스터 노드 입장에서 생각하자면 `10.0.2.11` IP는 워커 노드 내부에 존재하는 IP입니다. 호스트 네트워크의 IP도 아니기 때문에 워커 노드에 해당 IP가 존재하는지 조차도 모르는 상황입니다.) 찬찬히 다시 생각해 봅시다. 어떤 분들은 `169.254.1.1`가 IPv4 link-local 주소라는 것을 눈치챘을 수도 있습니다. 컨테이너의 기본 게이트웨이가 link-local 주소를 가리키고 있습니다. 컨테이너는 자신이 연결된 네트워크 인터페이스를 통해 해당 IP주소가 외부와 통신 가능하리라 기대합니다. 이 경우에는 컨테이너 내부에 있는 `eth0` 인터페이스가 되겠죠. 컨테이너는 외부로 통신하려고 할 때 해당 주소로 ARP 요청을 보낼 것입니다.(default gateway가 해당 인터페이스로 설정되어 있기 때문이죠.)
 
-1. Pod in master tries to ping the IP address 10.0.2.11
-2. Pod sends an ARP request to the gateway.
-3. Get’s the ARP response with the MAC address.
-4. Wait, who sent the ARP response?
-
-What’s going on? How can a container route at an IP that doesn't exist? Let’s walk through what’s happening. Some of you reading this might have noticed that 169.254.1.1 is an IPv4 link-local address. The container has a default route pointing at a link-local address. The container expects this IP address to be reachable on its directly connected interface, in this case, the containers eth0 address. The container will attempt to ARP for that IP address when it wants to route out through the default route.
-
-If we capture the ARP response, it will show the MAC address of the other end of the veth (cali123). So you might be wondering how on earth the host is replying to an ARP request for which it doesn’t have an IP interface. The answer is proxy-arp. If we check the host side VETH interface, we’ll see that proxy-arp is enabled.
+이 때, ARP 응답을 확인해 보면 반대편 네트워크 인터페이스의 MAC주소가 보일 것입니다(`cali123`). 여기서 문제가 생기는데요, 도대체 연결된 인터페이스도 없는 녀석이(`calico`) 어떻게 ARP 요청에 응답할 수 있을까요? 정답은 **proxy-arp**에 있습니다. 호스트쪽 `veth` 인터페이스(`cali123`)를 확인해 보면 해당 인터페이스에 `proxy-arp` 설정이 활성화(enabled)되어 있는 것을 볼 수 있습니다.
 
 ```bash
 master $ cat /proc/sys/net/ipv4/conf/cali123/proxy_arp
 # 1
 ```
 
-> “Proxy ARP is a technique by which a proxy device on a given network answers the ARP queries for an IP address that is not on that network. The proxy is aware of the location of the traffic’s destination, and offers its own MAC address as the (ostensibly final) destination.[1] The traffic directed to the proxy address is then typically routed by the proxy to the intended destination via another interface or via a tunnel. The process, which results in the node responding with its own MAC address to an ARP request for a different IP address for proxying purposes, is sometimes referred to as publishing”
+> "[Proxy ARP란](https://en.wikipedia.org/wiki/Proxy_ARP), 해당 네트워크에 존재하지 않는 proxy device가 ARP 요청을 대리하여 응답하는 기술을 말합니다. Proxy는 목적지의 실제 위치를 알고 있습니다(역자주: 예시에서는 proxy가 `10.0.2.11`의 위치를 이미 알고 있다는 뜻입니다.). 그렇기에 ARP 요청이 왔을 때, 본인의 MAC주소를 대신 전달해주어 ARP 요청자로 하여금 자신에게 패킷이 전달되도록 응답합니다. Proxy로 전달된 트래픽은 Proxy에 의해 실제 목적지로 전달됩니다. 이때 사용되는 인터페이스가 tunnel입니다. 이렇게 프록싱을 목적으로 ARP 요청에 대해 자신의 MAC 주소를 대신 응답하는 프로세스를 퍼블리싱(publishing)이라고도 부릅니다."
 
-Let’s take a closer look at the worker node,
+이번에는 워커노드를 자세히 살펴 봅시다.
 
 ![](/assets/images/packet-life/02-05.png)
 
-Once the packet reaches the kernel, it routes the packet based on routing table entries.
+패킷이 커널에 도달하게 되면 라우팅 테이블에 따라 패킷이 라우팅됩니다.
 
-#### Incoming traffic
+#### Incoming 트래픽
 
-1. The packet reaches the worker node kernel.
-2. Kernel puts the packet into the cali123.
-
+1. 패킷이 워커노드의 커널에 도달합니다.
+2. 커널이 `cali123` 인터페이스로 패킷을 보냅니다.
 
 
 ## 라우팅 모드
 
-Calico supports 3 routing modes; in this section, we will see the pros and cons of each method and where we can use them.
+Calico는 3가지 라우팅 모드를 지원합니다. 이번 섹션에서는 각각의 모드의 장단점에 대해서 살펴 보겠습니다.
 
-- IP-in-IP: default; encapsulated
-- Direct/NoEncapMode: unencapsulated (Preferred)
-- VXLAN: encapsulated (No BGP)
+- **IP-in-IP 모드**: 기본설정, encapsulated
+- **Direct / NoEncapMode 모드**: unencapsulated (추천모드)
+- **VXLAN 모드**: encapsulated (No BGP)
 
 ### IP-in-IP (Default)
 
-IP-in-IP is a simple form of encapsulation achieved by putting an IP packet inside another. A transmitted packet contains an outer header with host source and destination IPs and an inner header with pod source and destination IPs.
-Azure doesn’t support IP-IP (As far I know); therefore, we can’t use IP-IP in that environment. It’s better to disable IP-IP to get better performance.
+IP-in-IP 모드는 IP 패킷을 다른 IP 패킷에 집어 넣음으로써 간단하게 캡슐화하는 방법입니다. 바깥의 IP 패킷에는 호스트 서버의 출발지, 목적지 IP가 들어있고 안쪽 IP 패킷에는 `Pod`의 출발지, 목적지 정보가 들어 있습니다. Azure 클라우드는 IP-IP 모드를 지원하지 않기 때문에 해당 클라우드에서는 이 모드를 사용할 수 없습니다. 더 나은 성능을 위해 IP-IP 모드를 비활성화할 수 있습니다.
 
 ### NoEncapMode
 
-In this mode, send packets as if they came directly from the pod. Since there is no encapsulation and de-capsulation overhead, direct is highly performant.
-
-Source IP check must be disabled in AWS to use this mode.
+이 모드에서는 마치 `Pod`로부터 직접 전송된 것처럼 패킷을 전달합니다. 캡슐화와 디캡슐화가 수행되지 않기 때문에 성능면에서 우수한 장점을 가집니다. AWS에서는 Source IP check 기능을 반드시 비활성화 해야 합니다. (역자주: AWS EC2에는 패킷의 source IP가 패킷을 전송하는 호스트 IP와 동일한지 확인하는 기능이 있습니다. `NoEncapMode`에서는 source IP가 호스트 IP가 아닌 전송하는 `Pod` IP로 찍히기 때문에 해당 기능을 비활성화 하지 않으면 패킷이 전달되지 않습니다.)
 
 ### VXLAN
 
-VXLAN routing is supported in Calico 3.7+.
+VXLAN 라우팅 모드는 Calico 3.7 이상부터 지원됩니다.
 
-> VXLAN stands for Virtual Extensible LAN. VXLAN is an encapsulation technique in which layer 2 ethernet frames are encapsulated in UDP packets. VXLAN is a network virtualization technology. When devices communicate within a software-defined Datacenter, a VXLAN tunnel is set up between those devices. Those tunnels can be set up on both physical and virtual switches. The switch ports are known as VXLAN Tunnel Endpoints (VTEPs) and are responsible for the encapsulation and de-encapsulation of VXLAN packets. Devices without VXLAN support are connected to a switch with VTEP functionality. The switch will provide the conversion from and to VXLAN.
+> VXLAN은 Virtual Extensible LAN의 약자입니다. VXLAN은 네트워크 layer 2의 이더넷 프레임이 UDP 패킷으로 캡슐화되는 기술입니다. VXLAN은 네트워크 가상화 기술입니다. 네트워크 장비들이 소프트웨어 정의 데이터센터(software defined datacenter)에서 통신할 때, VXLAN tunnel이 이들 장비 사이에 위치하게 됩니다. 이 tunnel들은 물리 혹은 가상 스위치에 연결될 수 있습니다. 스위치 포트들은 VXLAN tunnel Endpoints(VTEPs)라고 불립니다. 이것은 VXLAN 패킷을 캡슐화 / 디캡슐화하는 기능을 담당합니다. VXLAN을 지원하지 않는 장비들을 VTEP 기능을 가진 스위치 포트에 연결하면 스위치가 알아서 VXLAN 기능을 수행합니다.
 
-VXLAN is great for networks that do not support IP-in-IP, such as Azure or any other DC that doesn’t support BGP.
+VXLAN은 Azure나 BGP 프로토콜을 지원하지 않는 데이터센터와 같이 IP-in-IP 모드를 지원하지 않는 네트워크에서 잘 사용될 수 있습니다.
 
 ![](/assets/images/packet-life/02-06.png)
 
 
 ## 라우팅 모드별 설정 방법
 
+### IPIP와 UnEncapMode
 
-### IPIP and UnEncapMode
-
-Check the cluster state before the Calico installation.
+Calico를 설치하기 전에 클러스터의 상태를 확인해 봅니다.
 
 ```bash
 master $ kubectl get nodes
@@ -167,17 +159,17 @@ master $ kubectl get pods --all-namespaces
 # kube-system   kube-scheduler-controlplane            1/1     Running   0          33s
 ```
 
-Check the CNI bin and conf directory. There won’t be any configuration file or the calico binary as the calico installation would populate these via volume mount.
+CNI 실행파일과 설정파일 디렉토리를 확인합니다. Calico가 아직 설치되지 않았기 때문에 기본적인 실행파일 외엔 별다른 파일들이 보이지 않습니다.
 
 ```bash
 master $ cd /etc/cni
 -bash: cd: /etc/cni: No such file or directory
 master $ cd /opt/cni/bin
 master $ ls
-bridge  dhcp  flannel  host-device  host-local  ipvlan  loopback  macvlan  portmap  ptp  sample  tuning  vlan
+# bridge  dhcp  flannel  host-device  host-local  ipvlan  loopback  macvlan  portmap  ptp  sample  tuning  vlan
 ```
 
-Check the IP routes in the master/worker node.
+마스터와 워커 노드의 IP 라우팅 테이블 정보를 확인합니다.
 
 ```bash
 master $ ip route
@@ -185,30 +177,30 @@ master $ ip route
 # 172.17.0.0/16 dev ens3 proto kernel scope link src 172.17.0.32
 # 172.18.0.0/24 dev docker0 proto kernel scope link src 172.18.0.1 linkdown
 
-curl https://docs.projectcalico.org/manifests/calico.yaml -O
-
 # Download and apply the calico.yaml based on your environment.
 curl https://docs.projectcalico.org/manifests/calico.yaml -O
+
 kubectl apply -f calico.yaml
 ```
 
-Let’s take a look at some useful configuration parameters,
+`calico.yaml` 파일에서 몇 가지 중요한 설정값들을 확인해 봅시다.
 
 ```bash
+# vim calico.yaml
 cni_network_config: |-
     {
       "name": "k8s-pod-network",
       "cniVersion": "0.3.1",
       "plugins": [
         {
-          "type": "calico", >>> Calico's CNI plugin
+          "type": "calico", # calico CNI plugin을 사용합니다.
           "log_level": "info",
           "log_file_path": "/var/log/calico/cni/cni.log",
           "datastore_type": "kubernetes",
           "nodename": "__KUBERNETES_NODE_NAME__",
           "mtu": __CNI_MTU__,
           "ipam": {
-              "type": "calico-ipam" >>> Calico's IPAM instaed of default IPAM
+              "type": "calico-ipam" # default ipam이 아닌, calico에서 제공하는 ipam을 사용합니다.
           },
           "policy": {
               "type": "k8s"
@@ -230,13 +222,13 @@ cni_network_config: |-
     }
 # Enable IPIP
 - name: CALICO_IPV4POOL_IPIP
-    value: "Always" >> Set this to 'Never' to disable IP-IP
-# Enable or Disable VXLAN on the default IP pool.
+    value: "Always" # IP-IP 모드를 비활성화하고 싶으면 Never라고 설정하면 됩니다.
+# Disable VXLAN
 - name: CALICO_IPV4POOL_VXLAN
-    value: "Never"
+    value: "Never"  # VXLAN은 비활성화하였습니다.
 ```
 
-Check POD and Node status after the calico installation.
+Calico 설치 이후 `Pod`와 `Node`의 상태를 확인합니다.
 
 ```bash
 master $ kubectl get pods --all-namespaces
@@ -259,76 +251,75 @@ master $ kubectl get nodes
 # node01         Ready    <none>   6m59s   v1.18.0
 ```
 
-Explore the CNI configuration as that’s what Kubelet needs to set up the network.
+CNI 설정을 살펴 봅니다. kubelet이 이 설정파일을 참고합니다.
 
 ```bash
 master $ cd /etc/cni/net.d/
 master $ ls
-10-calico.conflist  calico-kubeconfig
-master $
+# 10-calico.conflist  calico-kubeconfig
 master $
 master $ cat 10-calico.conflist
-{
-  "name": "k8s-pod-network",
-  "cniVersion": "0.3.1",
-  "plugins": [
-    {
-      "type": "calico",
-      "log_level": "info",
-      "log_file_path": "/var/log/calico/cni/cni.log",
-      "datastore_type": "kubernetes",
-      "nodename": "controlplane",
-      "mtu": 1440,
-      "ipam": {
-          "type": "calico-ipam"
-      },
-      "policy": {
-          "type": "k8s"
-      },
-      "kubernetes": {
-          "kubeconfig": "/etc/cni/net.d/calico-kubeconfig"
-      }
-    },
-    {
-      "type": "portmap",
-      "snat": true,
-      "capabilities": {"portMappings": true}
-    },
-    {
-      "type": "bandwidth",
-      "capabilities": {"bandwidth": true}
-    }
-  ]
-}
+# {
+#   "name": "k8s-pod-network",
+#   "cniVersion": "0.3.1",
+#   "plugins": [
+#     {
+#       "type": "calico",
+#       "log_level": "info",
+#       "log_file_path": "/var/log/calico/cni/cni.log",
+#       "datastore_type": "kubernetes",
+#       "nodename": "controlplane",
+#       "mtu": 1440,
+#       "ipam": {
+#           "type": "calico-ipam"
+#       },
+#       "policy": {
+#           "type": "k8s"
+#       },
+#       "kubernetes": {
+#           "kubeconfig": "/etc/cni/net.d/calico-kubeconfig"
+#       }
+#     },
+#     {
+#       "type": "portmap",
+#       "snat": true,
+#       "capabilities": {"portMappings": true}
+#     },
+#     {
+#       "type": "bandwidth",
+#       "capabilities": {"bandwidth": true}
+#     }
+#   ]
+# }
 ```
 
-Check the CNI binary files,
+CNI 실행파일을 다시 확인합니다. 아까와는 다르게 calico 관련한 실행파일들이 추가되었습니다.
 
 ```bash
 master $ ls
 # bandwidth  bridge  calico  calico-ipam dhcp  flannel  host-device  host-local  install  ipvlan  loopback  macvlan  portmap  ptp  sample  tuning  vlan
 ```
 
-
 Let’s install the calicoctl to give good information about the calico and let us modify the Calico configuration.
+
+Calico 설정을 변경하기 위해 `calicoctl`을 설치해 봅시다.
 
 ```bash
 master $ cd /usr/local/bin/
 master $ curl -O -L  https://github.com/projectcalico/calicoctl/releases/download/v3.16.3/calicoctl
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100   633  100   633    0     0   3087      0 --:--:-- --:--:-- --:--:--  3087
-100 38.4M  100 38.4M    0     0  5072k      0  0:00:07  0:00:07 --:--:-- 4325k
+#   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#                                  Dload  Upload   Total   Spent    Left  Speed
+# 100   633  100   633    0     0   3087      0 --:--:-- --:--:-- --:--:--  3087
+# 100 38.4M  100 38.4M    0     0  5072k      0  0:00:07  0:00:07 --:--:-- 4325k
 master $ chmod +x calicoctl
 master $ export DATASTORE_TYPE=kubernetes
 master $ export KUBECONFIG=~/.kube/config
-# Check endpoints - it will be empty as we have't deployed any POD
+# endpoint를 확인합니다. 아직 Pod를 생성하지 않았기 때문에 빈칸으로 보입니다.
 master $ calicoctl get workloadendpoints
-WORKLOAD   NODE   NETWORKS   INTERFACE
-master $
+# WORKLOAD   NODE   NETWORKS   INTERFACE
 ```
 
-Check BGP peer status. This will show the ‘worker’ node as a peer.
+BGP peer 상태를 확인합니다. 워커 노드가 peer로 보입니다.
 
 ```bash
 master $ calicoctl node status
@@ -342,6 +333,8 @@ master $ calicoctl node status
 ```
 
 Create a busybox POD with two replicas and master node toleration.
+
+busybox `Pod` 두개를 생성합니다. 마스터와 워커 노드에 각각 생성되기 위해 마스터 노드 `toleration`도 설정해 줍니다.
 
 ```bash
 cat > busybox.yaml <<"EOF"
@@ -373,7 +366,7 @@ master $ kubectl apply -f busybox.yaml
 # deployment.apps/busybox-deployment created
 ```
 
-Get Pod and endpoint status,
+`Pod`와 endpoint 상태를 확인합니다.
 
 ```bash
 master $ kubectl get pods -o wide
@@ -389,6 +382,8 @@ master $ calicoctl get workloadendpoints
 
 Get the details of the host side veth peer of master node busybox POD.
 
+마스터 노드에 있는 busybox `Pod`의 호스트쪽 인터페이스(veth peer)를 확인합니다.
+
 ```bash
 master $ ifconfig cali9861acf9f07
 # cali9861acf9f07: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1440
@@ -400,7 +395,7 @@ master $ ifconfig cali9861acf9f07
 #         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 ```
 
-Get the details of the master Pod’s interface,
+이번에는 `Pod` 내부쪽 인터페이스를 확인합니다.
 
 ```bash
 master $ kubectl exec busybox-deployment-8c7dc8548-x6ljh -- ifconfig
@@ -424,7 +419,7 @@ master $ kubectl exec busybox-deployment-8c7dc8548-x6ljh -- ip route
 master $ kubectl exec busybox-deployment-8c7dc8548-x6ljh -- arp
 ```
 
-Get the master node routes,
+마스터 노드의 라우팅 정보를 확인합니다.
 
 ```bash
 master $ ip route
@@ -438,6 +433,8 @@ master $ ip route
 ```
 
 Let’s try to ping the worker node Pod to trigger ARP.
+
+마스터 노드에 있는 `Pod` 안에서 
 
 ```bash
 master $ kubectl exec busybox-deployment-8c7dc8548-x6ljh -- ping 192.168.196.131 -c 1
