@@ -21,7 +21,7 @@ permalink: /:title
 3. CNI란 무엇인가?
 4. Pod 네트워크 namespace
 
-### 2탄 Calico CNI
+### [2탄 Calico CNI](/packet-network2)
 
 1. Calico CNI
 
@@ -697,4 +697,4 @@ controlplane $ curl `cat /var/lib/cni/networks/demo_br/last_reserved_ip`
 
 ## 마치며
 
-첫 번째 글은 쿠버네티스 네트워킹 이전에 컨테이너 생성 시점에서, CNI가 어떻게 컨테이너의 네트워크를 설정하는지 상세히 살펴 보았습니다. CNI의 역할은 컨테이너의 네트워크 연결과 삭제, IP주소 할당이라는 네트워크 연결성의 아주 기초적인 부분만 담당하는 것을 이해할 수 있는 시간이었습니다. 다음 편에서는 CNI plugin의 여러 구현체 중 유명한 Calico CNI에 대해서 살펴 보도록 하겠습니다.
+첫 번째 글은 쿠버네티스 네트워킹 이전에 컨테이너 생성 시점에서, CNI가 어떻게 컨테이너의 네트워크를 설정하는지 상세히 살펴 보았습니다. CNI의 역할은 컨테이너의 네트워크 연결과 삭제, IP주소 할당이라는 네트워크 연결성의 아주 기초적인 부분만 담당하는 것을 이해할 수 있는 시간이었습니다. [다음 편](/packet-network2)에서는 CNI plugin의 여러 구현체 중 유명한 Calico CNI에 대해서 살펴 보도록 하겠습니다.

@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "[번역]쿠버네티스 패킷의 삶 - #2"
-date:   2021-11-15 00:00:00
+date:   2021-12-01 00:00:00
 categories: kubernetes network
 image: /assets/images/packet-life/landing02.png
 permalink: /:title
@@ -10,10 +10,10 @@ permalink: /:title
 
 ## 쿠버네티스 패킷의 삶 시리즈
 
-1. [컨테이너 네트워킹과 CNI](): 리눅스 네트워크 namespace와 CNI 기초
-2. Calico CNI: CNI 구현체 중 하나인, Calico CNI 네트워킹
-3. [Pod 네트워킹](): Pod간, 클러스터 내/외부 네트워킹 설명
-4. [Ingress](): Ingress Controller에 대한 설명
+1. [컨테이너 네트워킹과 CNI](/packet-network1): 리눅스 네트워크 namespace와 CNI 기초
+2. Calico CNI: CNI 구현체 중 하나인, Calico CNI 네트워킹 ([원글](https://dramasamy.medium.com/life-of-a-packet-in-kubernetes-part-2-a07f5bf0ff14))
+3. Pod 네트워킹: Pod간, 클러스터 내/외부 네트워킹 설명
+4. Ingress: Ingress Controller에 대한 설명
 
 ---
 
@@ -382,7 +382,7 @@ master $ calicoctl get workloadendpoints
 
 Get the details of the host side veth peer of master node busybox POD.
 
-마스터 노드에 있는 busybox `Pod`의 호스트쪽 인터페이스(veth peer)를 확인합니다.
+마스터 노드에 있는 busybox `Pod`의 호스트쪽 인터페이스(veth peer)를 확인합니다. (`cali9861acf9f07` 인터페이스의 MAC 주소가 `ee:ee:ee:ee:ee:ee`인 것을 기억해주세요.)
 
 ```bash
 master $ ifconfig cali9861acf9f07
@@ -432,9 +432,7 @@ master $ ip route
 # 192.168.196.128/26 via 172.17.0.40 dev tunl0 proto bird onlink
 ```
 
-Let’s try to ping the worker node Pod to trigger ARP.
-
-마스터 노드에 있는 `Pod` 안에서 
+마스터 노드에 있는 `Pod` 안에서 워커노드에 있는 `Pod`로 ARP를 수행하기 위해 ping을 날려봅니다.
 
 ```bash
 master $ kubectl exec busybox-deployment-8c7dc8548-x6ljh -- ping 192.168.196.131 -c 1
@@ -445,15 +443,16 @@ master $ kubectl exec busybox-deployment-8c7dc8548-x6ljh -- arp
 # ? (169.254.1.1) at ee:ee:ee:ee:ee:ee [ether]  on eth0
 ```
 
-The MAC address of the gateway is nothing but the cali9861acf9f07. From now, whenever the traffic goes out, it will directly hit the kernel; And, the kernel knows that it has to write the packet into the tunl0 based on the IP route.
+게이트웨이의 MAC 주소가 `ee:ee:ee:ee:ee:ee`로 `cali9861acf9f07` 인터페이스를 가리킵니다. 이제부터 `Pod` 내부에서 트래픽이 밖으로 나갈 때마다 `cali9861acf9f07`를 통해 커널로 전달되고 커널에서는 IP 라우팅 테이블에 따라 해당 패킷을 `tunl0`으로 보내게 됩니다.
 
-Proxy ARP configuration,
+`cali9861acf9f07`의 Proxy ARP 설정을 확인해 봅니다.
 
 ```bash
 master $ cat /proc/sys/net/ipv4/conf/cali9861acf9f07/proxy_arp
 # 1
 ```
-**How the destination node handles the packet?**
+
+이번에는 목적지 노드(예시에서는 워커노드)에서는 전달 받은 패킷을 어떻게 처리하는지 알아 봅시다.
 
 ```bash
 node01 $ ip route
@@ -467,28 +466,27 @@ node01 $ ip route
 # 192.168.196.131 dev calib673e730d42 scope link
 ```
 
-Upon receiving the packet, the kernel sends the right veth based on the routing table.
+워커노드의 라우팅 정보를 살펴 보면, 커널이 `Pod` IP(`192.168.196.xxx`)에 따라 적절하게 해당하는 veth(`calixxx`)로 보내는 것을 알 수 있습니다.
 
-We can see the IP-IP protocol on the wire if we capture the packets. Azure doesn’t support IP-IP (As far I know); therefore, we can’t use IP-IP in that environment. It’s better to disable IP-IP to get better performance. Let’s try to disable and see what’s the effect.
+만약 지나가는 패킷을 열어 보면 IP-IP 프로토콜로 통신하는 것을 확인할 수 있을 것입니다. 더 나은 성능을 위해 이번에는 IP-IP 모드를 비활성화해보고 어떤 영향이 있는지 확인해 보겠습니다.
 
+### IP-IP 모드 비활성화
 
-### Disable IP-IP
-
-Update the ipPool configuration to disable IPIP.
+IP-IP 모드를 비활성화하기 위해서 ipPool 설정을 업데이트합니다.
 
 ```bash
 master $ calicoctl get ippool default-ipv4-ippool -o yaml > ippool.yaml
 master $ vi ippool.yaml
 ```
 
-Open the ippool.yaml and set the IPIP to ‘Never,’ and apply the yaml via calicoctl.
+앞서 설명 드린 것과 같이 `CALICO_IPV4POOL_IPIP` 값을 `Never`로 수정하여 apply 합니다.
 
 ```bash
 master $ calicoctl apply -f ippool.yaml
 # Successfully applied 1 'IPPool' resource(s)
 ```
 
-Recheck the IP route,
+다시 라우팅 정보를 확인합니다.
 
 ```bash
 master $ ip route
@@ -501,9 +499,7 @@ master $ ip route
 # 192.168.196.128/26 via 172.17.0.40 dev ens3 proto bird
 ```
 
-The device is no more tunl0; it is set to the management interface of the master node.
-
-Let’s ping the worker node POD and make sure all works fine. From now, there won’t be any IPIP protocol involved.
+`tunl0`이라는 디바이스가 더 이상 보이지 않고 마스터노드의 물린 인터페이스(`ens3`)로 설정되어 있습니다. 워커노드의 `Pod`에 ping을 보내어 정상적으로 작동하는지 확인해 봅니다. 이제는 더 이상 IP-IP 프로토콜로 동작하지 않을 것입니다.
 
 ```bash
 master $ kubectl exec busybox-deployment-8c7dc8548-x6ljh -- ping 192.168.196.131 -c 1
@@ -514,20 +510,22 @@ master $ kubectl exec busybox-deployment-8c7dc8548-x6ljh -- ping 192.168.196.131
 # round-trip min/avg/max = 0.653/0.653/0.653 ms
 ```
 
-Note: Source IP check should be disabled in AWS environment to use this mode.
+> 참고: AWS 환경에서 해당 모드를 사용하려면 `Source IP check`이 비활성화 되었는지 확인하기 바랍니다.
 
 ### VXLAN
 
-Re-initiate the cluster and download the calico.yaml file to apply the following changes,
+VXLAN을 테스트해 보기 위한 가장 깔끔한 방법은 클러스터를 다시 구성하는 것입니다. 클러스터를 재설치하고 `calico.yaml` 파일을 다시 받아 봅시다.
 
-1. Remove bird from livenessProbe and readinessProbe
+
+1. `livenessProbe`와 `readinessProbe`에서 Bird를 삭제합니다.
+
 ```yaml
-		  livenessProbe:
+          livenessProbe:
             exec:
               command:
               - /bin/calico-node
               - -felix-live
-              - -bird-live >> Remove this
+              - -bird-live # --> 이 부분을 삭제합니다.
             periodSeconds: 10
             initialDelaySeconds: 10
             failureThreshold: 6
@@ -536,10 +534,10 @@ Re-initiate the cluster and download the calico.yaml file to apply the following
               command:
               - /bin/calico-node
               - -felix-ready
-              - -bird-ready >> Remove this
+              - -bird-ready # --> 이 부분을 삭제합니다.
 ```
 
-2. Change the calico_backend to ‘vxlan’ as we don’t need BGP anymore.
+2. calico_backend를 `vxlan`으로 변경합니다.
 
 ```yaml
 kind: ConfigMap
@@ -550,20 +548,25 @@ metadata:
 data:
   # Typha is disabled.
   typha_service_name: "none"
-  # Configure the backend to use.
+  # 여기를 vxlan으로 수정합니다.
   calico_backend: "vxlan"
-3. Disable IPIP
-# Enable IPIP
-- name: CALICO_IPV4POOL_IPIP
-    value: "Never" # --> Set this to 'Never' to disable IP-IP
-# Enable or Disable VXLAN on the default IP pool.
-- name: CALICO_IPV4POOL_VXLAN
-    value: "Never"
 ```
 
-Let’s apply this new yaml.
+3. IP-IP 모드를 비활성화합니다.
+
+```yaml
+# Enable IPIP
+- name: CALICO_IPV4POOL_IPIP
+    value: "Never" # IP-IP 모드 비활성화
+- name: CALICO_IPV4POOL_VXLAN
+    value: "Always"
+```
+
+이 YAML 파일을 적용하고 라우팅 정보를 확인합니다.
 
 ```bash
+master $ kubectl apply -f calico.yaml
+
 master $ ip route
 # default via 172.17.0.1 dev ens3
 # 172.17.0.0/16 dev ens3 proto kernel scope link src 172.17.0.15
@@ -581,7 +584,7 @@ master $ ip route
 #         TX errors 0  dropped 11 overruns 0  carrier 0  collisions 0
 ```
 
-Get the POD status,
+`Pod` 정보를 확인합니다.
 
 ```bash
 master $ kubectl get pods -o wide
@@ -589,7 +592,8 @@ master $ kubectl get pods -o wide
 # busybox-deployment-8c7dc8548-8bxnw   1/1     Running   0          11s   192.168.49.67     controlplane   <none>           <none>
 # busybox-deployment-8c7dc8548-kmxst   1/1     Running   0          11s   192.168.196.130   node01         <none>           <none>
 ```
-Ping the worker node POD from
+
+마스터 노드에 있는 `Pod`의 라우팅 정보를 확인합니다.
 
 ```bash
 master $ kubectl exec busybox-deployment-8c7dc8548-8bxnw -- ip route
@@ -597,10 +601,11 @@ master $ kubectl exec busybox-deployment-8c7dc8548-8bxnw -- ip route
 # 169.254.1.1 dev eth0 scope link
 ```
 
-Trigger the ARP request,
+외부로 ping을 날리고 ARP 테이블을 다시 확인합니다.
 
 ```bash
 master $ kubectl exec busybox-deployment-8c7dc8548-8bxnw -- arp
+
 master $ kubectl exec busybox-deployment-8c7dc8548-8bxnw -- ping 8.8.8.8
 # PING 8.8.8.8 (8.8.8.8): 56 data bytes
 # 64 bytes from 8.8.8.8: seq=0 ttl=116 time=3.786 ms
@@ -609,23 +614,27 @@ master $ kubectl exec busybox-deployment-8c7dc8548-8bxnw -- arp
 # ? (169.254.1.1) at ee:ee:ee:ee:ee:ee [ether]  on eth0
 ```
 
-The concept is as the previous modes, but the only difference is that the packet reaches the vxland, and it encapsulates the packet with node IP and its MAC in the inner header and sends it. Also, the UDP port of the vxlan proto will be 4789. The etcd helps here to get the details of available nodes and their supported IP range so that the vxlan-calico can build the packet.
+이전 방식과 전체적으로는 비슷해 보입니다. 다른 점은 패킷이 vxlan에 도달한다는 것이고 도달하게 되면 노드의 IP와 MAC 주소를 안쪽 헤더에 캠슐화하여 전송한다는 것입니다. 그리고 vxlan 프로토콜의 UDP 포트는 4789이라는 점입니다. vxlan-calico가 패킷을 캡슐화하기 위해 라우팅 가능한 노드 정보와 할당 가능한 IP 대역 등에 대한 정보는 etcd를 통해 얻습니다.
 
-Note: VxLAN mode needs more processing power than the previous modes.
+> 참고: VXLAN은 이전 모드보다 더 많은 프로세싱 파워가 필요합니다.
 
 ![](/assets/images/packet-life/02-07.png)
 
-### Disclaimer
+### 밝히는 사실 (Disclaimer)
 
-This article does not provide any technical advice or recommendation; if you feel so, it is my personal view, not the company I work for.
+> 다음 글은 원저자가 밝히는 내용입니다.
+
+이 글은 특정 기술에 대한 조언이나 추천을 하지 않습니다. 필자가 속한 회사와는 무관하게 개인적인 의견임을 밝힙니다.
 
 ### References
 
-- https://docs.projectcalico.org/
-- https://www.openstack.org/videos/summits/vancouver-2018/kubernetes-networking-with-calico-deep-dive
-- https://kubernetes.io/
-- https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.2/manage_network/calico.html
-- https://github.com/coreos/flannel
+- [https://docs.projectcalico.org/](https://docs.projectcalico.org/)
+- [https://www.openstack.org/videos/summits/vancouver-2018/kubernetes-networking-with-calico-deep-dive](https://www.openstack.org/videos/summits/vancouver-2018/kubernetes-networking-with-calico-deep-dive)
+- [https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.2/manage_network/calico.html](https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.2/manage_network/calico.html)
+- [https://github.com/coreos/flannel](https://github.com/coreos/flannel)
 
 
 ## 마치며
+
+이번 포스트에서는 많이 사용되는 CNI 구현체 중에 하나인 Calico CNI가 구체적으로 어떻게 동작하는지에 대해서 살펴 보았습니다. 다음 포스트에서는 쿠버네티스 네트워킹의 중요한 축을 담당하는 `kube-proxy`와 `iptables`에 대해서 집중적으로 알아보겠습니다.
+  
