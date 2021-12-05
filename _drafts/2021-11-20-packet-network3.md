@@ -31,27 +31,27 @@ permalink: /:title
 
 ![](/assets/images/packet-life/03-01.png)
 
-Practically, the Pods in a Deployment should use a Load-Balancer type of entity to expose the application as the app is stateless, and there will be more than one Pod hosting the application. Load-Balancer type of entity is called ‘Service’ in Kubernetes.
+실무에서는 `Deployment`를 사용할 때, 앞단에 로드밸런서를 두고 어플리케이션을 노출 시킵니다. 그리고 한개 이상의 `Pod`를 사용하죠. 쿠버네티스에서 이 로드밸런서를 `Service`라고 부릅니다.
 
-## Pod-to-external
+## Pod - 외부 통신
 
-For the traffic that goes from pod to external addresses, Kubernetes uses [SNAT](). What it does is replace the pod’s internal source IP:port with the host’s IP:port. When the return packet comes back to the host, it rewrites the pod’s IP:port as the destination and sends it back to the original pod. The whole process is transparent to the original pod, who doesn’t know the address translation.
+`Pod`로부터 외부로 나가는 트래픽에 쿠버네티스는 [SNAT](https://en.wikipedia.org/wiki/Network_address_translation)를 사용합니다. 바로 `Pod`의 내부 IP:PORT를 호스트 서버의 IP:PORT로 치환하는 일을 수행하죠. 요청에 대해 응답이 오는 경우 그것을 다시 `Pod`의 IP:PORT로 바꿔서 원래의 `Pod`로 트래픽을 전달해 줍니다. `Pod` 입장에서는 이 모든 프로세스가 수행된지 전혀 모릅니다.
 
-## Pod-to-Service
-
+## Pod- Service 통신
 
 ### ClusterIP
-Kubernetes has a concept called “service,” which is simply an L4 load balancer in front of pods. There are several different types of services. The most basic type is called ClusterIP. This type of service has a unique VIP address that is only routable inside the cluster.
 
-It would not be easy to send traffic to a particular application using just pod IPs. The dynamic nature of a Kubernetes cluster means pods can be moved, restarted, upgraded, or scaled in and out of existence. Additionally, some services will have many replicas, so we need some way to load balance between them.
+쿠버네티스에는 "Service"라는 개념이 있습니다. 이것은 간단히 말해 `Pod` 앞단에 위치하는 L4 로드밸런서입니다. 몇 가지 종류의 `Service`가 있습니다. 그 중 가장 기본적인 종류로 `ClusterIP`가 있습니다. 이 서비스는 클러스터 내부에서 라우팅 가능한 고유의 VIP(가상 IP)를 가집니다.
 
-Kubernetes solves this problem with Services. A Service is an API object that maps a single virtual IP (VIP) to a set of pod IPs. Additionally, Kubernetes provides a DNS entry for each service’s name and virtual IP so that services can be easily addressed by name.
+`Pod` IP만으로는 특정 어플리케이션에 트래픽을 보내는 것은 쉽지 않습니다. 왜냐하면 쿠버네티스 환경에서는 `Pod`가 쉽게 이동하고, 재시작되고, 업그레이드되고 확장되고 사라지기 때문에 굉장히 동적입니다. 또한 `replicas`의 개수를 늘리게 되면 한개 이상의 `Pod`가 생성됨으로 이들간에 트래픽을 분산할 수 있는 방법이 있어야 합니다.
 
-The mapping of virtual IPs to pod IPs within the cluster is coordinated by the kube-proxy process on each node. This process sets up either iptables or IPVS to automatically translate VIPs into pod IPs before sending the packet out to the cluster network. Individual connections are tracked, so packets can be properly de-translated when they return. IPVS and iptables can load balancing of a single service virtual IP into multiple pod IPs, though IPVS has much more flexibility in the load balancing algorithms it can use. Virtual IP doesn’t actually exist in the system interface; it lives in iptable.
+그래서 쿠버네티스에서는 `Service`라는 객체를 두어 이 문제를 해결했습니다. `Service`는 단일 가상IP(VIP)를 특정 `Pod`들로 트래픽을 전달해 주는 끝점(엔드포인트)입니다. 또한 쿠버네티스는 `Service`의 이름을 이용하여 DNS 서비스를 제공합니다. 그렇기 때문에 각 서비스들은 이름으로 쉽게 찾을 수 있습니다.
+
+VIP를 `Pod` IP로 매핑해 주는 작업은 각 노드의 `kube-proxy`에 의해 수행됩니다. `kube-proxy`는 `iptables`나 `IPVS`를 이용하여 트래픽이 호스트 노드를 떠나기 전에 VIP를 `Pod` IP로 매핑 시키는 작업을 수행합니다. 개별 커넥션들은 트래킹이 됩니다. 그렇기에 패킷들이 리턴될 때 적절하게 재변환되어 돌아옵니다. `IPVS` 혹은 `iptables`를 이용하여 VIP를 여러 `Pod` IP로 부하를 분산합니다. 참고로 부하 분산을 위한 다양한 알고리즘을 사용하기에는 `IPVS`가 더 좋습니다. 가상IP (VIP)는 살제로 시스템 네트워크 인터페이스에 존재하지 않습니다. 단지 `iptable` 안에서만 존재합니다.
 
 ![](/assets/images/packet-life/03-02.png)
 
-> ‘Service’ definition from the Kubernetes document — An abstract way to expose an application running on a set of Pods as a network service. With Kubernetes you don’t need to modify your application to use an unfamiliar service discovery mechanism. Kubernetes gives Pods their own IP addresses and a single DNS name for a set of Pods, and can load-balance across them.
+> 쿠버네티스 공식 페이지의 `Service` 정의: `Service`는 `Pod`를 네트워크 서비스로 어플리케이션을 노출 시키기 위한 추상화된 방법을 제공합니다. 쿠버네티스에서는 서비스 탐색(역자주: 서비스의 끝점을 알아내기 위한 방법)을 위해 특별한 방법을 사용하지 않아도 됩니다. 단지 서비스의 이름만 알고 있으면 됩니다. 쿠버네티스는 각 `Pod`마다 고유의 IP주소를 제공하고 그곳들을 묶어서 단일한 DNS 이름을 부여하여 로드를 분산 시킵니다.
 
 - FrontEnd Deployment:
 
@@ -139,21 +139,21 @@ spec:
     app: auth
 ```
 
-Now the FrontEnd Pod can connect to the backend via the ClusterIP or the DNS entry added by the Kubernetes. A cluster-aware DNS server, such as CoreDNS, watches the Kubernetes API for new Services and creates a set of DNS records for each one. If DNS has been enabled throughout your cluster, all Pods should automatically resolve Services by their DNS name.
+위와 같이 쿠버네티스 manifest를 생성하면 FrontEnd Pod들이 BackEnd Pot들을 ClusterIP나 DNS 이름으로 접근할 수 있게 됩니다. 클러스터 내에 존재하는 DNS 서버가 (예를 들어, CoreDNS) 쿠버네티스 API를 통해 `Service`를 관찰하고 있다가 새로운 `Service`가 생기게 되면 그에 해당하는 DNS record를 생성합니다. 클러스터 전체에 DNS가 활성화되어 있다면 모든 `Pod`들이 자동으로 `Service`를 이름으로 DNS 주소를 얻을 수 있습니다.
 
 ![](/assets/images/packet-life/03-03.png)
 
-### NodePort (External-to-Pod)
+### NodePort (외부 - Pod 통신)
 
-Now we have the DNS that can be used to communicate between the services in the cluster. However, the external requests can’t reach the service that lives inside the cluster as the IP address are virtual and Private.
+이제 쿠버네티스 내부적으로 DNS를 통해 서로 통신할 수 있는 메커니즘을 살펴 보았습니다. 하지만 클러스터 외부에서는 클러스터 내부에 존재하는 `Service`로 접근하지는 못합니다. 왜냐하면 `Service`가 제공하는 VIP는 가상IP이고 내부IP이기 때문입니다.
 
-Let’s try to reach the frontEnd Pod IP address from the external server. (Note: At this point, no service has been created for the FrontEnd service)
+외부 서버에서 frontEnd `Pod` IP로 접근을 시도해 봅시다.
 
 ![](/assets/images/packet-life/03-04.png)
 
-Can’t reach the Pod IP as it is a private IP address that can’t be routable.
+보시다시피, 클라이언트에서는 내부 IP주소인 FrontEnd 주소로 접근하지 못합니다.
 
-Let’s create a NodePort service to expose the FrontEnd service to the external world. If you set the type field to NodePort, the Kubernetes control plane allocates a port from a range specified by --service-node-port-range flag (default: 30000-32767). Each node proxies that port (the same port number on every Node) into your Service. Your Service reports the allocated port in its `.spec.ports[*].nodePort` field.
+그럼 FrontEnd를 외부 세계에 노출 시키기 위해 `NodePort` 타입의 서비스를 생성해 봅시다. `type` 필드를 `NodePort`라고 수정하면 쿠버네티스는 `--service-node-port-range` 옵션에 의해 정해진 포트 대역대 안에서(기본적인 대역대: `30000`-`32767`) 특정 포트를 하나 할당합니다. 그러면 모든 노드에서 해당 포트에 대해 `Service`로 트래픽을 라우팅합니다. `Service`는 해당 포트의 이름을 `nodePort`라 부르며 `.spec.ports[*].nodePort` 필드에 정의됩니다.
 
 ```yaml
 apiVersion: v1
@@ -165,49 +165,47 @@ spec:
   selector:
     app: webapp
   ports:
-      # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
     - port: 80
       targetPort: 80
-      # Optional field
-      # By default and for convenience, the Kubernetes control plane will allocate a port from a range (default: 30000-32767)
+      # 기본적으로 생략하면 쿠버네티스가 대신 포트를 하나 할당해주고 사용자가 직접 할당할 수도 있습니다.
       nodePort: 31380
-...
 ```
 
 ![](/assets/images/packet-life/03-05.png)
 
-Now we can access the frontend service via `<anyClusterNode>:<nodePort>`. If you want a specific port number, you can specify a value in the nodePort field. The control plane will either allocate you that port or report that the API transaction failed. This means that you need to take care of possible port collisions yourself. You also have to use a valid port number, one that's inside the range configured for NodePort use.
+이제 FrontEnd 서비스를 `<아무 NodeIP>:<nodePort>`로 접근할 수 있게 되었습니다.(역자주: `<아무 NodeIP>`란 쿠버네티스 클러스터를 구성하고 있는 노드(마스터, 워커 노드 둘다) 중 아무 호스트 IP를 의미합니다.) 특정 포트를 지정하고 싶다면 `nodePort` 필드의 값을 직접 지정하면 됩니다. 쿠버네티스 마스터가 해당 포트를 할당해주거나 실패하면 에러 리포트를 줄 것입니다. 이 뜻은 포트 충돌을 유념해야 한다는 것입니다. 또한 `NodePort`에 사용되는 허용 가능한 포트 대역 안에서 포트 번호를 선택해야 합니다.(`--service-node-port-range`)
 
-## External Traffic Policy
+## 외부 트래픽 정책(ExternalTrafficPolicy)
 
-> ExternalTrafficPolicy denotes if this Service desires to route external traffic to node-local or cluster-wide endpoints. “Local” preserves the client source IP and avoids a second hop for NodePort type services, but risks potentially imbalanced traffic spreading. “Cluster” obscures the client source IP and may cause a second hop to another node, but should have good overall load-balancing
+> 외부 트래픽 정책(ExternalTrafficPolicy)이란 외부 트래픽에 대한 응답으로 `Service`가 노드 안(Local)에서만 응답할지 Cluster 전체(Cluster)로 나아가서 응답할지 결정하는 옵션입니다. "Local" 타입은 client 소스IP를 유지하고 네트워크 hop이 길어지지 않게 막아줍니다. 하지만 잠재적으로 트래픽 분산에 대한 불균형을 가져 올 수 있습니다.  "Cluster" 타입은 client의 소스IP를 가리고 네트워크 hop을 길게 만들지만 전체적으로 부하가 분산되도록 해줍니다.
 
+더 자세한 내용을 이어서 말씀 드리겠습니다.
 
 ### Cluster Traffic Policy
 
-This is the default external traffic policy for Kubernetes Services. The assumption here is that you always want to route traffic to all pods (across all the nodes) running a service with equal distribution.
+이 옵션은 `Service`의 기본 옵션입니다. 이 옵션은 당신이 트래픽을 모든 노드 전반에 걸쳐 보내고 싶어한다는 것을 전제로 합니다. 그렇기에 부하가 고르게 분산됩니다.
 
-One of the caveats of using this policy is that you may see unnecessary network hops between nodes as you ingress external traffic. For example, if you receive external traffic via a NodePort, the NodePort SVC may (randomly) route traffic to a pod on another host when it could have routed traffic to a pod on the same host, avoiding that extra hop out to the network.
+이 옵션의 한가지 단점은 불필요한 네트워크 hop을 증가시킨다는 것에 있습니다. 예를 들어, `NodePort`를 통해 외부 트래픽을 받게 될 때, 운 없게도 `NodePort` 서비스의 트래픽을 전달 받는 `Pod`가 없는 노드로 요청이 갈 수 있습니다. 이런 경우에는 해당 노드에는 전달 받을 `Pod`가 없기 때문에 추가적인 hop을 걸쳐 다른 노드에 위치한 `Pod`로 트래픽이 전달되게 됩니다.
 
-Packet flow in Cluster traffic policy is as follows,
+Cluster 타입에서의 패킷 흐름은 다음과 같습니다:
 
-- client sends the packet to node2:31380
-- node2 replaces the source IP address (SNAT) in the packet with its own IP address
-- node2 replaces the destination IP on the packet with the pod IP
-- packet is routed to node 1 or 3, and then to the endpoint
-- the pod’s reply is routed back to node2
-- the pod’s reply is sent back to the client
+- 사용자가 `node2_IP:31380`으로 패킷을 보냅니다.
+- `node2`는 출발지 IP주소를 자신의 노드 IP로 변경합니다.(SNAT)
+- `node2`는 목적지 IP주소를 전달 받을 `Pod` IP로 변경합니다.
+- (`node2`에 전달 받을 `Pod`이 없을 경우) `node1`이나 `node3`으로 hop을 건너게 됩니다.
+- 패킷을 전달 받은 `Pod`는 `node2`로 다시 패킷을 응답합니다.
+- `node2`를 통해서 사용자에게 패킷이 응답됩니다.
 
 ![](/assets/images/packet-life/03-06.png)
 
 
 ### Local Traffic Policy
 
-With this external traffic policy, kube-proxy will add proxy rules on a specific NodePort (30000–32767) only for pods that exist on the same node (local) instead of every pod for a service regardless of where it was placed.
+이 옵션에서는 `kube-proxy`가 전달 받을 `Pod`가 있는 노드에만 `NodePort`를 엽니다. (역자주: 예를 들어 `node1`, `node2`에만 전달 받을 `Pod`가 있는 경우, 해당 노드에만 `NodePort`를 엽니다. Cluster 모드에서는 모든 노드에 `NodePort`가 열립니다.)
 
-You’ll notice that if you try to set externalTrafficPolicy: Local on your Service, the Kubernetes API will require you are using the LoadBalancer or NodePort type. This is because the “Local” external traffic policy is only relevant for external traffic, which only applies to those two types.
+`externalTrafficPolicy`를 `Local`는 `Service` 타입이 `NodePort`이거나 `LoadBalancer` 일 때만 동작합니다. 외부 트래픽을 받을 때만 의미 있기 때문입니다.
 
-If you set service.spec.externalTrafficPolicy to the value Local, kube-proxy only proxies proxy requests to local endpoints and does not forward traffic to other nodes. This approach preserves the original source IP address. If there are no local endpoints, packets sent to the node are dropped, so you can rely on the correct source-ip in any packet processing rules you might apply a packet that makes it through to the endpoint.
+이 옵션을 사용하게 되면 `kube-proxy`는 `Pod`가 있는 노드에만 포트를 열고 그 외에는 트래픽을 전달하지 않고 drop 시킵니다. 이로써, client의 소스IP가 보존될 수 있습니다.(역자주: 다른 노드로 네트워크 hop을 건너지 않기 때문에 클라이언트 IP가 보존됩니다.)
 
 ```yaml
 ---
@@ -217,34 +215,30 @@ metadata:
   name: frontend
 spec:
   type: NodePort
-  externalTrafficPolicy: Local
+  externalTrafficPolicy: Local   # <-- 기본적으로는 Cluster이지만 사용자의 요구에 따라서 Local로 변경 가능합니다.
   selector:
     app: webapp
   ports:
-      # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
     - port: 80
       targetPort: 80
-      # Optional field
-      # By default and for convenience, the Kubernetes control plane will allocate a port from a range (default: 30000-32767)
       nodePort: 31380
-...
 ```
 
-Packet flow in Local traffic policy as follows,
+Local 타입에서의 패킷 흐름은 다음과 같습니다:
 
-- client sends the packet to node1:31380, which does have endpoints
-- node1 routes packet to the endpoint with the correct source IP
-- node1 won’t route the packet to node3 as the policy is Local
-- the client sends a packet to node2:31380, which doesn't have any endpoints
-- packet is dropped
+- 사용자가 `Pod` endpoint가 존재하는 `node1` 서버의 `31380` 포트로 패킷을 전송합니다.
+- `node1` 서버는 해당 트래픽을 클라이언트의 소스 IP를 유지한채 `Pod`로 전달합니다. 
+- `node1`은 해당 트래픽을 다른 곳으로 라우팅하지 않습니다. (`Local`로 설정했기 때문에)
+- 사용자가 `node2:31380`(Pod endpoint가 없는 노드)로 보내게 되는 경우에는
+- 해당 패킷이 버려집니다.(dropped)
 
 ![](/assets/images/packet-life/03-07.png)
 
 ![](/assets/images/packet-life/03-08.png)
 
-### Local traffic policy in LoadBalancer Service type
+### Local traffic policy와 LoadBalancer type과의 조합
 
-If you’re running on Google Kubernetes Engine/GCE, setting the same service.spec.externalTrafficPolicy field to Local forces nodes without Service endpoints to remove themselves from the list of nodes eligible for load-balanced traffic by deliberately failing health checks. So there won’t be any traffic drops. This model is great for applications that ingress a lot of external traffic and avoid unnecessary hops on the network to reduce latency. We can also preserve true client IPs since we no longer need SNAT traffic from a proxying node! However, the biggest downsides to using the “Local” external traffic policy, as mentioned in the Kubernetes docs, is that traffic to your application may be imbalanced.
+만약 GCP나 AWS와 같이 클라우드 서비스 위에서 쿠버네티스를 운영하는 경우, `externalTrafficPolicy`값을 `Local`로 설정하면 클라우드에서 제공하는 로드밸런서의 health check가 실패하게 되어 고의적으로 해당 노드로 트래픽이 전달되지 않게 됩니다.(역자주: 전달 받을 `Pod`가 없는 노드인 경우 패킷이 drop됨으로 해당 노드의 health check가 실패하게 됩니다.) 그렇기 때문에 실제적으로는 트래픽 drop이 발생하지 않게 됩니다.(그전에 로드밸런서에서 트래픽을 해당 노드로 보내지 않기 때문에) 이런 구조는 외부 트래픽이 많은 어플리케이션에서 불필요한 네트워크 hop을 없애서 지연시간(latency)를 줄여줍니다. 또한 실제 사용자의 소스 IP를 보존해주고 노드에서 SNAT 수행을 필요하지 않아도 되게 만들어 줍니다.(네트워크 hop을 거치지 않기 때문에) 하지만 외부 트래픽 정책을 `Local`로 설정할 경우, 가장 큰 단점은, 앞서 말씀 드린 것처럼 트래픽을 고르게 분산하지 못한다는 점이 있습니다.
 
 ![](/assets/images/packet-life/03-09.png)
 
@@ -274,7 +268,7 @@ This is how the TCP connection works between pod and service; The sequence of ev
 
 GIF visualization:
 
-![](/assets/images/packet-life/03-10.png)
+![](/assets/images/packet-life/03-10.gif)
 
 
 ## iptables
