@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Helm Operator 소개"
+title:  "Helm Operator (Helm Controller) 소개"
 date:   2020-05-13 00:00:00
 categories: kubernetes gitops helm
 image: /assets/images/helm-op/landing.jpg
@@ -207,6 +207,11 @@ helm status jenkins-dev
 사용자는 `HelmRelease` 리소스를 생성한 것이 전부지만 실제로 helm chart까지 완벽하게 서비스가 배포되는 것을 확인할 수 있습니다. 이렇게 helm operator를 잘 활용하면 복잡한 쿠버네티스 어플리케이션들도 `HelmRelease` YAML 파일들로만 컴팩트하게 관리할 수 있게 됩니다.
 
 ![](/assets/images/helm-op/05.png)
+
+
+## Update
+
+2021년 현 시점에서 [helm-operator](https://github.com/fluxcd/helm-operator)는 maintenance 모드에 있으며 같은 회사에서 [helm-controller](https://fluxcd.io/docs/components/helm/)라는 이름으로 새롭게 나왔습니다. 컨셉 및 사용법은 거의 동일함으로 바꿔서 사용하는데 전혀 문제가 없습니다.
 
 ## 마치며
 
