@@ -25,12 +25,12 @@ permalink: /:title
 
 1. Calico CNI
 
-### 3탄 Pod 네트워킹
+### [3탄 Service 네트워킹](/packet-network3)
 
 1. Pod - Pod 통신
 2. Pod - 외부 통신
 3. Pod - Service 통신
-4. 외부 - Pod 통신
+4. 외부 통신
 5. 외부 트래픽 정책
 6. Kube-Proxy
 7. iptable rules 처리 흐름

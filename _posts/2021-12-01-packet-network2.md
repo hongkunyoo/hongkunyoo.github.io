@@ -12,7 +12,7 @@ permalink: /:title
 
 1. [컨테이너 네트워킹과 CNI](/packet-network1): 리눅스 네트워크 namespace와 CNI 기초
 2. Calico CNI: CNI 구현체 중 하나인, Calico CNI 네트워킹 ([원글](https://dramasamy.medium.com/life-of-a-packet-in-kubernetes-part-2-a07f5bf0ff14))
-3. Pod 네트워킹: Pod간, 클러스터 내/외부 네트워킹 설명
+3. [Service 네트워킹: Service, 클러스터 내/외부 네트워킹 설명](/packet-network3)
 4. Ingress: Ingress Controller에 대한 설명
 
 ---
