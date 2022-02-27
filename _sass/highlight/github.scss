@@ -10,7 +10,13 @@
   background-color: #f8f8f8;
   border: 1px solid #ccc;
   padding: 6px 10px;
-  border-radius: 3px;
+  border-radius: 0.5em;
+  
+  padding: 1em 1em 1em;
+  margin: 1em -0.5em;
+  border-radius: 0.5em;
+  box-shadow: 0 0.3em 0.8em rgba(0, 0, 0, 0.3);
+
 }
 
 .highlight {

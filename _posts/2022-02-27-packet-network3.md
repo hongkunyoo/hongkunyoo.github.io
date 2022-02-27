@@ -1,12 +1,12 @@
 ---
 layout: post
 title:  "[번역]쿠버네티스 패킷의 삶 - #3"
-date:   2022-02-26 00:00:00
+date:   2022-02-27 00:00:00
 categories: kubernetes network
 image: /assets/images/packet-life/landing03.png
 permalink: /:title
 ---
-쿠버네티스 패킷의 삶 #3 시작합니다. Pod 네트워크가 동작하는 방법, Service - Pod 트래픽이 어떻게 전달되는지 알아 봅시다.
+쿠버네티스 패킷의 삶 #3에서는 Service 네트워크가 동작하는 방법에 대해 심층적으로 알아 봅니다.
 
 ## 쿠버네티스 패킷의 삶 시리즈
 

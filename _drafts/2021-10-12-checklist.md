@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "[번역] 쿠버네티스 위에 프로덕션 레벨의 웹앱을 배포하기 위한 체크리스트"
+title:  "[번역]쿠버네티스 위에 프로덕션 레벨의 웹앱을 배포하기 위한 체크리스트"
 date:   2021-10-12 00:00:00
 categories: kubernetes checklist
 image: /assets/images/scalenode/landing.png
@@ -30,40 +30,41 @@ https://srcco.de/posts/web-service-on-kubernetes-production-checklist-2019.html
 - 코드 버전들이 고정되어 있는가
 - 모든 관련 코드들이 OpenTracking과 OpenTelemtry에 측정되는가
 - OpenTracing/OpenTelemetry 시멘틱이 컨벤션을 따르는가
-- 모든 외부 요청 HTTP API는 timeout이 정의가 되어있는가
-- 
+- 모든 outbound 요청 HTTP API는 timeout이 정의가 되어있는가
+- HTTP 커넥션 풀이 트래픽 양에 맞춰 적절하게 설정되어 있는가
+- 쓰레드 풀과 non-blocking async 코드가 적절하게 구현되어 있는가
+- DB 풀이 적절하게 설정되어 있는가
+- retry, 재시작 정책이 종속된 서비스에 적용되어 있는가
+- 서킷 브레이커가 구축되어 있는가
+- 비즈니스 요구사항에 맞게 서킷 브레이커 fallback이 구현되어 있는가
+- 부하분산 / rate limit 메커니즘이 구현되어 있는가
+- 모니터링을 위해 어플리케이션 메트릭이 노출되어 있는가 (Prometheus scrapping)
+- 어플리케이션 로그 포맷이 정의되어 있는가
+- 에러에 대해서 어플리케이션이 명시적으로 죽는가
+- 동료들에 의해 코드가 리뷰되었는가
 
-- Application's code repository (git) has clear instructions on how to develop, how to configure, and how to contribute changes (important for emergency fixes)
-- Code dependencies are pinned (i.e. hotfix changes do not accidentally pull in new libraries)
-- All relevant code is instrumented with OpenTracing or OpenTelemetry
-- OpenTracing/OpenTelemetry semantic conventions are followed (incl. additional company conventions)
-- All outgoing HTTP calls have a defined timeout
 
-- HTTP connection pools are configured with sane values according to expected traffic
-- Thread pools and/or non-blocking async code is correctly implemented/configured
-- Database connection pools are sized correctly
-- Retries and retry policies (e.g. backoff with jitter) are implemented for dependent services
-- Circuit breakers are implemented
-- Fallbacks for circuit breakers are defined according to business requirements
-- Load shedding / rate limiting mechanisms are implemented (could be part of provided infrastructure)
-- Application metrics are exposed for collection (e.g. to be scraped by Prometheus)
-- Application logs go to stdout/stderr
-- Application logs follow good practices (e.g. structured logging, meaningful messages), log levels are clearly defined, and debug logging is disabled for production by default (with option to turn on)
-- Application container crashes on fatal errors (i.e. it does not enter some unrecoverable state or deadlock)
-- Application design/code was reviewed by a senior/principal engineer
+### 보안 & 컴플라이언스
 
-### Security & Compliance
-- Application can run as unprivileged user (non-root)
-- Application does not require a writable container filesystem (i.e. can be mounted read-only)
-- HTTP requests are authenticated and authorized (e.g. using OAuth)
-- Mechanisms to mitigate Denial Of Service (DOS) attacks are in place (e.g. ingress rate limiting, WAF)
-- A security audit was conducted
-- Automated vulnerability checks for code / dependencies are in place
-- Processed data is understood, classified (e.g. PII), and documented
-- Threat model was created and risks are documented
-- Other applicable organizational rules and compliance standards are followed
+- 어플리케이션이 non-root 유저로 동작하는가
+- 컨테이너에 writable file system이 필요하지는 않는가
+- HTTP 요청에 대해 AuthN & AuthZ이 되고 있는가
+- DOS 공격에 대해 완화할 수 있는 메커니즘이 설계되어 있는가
+- 보안 auditing이 수행되고 있는가
+- 코드 & 패키지에 대해 자동 취약점 검사가 수행되고 있는가
+- 처리된 데이터가 분류되고 문서화되고 있는가
+- 위협 모델이 존재하고 리스크가 문서화 되는가
+- 다른 조직의 컴플라이언스 규칙을 잘 따르고 있는가
 
 ### CI/CD
+
+- 코드 변화에 대해 lint가 자동으로 수행되고 있는가
+- 배포 과정에서 자동 테스트가 이루어지고 있는가
+- 운영 배포에 사람이 개입하는 경우가 있는가
+- 관련된 모든 팀 멤버가 배포하고 롤백할 수 있는가
+- 운영에 배포된 어플리케이션에 대해 스모크 테스트가 존재하며 자동 롤백이 되는가
+
+
 - Automated code linting is run on every change
 - Automated tests are part of the delivery pipeline
 - No manual operations are needed for production deployments

@@ -517,7 +517,7 @@ master $ kubectl exec busybox-deployment-8c7dc8548-x6ljh -- ping 192.168.196.131
 VXLAN을 테스트해 보기 위한 가장 깔끔한 방법은 클러스터를 다시 구성하는 것입니다. 클러스터를 재설치하고 `calico.yaml` 파일을 다시 받아 봅시다.
 
 
-1. `livenessProbe`와 `readinessProbe`에서 Bird를 삭제합니다.
+#1. `livenessProbe`와 `readinessProbe`에서 Bird를 삭제합니다.
 
 ```yaml
           livenessProbe:
@@ -537,7 +537,7 @@ VXLAN을 테스트해 보기 위한 가장 깔끔한 방법은 클러스터를 �
               - -bird-ready # --> 이 부분을 삭제합니다.
 ```
 
-2. calico_backend를 `vxlan`으로 변경합니다.
+#2. calico_backend를 `vxlan`으로 변경합니다.
 
 ```yaml
 kind: ConfigMap
@@ -552,7 +552,7 @@ data:
   calico_backend: "vxlan"
 ```
 
-3. IP-IP 모드를 비활성화합니다.
+#3. IP-IP 모드를 비활성화합니다.
 
 ```yaml
 # Enable IPIP

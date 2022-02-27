@@ -49,8 +49,24 @@ qq {
    width: 90%;
 }
 
+.nanum-font {
+  font-family: 'NanumSquareRound';
+}
 
+.nanumB-font {
+ font-family: 'NanumSquareRoundB';
+}
 
+.nanumEB-font {
+ font-family: 'NanumSquareRoundEB';
+}
+
+.language-plaintext {
+    background-color: rgba(0, 0, 0, 0.04);
+    padding: 0.3em;
+    border-radius: 0.3em;
+    color: #e83e8c;
+}
 
 .author-image {
     -webkit-box-sizing: border-box;

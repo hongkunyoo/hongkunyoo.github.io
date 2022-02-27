@@ -270,10 +270,10 @@ span.post-name,span.post-date,span.author-meta {
 
 span.post-read-more a {
 	color:rgba(0,0,0,.44);
-     align-items: center;
+    align-items: center;
     display: inline-block;
     float: right;
-     width: 30px;
+    width: 30px;
     height: 30px;
     line-height: 30px;
     text-align: center;
@@ -320,13 +320,15 @@ span.post-name a,span.post-read-more a:hover {
 }
 
 blockquote {
-	border-left:4px solid #222;
-	padding:0 0 0 20px;
-	font-style:italic;
-	color:rgba(0,0,0,.5);
-    margin-left:30px;
     font-size: .9em;
+    background: #f7f7f7;
+    border-left: 8px solid #afafaf;
+    margin: 30px 00px 30px 30px;
+    padding: 2em 30px 1em 30px;
+    border-radius: 8px;
+    color: #4f575e !important;
 }
+
 .featured-image {
     display: block;
     margin-bottom: 2rem;
@@ -547,7 +549,7 @@ background-color: #fff;
 
 .article-post .h1, .article-post .h2, .article-post .h3, .article-post .h4, .article-post .h5, .article-post .h6, .article-post h1, .article-post h2, .article-post h3, .article-post h4, .article-post h5, .article-post h6 {
     font-weight: 600;
-    font-family: PT Sans;
+    font-family: 'NanumSquareRoundEB';
     margin-top: 3rem;
 }
 
