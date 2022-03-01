@@ -13,7 +13,7 @@ permalink: /:title
 1. [컨테이너 네트워킹과 CNI](/packet-network1): 리눅스 네트워크 namespace와 CNI 기초
 2. [Calico CNI](/packet-network2): CNI 구현체 중 하나인, Calico CNI 네트워킹
 3. Service 네트워킹: Service, 클러스터 내/외부 네트워킹 설명([원글](https://dramasamy.medium.com/life-of-a-packet-in-kubernetes-part-3-dd881476da0f))
-4. Ingress: Ingress Controller에 대한 설명
+4. [Ingress](/packet-network4): Ingress Controller에 대한 설명
 
 ---
 

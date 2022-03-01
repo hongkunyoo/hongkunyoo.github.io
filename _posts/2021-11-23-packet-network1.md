@@ -37,7 +37,7 @@ permalink: /:title
 8. Network 정책
 
 
-### 4탄 Ingress
+### [4탄 Ingress](/packet-network4)
 
 1. Ingress Controller
 2. Ingress 예제
