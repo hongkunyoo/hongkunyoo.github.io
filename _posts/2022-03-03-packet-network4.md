@@ -235,4 +235,3 @@ Metal LB에 대한 소개로 조훈님의 발표도 참고해 주시기 바랍�
 
 사실 이번 블로그 원글 내용은 약간 용두사미로 흘러가서 번역을 하지 않을까도 생각했지만 그래도 기왕하는거 끝까지 번역하기로 하였습니다. 이 글을 읽고 Ingress에 대한 조금 더 자세한 내용이 궁금하시다면 [쿠버네티스 네트워킹 이해하기#3: Ingress 편](https://coffeewhale.com/k8s/network/2019/05/30/k8s-network-03/)도 참고해 보시길 바랍니다.
 
-![](/assets/images/packet-life/04-05.jpeg)

@@ -17,6 +17,7 @@ encoding: utf-8
 locale: en_us
 lang: en_us
 feed_items: 5
+future: true
 # feed_update_period: daily
 # feed_update_frequency: 1
 highlighter: rouge
