@@ -7,6 +7,12 @@ image: /assets/images/k8s_network/landing01.png
 ---
 [해당 포스트](https://medium.com/google-cloud/understanding-kubernetes-networking-pods-7117dd28727)는 제가 [CKA 자격증 취득](/kubernetes/cka/2019/01/13/cak)을 위해 쿠버네티스 network에 대해 공부할 때 굉장히 도움이 되었던 글로써, 많은 분들이 쿠버네티스를 공부하는데에 도움이 되길 바라는 마음에서 번역해 보았습니다.
 
+## 쿠버네티스 네트워킹 이해하기 시리즈
+
+1. #1 Pods 네트워크
+2. [#2 Service 네트워크](/k8s/network/2019/05/11/k8s-network-02/)
+3. [#3 Ingress 네트워크](/k8s/network/2019/05/30/k8s-network-03/)
+
 ---
 
 이 포스트에서는 쿠버네티스 클러스터에서 동작하는 여러 네트워크 layer에 대해서 파헤쳐 보겠습니다. 쿠버네티스는 많은 훌륭한 디자인을 품고 있는 강력한 플랫폼입니다. 그러나 그 동작 방식을 생각해 보는 것은 헷갈릴 수 있습니다. Pod 네트워크, Service 네티워크, Cluster IP, container ports, host ports, node ports.. 많은 분들이 힘들어하는 것을 봤습니다. 저희는 보통 이러한 얘기들을 회사에서 자주 얘기하죠. 어떤 문제가 발생하였을 때 전체 layer를 살펴 보며 문제의 원인을 파악하려고 합니다. 하지만 각 layer별로 어떤 역할을 하는지 쪼개어 이해한다면 보다 우아한 방법으로 전체를 이해할 수 있을 것입니다.
@@ -15,6 +21,7 @@ image: /assets/images/k8s_network/landing01.png
 [여기](https://docs.docker.com/engine/docker-overview/#the-underlying-technology)를 보시고 쿠버네티스에 대한 전반적인 개념에 대해서 원하신다면 [여기](https://kubernetes.io)를 참고하시고 Pod에 대한 상세 내용은 [여기](https://kubernetes.io/docs/concepts/workloads/pods/pod)를 참고하시기 바랍니다. 마지막으로 기본적인 [네트워킹 개념](https://www.digitalocean.com/community/tutorials/an-introduction-to-networking-terminology-interfaces-and-protocols)과 [IP 주소 공간](https://www.digitalocean.com/community/tutorials/understanding-ip-addresses-subnets-and-cidr-notation-for-networking)을 미리 아신다면 도움이 되실 겁니다.
 
 ### Pods
+
 그럼 Pod란 무엇일까요? Pod는 적어도 한개 이상의 컨테이너를 구성하고 같은 host와 network 스택을 공유하고 volume과 같은 리소스들을 공유할 수 있습니다. Pod는 쿠버네티스의 기장 기본이 되는 단위입니다. 그렇다면 "네트워크 스택을 공유한다"는 의미는 무엇일까요? 그것은 Pod 안의 모든 컨테이너가 localhost를 통해 서로에게 도달이 가능하다는 것을 의미합니다. 예를 들어, 80포트를 이용하고 있는 nginx 컨테이너가 있으면 scrapyd를 실행하고 있는 다른 컨테이너에서 http://localhost:80 으로 첫번째 컨테이너에 접근할 수 있습니다. 어떻게 동작하는 것일까요?
 
 먼저 컨테이너 한개를 실행하게 되면 어떤 일이 벌어지는지 살펴보도록 보겠습니다.

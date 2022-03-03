@@ -27,9 +27,27 @@ body {
     line-height:1.7;
     color: #333;
     overflow-x:hidden;
-    padding-top:116px;
-    
+    padding-top:116px;   
 }
+
+img {
+    @extend .mx-auto;
+    @extend .d-block
+}
+
+table {
+    @extend .table;
+    @extend .table-bordered;
+    @extend .table-hover;
+    @extend .table-sm;
+}
+
+thead {
+    color: white;
+    background-color: grey;
+    border-color: black;
+}
+
 .serif-font {
     font-family:PT Serif;
 }
