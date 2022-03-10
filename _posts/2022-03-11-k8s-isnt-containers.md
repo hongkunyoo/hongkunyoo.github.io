@@ -1,9 +1,9 @@
 ---
 layout: post
 title:  "[번역]쿠버네티스는 단순히 컨테이너를 관리하는 툴이 아닙니다."
-date:   2021-11-15 00:00:00
+date:   2022-03-11 00:00:00
 categories: kubernetes network
-image: /assets/images/packet-life/landing03.png
+image: /assets/images/k8s-api.jpeg
 permalink: /:title
 ---
 나름 조회수가 잘 나왔던 저의 블로그 글 중 하나인 [쿠버네티스 API서버는 정말 그냥 API서버라구욧](https://coffeewhale.com/apiserver)에서 쿠버네티스 API 서버가 일반적인 API 서버와 크게 다르지 않다는 점을 강조한 내용으로 글을 작성하였었습니다. 이와 연관되어 쿠버네티스의 API가 가지는 중요성에 대해 [잘 소개한 글](https://joshgav.github.io/2021/12/16/kubernetes-isnt-about-containers.html)이 있어서 번역해 보았습니다.
@@ -19,8 +19,6 @@ permalink: /:title
 또한 쿠버네티스를 어떠한 워크로드도 다 잘 실행 시킬 수 있는 general workload 스케줄러라고도 정의할 수 없습니다. 물론 다양한 워크로드를 효율적으로 스케줄링 할 수 있는 능력은 쿠버네티스의 중요한 기능 중 하나이지만 이것 하나만으로는 쿠버네티스의 성공을 말할 수 없습니다.
 
 ## 그리고 API가 그 다음으로 나왔습니다.
-
-![Always has been APIs](https://joshgav.github.io/assets/always_has_been_apis.jpeg)
 
 쿠버네티스가 성공할 수 있었던 가장 큰 이유는 소프트웨어 정의 인프라 서비스(workload 포함, 네트워킹, 스토리지 등)들을 이용할 때 표준화된 프로그래밍 인터페이스를 제공했다는 점입니다. 쿠버네티스는 여러가지 모양과 크기의 워크로드들을 동일한 구조와 표현방법(YAML)으로 소프트웨어를 설계하고 구현하고 운영할 수 있게 명세와 구현이 포함된 완벽한 프레임워크를 제공하였습니다. 바로 선언형으로 정의된 리소스와 그것을 관리하는 컨트롤러로 말이죠.
 
