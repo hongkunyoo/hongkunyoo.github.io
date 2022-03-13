@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "[번역]쿠버네티스는 단순히 컨테이너를 관리하는 툴이 아닙니다."
-date:   2022-03-11 00:00:00
+date:   2022-03-14 00:00:00
 categories: kubernetes network
 image: /assets/images/k8s-api.jpeg
 permalink: /:title
