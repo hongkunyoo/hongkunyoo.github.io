@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "[번역]Calico 라우팅 모드"
-date:   2021-10-27 00:00:00
+date:   2022-03-29 00:00:00
 categories: network calico
 image: /assets/images/calico-routing-mode/landing.png
 permalink: /:title
@@ -126,7 +126,7 @@ Calico는 3가지 라우팅 모드를 지원합니다.
 
 `IP-in-IP`는 IP를 또 다른 IP 안에 집어 넣음으로써 캡슐화를 수행합니다. 전송되는 패킷에는 외부 헤더(outer header)와 내부 헤더(inner header)가 있습니다. 외부 헤더에는 호스트 네트워크의 출발지와 목적지 IP가 들어 있으며 내부 헤더에는 Pod 네트워크의 출발지, 목적지 IP가 있습니다.
 
-![](/assets/images/calico-routing-mode/03.png)
+![](/assets/images/calico-routing-mode/03.jpeg)
 
 
 `IP-in-IP` 모드에서 worker-1의 라우팅 테이블은 다음과 같다고 생각해 봅시다:
@@ -337,5 +337,5 @@ kubectl apply -f calico.yaml
 
 ## 마무리하며
 
-이번 포스트를 통해 Calico가 동작하는 모드에 대해서 각각 살펴 봤습니다. 이를 통해 Calico CNI가 대부분의 네트워크에서 동작 가능한 매우 매력적인 CNI 프로젝트라는 것을 알게 되었길 바라겠습니다.
+이번 포스트를 통해 Calico가 동작하는 모드에 대해서 각각 살펴 봤습니다. 이를 통해 Calico CNI가 대부분의 네트워크에서 동작 가능한 매우 매력적인 CNI 프로젝트라는 것을 알게 되었길 바랍니다.
 
