@@ -383,7 +383,7 @@ curl --cacert rootCA.pem --cert client.pem --key client-key.pem  https://localho
 
 쉽게 생각해서 클라이언트 인증서를 계정 ID, 클라이언트 key를 비밀번호라고 이해하면 편합니다.(key를 직접 전송하지는 않습니다.) 서버에서 사용자의 비밀번호를 체크하지 않고 사용자 계정만 확인하는 경우, 누구나 다른 사용자의 계정 정보를 이용하여 접근할 수 있기 때문에 서버는 꼭 인증서의 소유권을 확인해야 합니다.
 
-> 실제 사용자의 key를 서버로 전송하는 것이 아니라 사용자가 가진 key로 서명한 데이터를 서버로 전송함으로써 인증서의 소유권을 주장합니다. 이 부분은 [@devhak2](https://github.com/devhak2)님이 댓글로 정정해 주셨습니다. (https://github.com/hongkunyoo/blog-comments/issues/32#issuecomment-1169447523)
+> 실제 사용자의 key를 서버로 전송하는 것이 아니라 사용자가 가진 key로 서명한 데이터를 서버로 전송함으로써 인증서의 소유권을 주장합니다. 이 부분은 [@devhak2](https://github.com/devhak2)님이 [댓글](https://github.com/hongkunyoo/blog-comments/issues/32#issuecomment-1169447523)로 정정해 주셨습니다. 
 
 ### 4. 쿠버네티스에서 제공하는 인증서로 변경
 
