@@ -40,3 +40,54 @@ spec:
               number: 80
         path: /
         pathType: Prefix
+---
+import flask
+from flask import Flask, request, redirect, session
+import io
+import pprint
+import base64
+import jwt 
+
+app = Flask(__name__)
+
+@app.route('/', methods=["GET", "POST"])
+def hello():
+    return return_request('/')
+
+@app.route('/<PATH>', methods=["GET", "POST"])
+def hellopath(PATH):
+    return return_request(PATH)
+
+
+
+def return_request(path):
+
+    sb = io.StringIO()
+    d = {}
+    d['headers'] = [{k:v} for k, v in request.headers]
+    d['cookies'] = [{k:v} for k, v in request.cookies.items()]
+    d['method'] = request.method
+    d['uri'] = path
+    d['query'] = request.query_string.decode('UTF-8')
+    d['data'] = request.data.decode("utf-8")
+    d['args'] = [{k:v} for k, v in request.args.items()]
+    d['form'] = [{k:v} for k, v in request.form.items()]
+
+    try:
+        token = request.headers.get("Authorization")[7:]
+        #print(token)
+        id_token = jwt.decode(token, options={"verify_signature": False})
+        d['id_token'] = id_token
+    except:
+        d['id_token'] = None
+
+
+    pprint.pprint(d, stream=sb)
+    cont = sb.getvalue()
+    print(cont)
+
+    return "<pre>" + cont + "</pre>"
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', debug=True)
