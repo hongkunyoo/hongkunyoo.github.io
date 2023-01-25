@@ -10,6 +10,24 @@ spec:
     imagePullPolicy: Always
     name: flask
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: flask
+  template:
+    metadata:
+      labels:
+        run: flask
+    spec:
+      containers:
+      - name: flask
+        image: hongkunyoo/flask
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -40,6 +58,10 @@ spec:
               number: 80
         path: /
         pathType: Prefix
+  tls:
+  - hosts:
+    - $HOST
+    secretName: $TLS 
 ---
 import flask
 from flask import Flask, request, redirect, session
