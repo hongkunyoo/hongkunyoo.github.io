@@ -187,7 +187,7 @@ IP 네트워크는 보통 자신의 host에서 목적지를 찾지 못하게 되
 
 ### kube-proxy
 
-쿠버네티스의 다른 모든 것과 마찬가지로 `service` 또한 하나의 쿠버네티스 resource에 불과합니다. 그것은 어떤 소프트웨어를 어떻게 설정해야 하는지에 대한 정보가 저장되어 있는 리소스였습니다. 사실 serivce를 하나 등록하게 되면 쿠버네티스의 어려 컴포넌트들에 영향을 미치게 되는데 오늘 여기에서는 위의 예시를 가능하게 만들었던 kube-proxy에 대해서만 살펴보도록 하겠습니다. 많은 분들은 kube-proxy라는 이름에서 벌써 어떤 녀석인지를 유추할 수 있을텐데요, kube-proxy는 [haproxy](http://www.haproxy.org/)  나  [linkerd](https://linkerd.io/)와 같이 보통의 reverse-proxy와는 조금 다른 부분들이 있습니다.
+쿠버네티스의 다른 모든 것과 마찬가지로 `service` 또한 하나의 쿠버네티스 resource에 불과합니다. 그것은 어떤 소프트웨어를 어떻게 설정해야 하는지에 대한 정보가 저장되어 있는 리소스였습니다. 사실 serivce를 하나 등록하게 되면 쿠버네티스의 여러 컴포넌트들에 영향을 미치게 되는데 오늘 여기에서는 위의 예시를 가능하게 만들었던 kube-proxy에 대해서만 살펴보도록 하겠습니다. 많은 분들은 kube-proxy라는 이름에서 벌써 어떤 녀석인지를 유추할 수 있을텐데요, kube-proxy는 [haproxy](http://www.haproxy.org/)  나  [linkerd](https://linkerd.io/)와 같이 보통의 reverse-proxy와는 조금 다른 부분들이 있습니다.
 
 proxy의 일반적인 역할은 서로 열린 connection을 통해 클라이언트와 서버의 트래픽을 전달하는데 있습니다. 클라이언트는 `service` port로 inbound 연결을 하게 되고 proxy에서 서버로 outbound 연결을 합니다. 이런 종류의 proxy 서버들은 전부 user space에서 동작하기 때문에 모든 패킷들은 user space를 지나 다시 kernel space를 거쳐서 proxy됩니다. kube-proxy도 마찬가지로 user space proxy로 구현되어 있는데 기존의 proxy와는 약간 다른 방법으로 구현되어 있습니다. proxy는 기본적으로 interface device가 필요합니다. 클라이언트와 서버 모두 연결을 맺을 때 필요합니다. 이때 우리가 사용할 수 있는 interface는 host에 존재하는 ethernet interface이거나 Pod내에 존재하는 가상 ethernet interface 두개 뿐입니다.
 
