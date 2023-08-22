@@ -27,6 +27,7 @@ spec:
       containers:
       - name: flask
         image: hongkunyoo/flask
+        imagePullPolicy: Always
 ---
 apiVersion: v1
 kind: Service
