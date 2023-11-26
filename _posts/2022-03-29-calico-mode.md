@@ -271,7 +271,7 @@ Now routing between all pods works! Examining worker-1's route table:
 
 ### VXLAN
 
-`VXLAN` 라우팅은 Calico 3.7 이상부터 지원합니다. 역사적으로 `VXLAN` 기능을 사용하고 Calico의 네트워크 정책 기능을 사용하기 위해 Calico와 Flannel을 동시에 사용하였습니다. 이것을 주로 Canal이라고 불렀습니다. `VXLAN`과 `IP-in-IP`는 네트워크 구조에 따라 선택하였습니다. `VXLAN`은 가상 layer 2 네트워크를 구성하기 위해 사용됩니다. 그래서 일반적인 패킷보다 조금 더 큰 헤더 사이즈를 가지게 되고 약간의 성능 저하가 발생합니다. `VXLAN`은 Azure와 같이 `IP-in-IP` 기능이 지원되지 않는 환경이나 BGP릴 지원하지 않는 환경에서 사용하기 용이합니다.
+`VXLAN` 라우팅은 Calico 3.7 이상부터 지원합니다. 역사적으로 `VXLAN` 기능을 사용하고 Calico의 네트워크 정책 기능을 사용하기 위해 Calico와 Flannel을 동시에 사용하였습니다. 이것을 주로 Canal이라고 불렀습니다. `VXLAN`과 `IP-in-IP`는 네트워크 구조에 따라 선택하였습니다. `VXLAN`은 가상 layer 2 네트워크를 구성하기 위해 사용됩니다. 그래서 일반적인 패킷보다 조금 더 큰 헤더 사이즈를 가지게 되고 약간의 성능 저하가 발생합니다. `VXLAN`은 Azure와 같이 `IP-in-IP` 기능이 지원되지 않는 환경이나 BGP를 지원하지 않는 환경에서 사용하기 용이합니다.
 
 `VXLAN`은 Calico가 동작하는 근본적인 방법과 다르기 때문에 `IPPool` 설정값을 바꾸는 선에서 해결할 수는 없고 Calico를 클러스터에 새롭게 재배포해야 합니다.
 `VXLAN`을 활성화 하기 위해서 다음과 같이 Calico manifest 파일을 수정해야 합니다.
