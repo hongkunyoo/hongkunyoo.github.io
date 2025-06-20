@@ -36,6 +36,10 @@ set nocursorline
 set encoding=utf-8
 set showcmd
 set ignorecase smartcase
+set showmatch
+set list
+set mouse=
+
 
 " ---------- vim keymap ----------- "
 " disable Ctrl-a increment
