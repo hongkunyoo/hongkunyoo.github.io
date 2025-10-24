@@ -7,6 +7,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-sensible'
 Plug 'junegunn/seoul256.vim'
+Plug 'yegappan/taglist'
 
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
@@ -39,8 +40,26 @@ set ignorecase smartcase
 set showmatch
 set list
 set mouse=
+set cindent
 
 
 " ---------- vim keymap ----------- "
 " disable Ctrl-a increment
 map <C-a> <Nop>
+
+" ------- for linux kernel -------- "
+"" # ctags "
+"set tags=./tags
+"
+"" # cscope "
+"if has("cscope")
+"  if filereadable("cscope.out")
+"    cs add cscope.out
+"  endif
+"endif
+"set cscopetag
+"
+"":cs find t schedule
+"
+"" # taglist "
+"":Tlist
