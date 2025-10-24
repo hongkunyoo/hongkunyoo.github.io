@@ -48,10 +48,16 @@ set cindent
 map <C-a> <Nop>
 
 " ------- for linux kernel -------- "
-"" # ctags "
+"" ## Setup ##
+"" sudo apt update && sudo apt install -y universal-ctags cscope
+"" make tags
+"" make cscope
+""
+""
+"" ## ctags
 "set tags=./tags
 "
-"" # cscope "
+"" ## cscope
 "if has("cscope")
 "  if filereadable("cscope.out")
 "    cs add cscope.out
@@ -61,5 +67,5 @@ map <C-a> <Nop>
 "
 "":cs find t schedule
 "
-"" # taglist "
+"" ## taglist
 "":Tlist
