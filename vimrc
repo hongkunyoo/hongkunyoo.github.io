@@ -48,11 +48,11 @@ set cindent
 map <C-a> <Nop>
 
 " ------- for linux kernel -------- "
+" From https://tear94fall.github.io/lecture/2020/03/03/vim-ctags-cscope-taglist.html
 "" ## Setup ##
 "" sudo apt update && sudo apt install -y universal-ctags cscope
 "" make tags
 "" make cscope
-""
 ""
 "" ## ctags
 "set tags=./tags
