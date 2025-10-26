@@ -8,6 +8,13 @@ Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-sensible'
 Plug 'junegunn/seoul256.vim'
 Plug 'yegappan/taglist'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } 
+Plug 'junegunn/fzf.vim'
+Plug 'wellle/context.vim'
+
+" clangd
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Plug 'clangd/coc-clangd'
 
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
@@ -42,10 +49,11 @@ set list
 set mouse=
 set cindent
 
-
 " ---------- vim keymap ----------- "
 " disable Ctrl-a increment
 map <C-a> <Nop>
+
+
 
 " ------- for linux kernel -------- "
 " From https://tear94fall.github.io/lecture/2020/03/03/vim-ctags-cscope-taglist.html
