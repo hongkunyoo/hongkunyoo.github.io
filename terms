@@ -1,0 +1,361 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Terms of Service</title>
+
+  <meta
+    name="description"
+    content="Terms of Service for [Application Name]. Please read these terms carefully before using this application."
+  />
+
+  <style>
+    body {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Helvetica, Arial, sans-serif;
+      line-height: 1.7;
+      color: #222;
+      background: #fff;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: 2rem;
+    }
+
+    h2 {
+      margin-top: 36px;
+      font-size: 1.35rem;
+    }
+
+    p,
+    li {
+      font-size: 1rem;
+    }
+
+    ul {
+      padding-left: 24px;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .updated {
+      color: #666;
+      margin-bottom: 32px;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>Terms of Service</h1>
+
+    <p class="updated">
+      <strong>Last updated:</strong> October 6, 2026
+    </p>
+
+    <p>
+      These Terms of Service ("Terms") govern your access to and use of
+      <strong>[Application Name]</strong>, available at
+      <a href="https://example.com">https://example.com</a>
+      (the "Service").
+    </p>
+
+    <p>
+      By accessing or using the Service, you agree to be bound by these Terms.
+      If you do not agree to these Terms, you should not use the Service.
+    </p>
+
+    <h2>1. Use of the Service</h2>
+
+    <p>
+      You may use the Service only in compliance with these Terms and all
+      applicable laws and regulations.
+    </p>
+
+    <p>
+      You agree not to misuse the Service or use it in a way that interferes
+      with its normal operation or with the use of the Service by others.
+    </p>
+
+    <h2>2. Eligibility</h2>
+
+    <p>
+      You must be legally capable of entering into a binding agreement under
+      the laws applicable to you in order to use the Service.
+    </p>
+
+    <p>
+      If you use the Service on behalf of a company, organization, or other
+      entity, you represent that you have authority to bind that entity to
+      these Terms.
+    </p>
+
+    <h2>3. User Accounts</h2>
+
+    <p>
+      Some features of the Service may require you to create an account.
+    </p>
+
+    <p>
+      You are responsible for maintaining the confidentiality of your account
+      credentials and for all activities that occur under your account.
+    </p>
+
+    <p>
+      You agree to provide accurate and up-to-date information and to notify us
+      promptly if you believe your account has been accessed without
+      authorization.
+    </p>
+
+    <h2>4. Acceptable Use</h2>
+
+    <p>
+      You agree not to use the Service to:
+    </p>
+
+    <ul>
+      <li>Violate any applicable law or regulation</li>
+      <li>Infringe the rights of another person or organization</li>
+      <li>Upload, distribute, or transmit malicious software or harmful code</li>
+      <li>Attempt to gain unauthorized access to systems, accounts, or data</li>
+      <li>Interfere with or disrupt the operation of the Service</li>
+      <li>
+        Use automated systems, bots, scrapers, or similar tools in a manner
+        that places an unreasonable load on the Service
+      </li>
+      <li>Engage in fraudulent, deceptive, abusive, or harmful activity</li>
+      <li>
+        Reverse engineer, decompile, or attempt to extract source code from
+        the Service except where permitted by applicable law
+      </li>
+    </ul>
+
+    <h2>5. User Content</h2>
+
+    <p>
+      The Service may allow you to submit, upload, store, publish, or otherwise
+      provide content ("User Content").
+    </p>
+
+    <p>
+      You retain ownership of your User Content. However, you grant us a
+      limited license to host, process, store, reproduce, and display your User
+      Content as necessary to provide and operate the Service.
+    </p>
+
+    <p>
+      You are responsible for ensuring that your User Content does not violate
+      applicable laws or the rights of third parties.
+    </p>
+
+    <p>
+      We may remove or restrict access to User Content when reasonably
+      necessary to enforce these Terms, comply with the law, or protect the
+      Service and its users.
+    </p>
+
+    <h2>6. Intellectual Property</h2>
+
+    <p>
+      The Service, including its software, design, branding, text, graphics,
+      interfaces, and other content provided by us, is owned by or licensed to
+      us and may be protected by intellectual property laws.
+    </p>
+
+    <p>
+      Except as expressly permitted by these Terms, you may not copy, modify,
+      distribute, sell, license, or create derivative works from any part of
+      the Service without prior permission.
+    </p>
+
+    <h2>7. Third-Party Services</h2>
+
+    <p>
+      The Service may integrate with or contain links to third-party websites,
+      applications, APIs, platforms, or other services.
+    </p>
+
+    <p>
+      We are not responsible for the availability, security, content, privacy
+      practices, or operation of third-party services.
+    </p>
+
+    <p>
+      Your use of third-party services may be subject to separate terms and
+      privacy policies provided by those third parties.
+    </p>
+
+    <h2>8. Service Availability</h2>
+
+    <p>
+      We aim to provide a reliable Service, but we do not guarantee that the
+      Service will always be available, uninterrupted, secure, or error-free.
+    </p>
+
+    <p>
+      We may modify, suspend, limit, or discontinue any part of the Service at
+      any time, including for maintenance, security, operational, or business
+      reasons.
+    </p>
+
+    <h2>9. Fees and Payments</h2>
+
+    <p>
+      Certain features of the Service may be offered for a fee.
+    </p>
+
+    <p>
+      If you purchase a paid feature or subscription, you agree to pay all
+      applicable fees and charges presented to you at the time of purchase.
+    </p>
+
+    <p>
+      Prices, billing periods, refund conditions, and subscription terms may be
+      described separately on the applicable purchase or pricing page.
+    </p>
+
+    <p>
+      Unless otherwise required by law or explicitly stated, payments may be
+      non-refundable.
+    </p>
+
+    <h2>10. Termination</h2>
+
+    <p>
+      You may stop using the Service at any time.
+    </p>
+
+    <p>
+      We may suspend or terminate your access to the Service if we reasonably
+      believe that you have violated these Terms, created a security risk,
+      caused harm to the Service or other users, or engaged in unlawful
+      activity.
+    </p>
+
+    <p>
+      Upon termination, provisions that by their nature should survive
+      termination will continue to apply, including provisions relating to
+      intellectual property, disclaimers, limitations of liability, and
+      dispute resolution.
+    </p>
+
+    <h2>11. Disclaimer of Warranties</h2>
+
+    <p>
+      The Service is provided on an "as is" and "as available" basis to the
+      fullest extent permitted by applicable law.
+    </p>
+
+    <p>
+      We make no warranties, express or implied, regarding the accuracy,
+      reliability, availability, suitability, security, or performance of the
+      Service.
+    </p>
+
+    <p>
+      Your use of the Service is at your own risk.
+    </p>
+
+    <h2>12. Limitation of Liability</h2>
+
+    <p>
+      To the fullest extent permitted by applicable law, we will not be liable
+      for any indirect, incidental, special, consequential, or punitive
+      damages, or for any loss of profits, revenue, data, business
+      opportunities, or goodwill arising from or related to your use of the
+      Service.
+    </p>
+
+    <p>
+      Where liability cannot be excluded under applicable law, our liability
+      will be limited to the maximum extent permitted by law.
+    </p>
+
+    <h2>13. Indemnification</h2>
+
+    <p>
+      To the extent permitted by applicable law, you agree to indemnify and
+      hold us harmless from claims, liabilities, damages, losses, and expenses
+      arising from your misuse of the Service, your User Content, or your
+      violation of these Terms or applicable law.
+    </p>
+
+    <h2>14. Privacy</h2>
+
+    <p>
+      Your use of the Service is also subject to our Privacy Policy, which
+      explains how we collect, use, and protect information.
+    </p>
+
+    <p>
+      You can review our Privacy Policy at:
+      <a href="/privacy-policy">Privacy Policy</a>.
+    </p>
+
+    <h2>15. Changes to These Terms</h2>
+
+    <p>
+      We may update these Terms from time to time to reflect changes to the
+      Service, applicable law, or our business practices.
+    </p>
+
+    <p>
+      When we make changes, we will update the "Last updated" date at the top
+      of this page.
+    </p>
+
+    <p>
+      Your continued use of the Service after updated Terms become effective
+      constitutes acceptance of the revised Terms.
+    </p>
+
+    <h2>16. Governing Law</h2>
+
+    <p>
+      These Terms will be governed by and interpreted in accordance with the
+      laws applicable in the jurisdiction in which the operator of the Service
+      is established, without regard to conflict-of-law principles, unless
+      applicable law requires otherwise.
+    </p>
+
+    <h2>17. Severability</h2>
+
+    <p>
+      If any provision of these Terms is found to be invalid or unenforceable,
+      the remaining provisions will remain in full force and effect.
+    </p>
+
+    <h2>18. Entire Agreement</h2>
+
+    <p>
+      These Terms, together with our Privacy Policy and any additional terms
+      presented in connection with specific features of the Service,
+      constitute the entire agreement between you and us regarding your use of
+      the Service.
+    </p>
+
+    <h2>19. Contact</h2>
+
+    <p>
+      If you have any questions about these Terms, please contact us:
+    </p>
+
+    <p>
+      Email:
+      <a href="mailto:your-email@example.com">
+        your-email@example.com
+      </a>
+    </p>
+  </main>
+</body>
+</html>
+```
