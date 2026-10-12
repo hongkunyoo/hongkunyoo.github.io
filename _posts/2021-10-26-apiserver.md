@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "쿠버네티스 API서버는 정말 그냥 API서버라구욧"
+description: "kubectl 대신 curl로 kube-apiserver를 직접 호출하며, 인증(JWT)과 권한부여부터 Pod 생성·조회·watch·로그·삭제까지 API서버가 평범한 REST 서버임을 확인합니다."
 date:   2021-10-26 00:00:00
 image: /assets/images/apiserver/landing.png
 permalink: /:title

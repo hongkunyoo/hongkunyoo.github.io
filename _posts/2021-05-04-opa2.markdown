@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "쿠버네티스 Admission Control #2 - Open Policy Agent"
+description: "범용 정책 엔진 Open Policy Agent(OPA)와 정책 언어 Rego의 기본 문법을 알아보고, Playground에서 Hello World와 이미지 안전성 정책 예제를 실습합니다."
 date:   2021-05-04 00:00:00
 image: /assets/images/opa/landing-ac02.png
 categories: kubernetes security

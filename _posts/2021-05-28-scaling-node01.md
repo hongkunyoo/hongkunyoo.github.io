@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역] 쿠버네티스 2,500대 노드 운영하기"
+description: "OpenAI가 쿠버네티스 클러스터를 2,500대 노드로 키우며 etcd, kube master, 도커 이미지 pull, 네트워킹, ARP cache에서 겪은 문제와 해결 과정을 번역했습니다."
 date:   2021-05-28 00:00:00
 image: /assets/images/scalenode/landing01.png
 permalink: /:title

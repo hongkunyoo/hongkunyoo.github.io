@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Headless Service를 이용하여 네임스페이스가 다른 서비스에 Ingress 연결하기"
+description: "cert-manager로 TLS를 설정한 Ingress에서 다른 네임스페이스의 서비스로 연결해야 할 때, ExternalName을 쓰는 Headless Service로 간단히 해결하는 방법을 소개합니다."
 date:   2020-01-22 00:00:00
 image: /assets/images/headless-svc/landing.png
 categories: kubernetes

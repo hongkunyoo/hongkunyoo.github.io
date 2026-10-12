@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "나만의 스티커 제작하기"
+description: "블로그 브랜드인 커피고래 로고가 만들어진 이야기와, 그 로고로 나만의 스티커를 주문해 제작한 과정을 공유합니다."
 date:   2019-07-09 00:00:00
 image: /assets/images/sticker/landing.png
 categories: essay

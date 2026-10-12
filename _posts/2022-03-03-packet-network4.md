@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역]쿠버네티스 패킷의 삶 - #4"
+description: "Ingress Controller가 L7 로드밸런서를 설정하는 원리와 Prefix·Host 기반 라우팅, Nginx와 Contour+Envoy 예시를 다루는 쿠버네티스 패킷의 삶 시리즈 마지막 편 번역입니다."
 date:   2022-03-03 00:00:00
 image: /assets/images/packet-life/landing04.png
 permalink: /:title

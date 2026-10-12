@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Kubernetes와 MLOps #1"
+description: "기계학습 관점에서 쿠버네티스를 소개하고, 쿠버네티스로 ML 학습 환경을 구성했을 때 서버 접속, 실행 환경 통일, 자원 관리 등에서 얻는 8가지 장점을 정리합니다."
 date:   2019-01-10 21:30:00
 image: /assets/images/k8s_ml/landing.png
 categories: kubernetes mlops

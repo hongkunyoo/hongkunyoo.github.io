@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "GitOps와 ArgoCD"
+description: "단일 진실의 원천(SSOT) 개념으로 GitOps를 설명하고, 그 구현체인 ArgoCD를 설치해 운영 배포까지 해 보는 과정을 소개합니다."
 date:   2020-02-10 00:00:00
 image: /assets/images/gitops-argocd/landing.png
 categories: kubernetes gitops

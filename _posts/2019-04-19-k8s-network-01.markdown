@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역] 쿠버네티스 네트워킹 이해하기#1: Pods"
+description: "쿠버네티스 네트워킹 시리즈 1편으로, 컨테이너와 Pod가 가상 네트워크 장치와 라우팅 규칙으로 다른 노드의 Pod와 통신하는 원리를 설명하는 글을 번역했습니다."
 date:   2019-04-19 00:00:00
 image: /assets/images/k8s_network/landing01.png
 categories: kubernetes network

@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역] 쿠버네티스 네트워킹 이해하기#2: Services"
+description: "Pod가 교체되어도 안정적으로 통신할 수 있게 해주는 Service 네트워크와 kube-proxy의 동작 원리를 설명하는 쿠버네티스 네트워킹 시리즈 2편 번역입니다."
 date:   2019-05-11 00:00:00
 image: /assets/images/k8s_network/landing02.png
 categories: kubernetes network

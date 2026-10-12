@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역]쿠버네티스는 단순히 컨테이너를 관리하는 툴이 아닙니다."
+description: "쿠버네티스의 진짜 의의는 컨테이너 실행이 아니라 API에 있다는 관점을, 도커 이후 API가 늘어나며 생태계가 확장된 흐름으로 설명한 글을 번역했습니다."
 date:   2022-03-14 00:00:00
 image: /assets/images/k8s-api.jpeg
 permalink: /:title

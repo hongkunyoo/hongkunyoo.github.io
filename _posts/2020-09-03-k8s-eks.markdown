@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "나만의 k8s 클러스터 구축하기 - #2 Amazon EKS편"
+description: "awscli, eksctl, aws-iam-authenticator, kubectl을 설치하고 Amazon EKS 클러스터를 구축한 뒤, Cluster AutoScaler 설정과 정리까지 하는 방법을 소개합니다."
 date:   2020-09-03 00:00:00
 image: /assets/images/k8s-cluster/landing02.png
 image_width: 1200

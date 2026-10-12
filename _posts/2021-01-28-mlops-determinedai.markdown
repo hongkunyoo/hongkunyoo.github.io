@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역] 데이터 과학자들은 쿠버네티스에 관심이 없습니다 - MLOps"
+description: "데이터 과학자가 쿠버네티스를 몰라도 GPU 자원을 쓸 수 있어야 한다는 Determined AI의 글을 번역했습니다. 기존 ML 도구의 문제와 좋은 도구의 조건을 다룹니다."
 date:   2021-01-28 00:00:00
 image: /assets/images/mlops/unicorns.png
 image_width: 1200

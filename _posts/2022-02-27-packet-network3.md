@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역]쿠버네티스 패킷의 삶 - #3"
+description: "kube-proxy가 iptables로 ClusterIP, NodePort 트래픽을 전달하는 방식과 ExternalTrafficPolicy(Cluster, Local)의 차이를 다루는 쿠버네티스 패킷의 삶 시리즈 3편 번역입니다."
 date:   2022-02-27 00:00:00
 image: /assets/images/packet-life/landing03.png
 permalink: /:title

@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "helm subchart 파헤치기"
+description: "패키지와 환경(dev, staging, prod)이 늘어나며 복잡해지는 helm 설정을 subchart로 하나의 패키지로 묶어 관리하는 방법과 values.yaml 작성법을 소개합니다."
 date:   2019-06-05 00:00:00
 categories: kubernetes
 tags: helm subchart

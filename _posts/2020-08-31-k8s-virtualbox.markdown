@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "나만의 k8s 클러스터 구축하기 - #1 VirtualBox편"
+description: "Windows PC에 VirtualBox로 Ubuntu 20.04 VM 2대를 만들고 NAT 네트워크를 구성해 master와 worker로 이루어진 나만의 쿠버네티스 클러스터를 구축합니다."
 date:   2020-08-31 00:00:00
 image: /assets/images/k8s-cluster/landing.png
 categories: kubernetes

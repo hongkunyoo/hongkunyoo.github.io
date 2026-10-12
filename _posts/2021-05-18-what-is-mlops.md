@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "커피고래가 생각하는 MLOps"
+description: "기계학습 프로젝트가 운영까지 가기 어려운 이유(데이터 종속성, 환경 차이, 자원 관리 등)를 짚고, 커피고래가 생각하는 MLOps의 정의와 목표를 정리했습니다."
 date:   2021-05-18 00:00:00
 image: /assets/images/mlops/mlops-cycle.png
 image_width: 1973

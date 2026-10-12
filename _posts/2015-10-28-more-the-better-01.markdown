@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역] 더 많은 데이터가 더 좋은 알고리즘을 이긴다 #1"
+description: "스탠포드 데이터 마이닝 수업의 넷플릭스 프라이즈 사례를 통해, 더 복잡한 알고리즘보다 더 많은 데이터가 성능을 크게 높인다는 Datawocky 블로그 글을 번역했습니다."
 date:   2015-10-28 10:18:00
 image: /assets/images/bigdata-landing.png
 categories: machine-learning

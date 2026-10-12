@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "k8s 인증 완벽이해 #1 - X.509 Client Certs"
+description: "쿠버네티스 인증 시리즈 1편으로, X.509 인증서와 PKI 개념부터 쿠버네티스 CA로 클라이언트 인증서를 발급해 사용자를 인증하는 과정까지 실습합니다."
 date:   2020-05-02 00:00:00
 image: /assets/images/k8s-auth/landing-01.jpg
 categories: kubernetes authentication

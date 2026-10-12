@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Git-sync와 사이드카 패턴"
+description: "쿠버네티스 사이드카 패턴의 개념과 활용도를 알아보고, Git 저장소를 Pod 안으로 동기화해 주는 git-sync의 사용법과 활용 사례를 소개합니다."
 date:   2020-02-22 00:00:00
 image: /assets/images/git-sync/01.png
 categories: kubernetes

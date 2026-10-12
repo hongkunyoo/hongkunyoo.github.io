@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역]쿠버네티스 패킷의 삶 - #1"
+description: "쿠버네티스 패킷의 삶 시리즈 1편으로, 리눅스 namespace와 컨테이너 네트워킹, CNI 명세, Pod 네트워크 namespace를 예제로 따라가며 설명하는 글을 번역했습니다."
 date:   2021-11-23 00:00:00
 image: /assets/images/packet-life/landing01.png
 permalink: /:title

@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  Certified Kubernetes Administrator 취득 후기
+description: "2018년 12월 취득한 쿠버네티스 공식 자격증 CKA 후기입니다. 실기(hands-on) 위주 시험의 특징과 공부에 도움이 된 자료를 순서대로 공유합니다."
 date:   2019-01-12 22:00:00
 image: /assets/images/certificates/landing-cka.png
 categories: kubernetes certificate

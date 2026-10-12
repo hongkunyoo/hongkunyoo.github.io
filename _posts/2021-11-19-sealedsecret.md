@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "GitOps Secret 관리"
+description: "GitOps에서 Secret을 Git에 그대로 올리면 민감 정보가 노출되는 문제를 SealedSecret으로 해결하는 방법과 동작 원리, 설치·사용법을 소개합니다."
 date:   2021-11-19 00:00:00
 image: /assets/images/sealedsecret/landing.png
 permalink: /:title

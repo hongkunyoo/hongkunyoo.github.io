@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "나도 LINE 개발자입니다."
+description: "LG전자에서 4년간 데이터·ML 플랫폼을 개발하고 운영한 MLOps 엔지니어가 처음 이직에 도전해 LINE에 합류하기까지의 고민과 과정을 공유합니다."
 date:   2021-02-02 00:00:00
 image: /assets/images/line-developer/landing.jpg
 categories: essay

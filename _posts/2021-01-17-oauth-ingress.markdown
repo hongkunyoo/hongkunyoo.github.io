@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Kubernetes-NGINX Ingress 인증 - OAuth"
+description: "NGINX Ingress의 auth-url 외부 인증과 oauth2-proxy, GitHub OAuth 앱으로 쿠버네티스 서비스에 OAuth 인증을 붙이는 방법을 OAuth·OIDC 흐름과 함께 설명합니다."
 date:   2021-01-17 00:00:00
 image: /assets/images/landing/nginx-oauth2.png
 categories: kubernetes authentication

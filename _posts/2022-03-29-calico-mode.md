@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역]Calico 라우팅 모드"
+description: "Calico가 BGP로 라우팅 정보를 공유하는 방식과 IP-in-IP, Direct, VXLAN 모드에서 리눅스 서버 간 패킷이 전달되는 과정을 AWS 데모로 설명한 글을 번역했습니다."
 date:   2022-03-29 00:00:00
 image: /assets/images/calico-routing-mode/landing.png
 permalink: /:title

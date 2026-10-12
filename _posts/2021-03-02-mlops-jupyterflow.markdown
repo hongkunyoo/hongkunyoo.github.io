@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "데이터 과학자를 위한 ML툴 - JupyterFlow"
+description: "데이터 과학자가 컨테이너화나 매니페스트 작성 없이 JupyterHub에서 바로 쿠버네티스로 ML 작업을 실행할 수 있게 해주는 JupyterFlow를 소개합니다."
 date:   2021-03-02 00:00:00
 image: /assets/images/jupyterflow/landing.png
 categories: kubernetes mlops

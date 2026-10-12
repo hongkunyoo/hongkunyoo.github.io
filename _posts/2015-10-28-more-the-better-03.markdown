@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역] 더 많은 데이터가 더 좋은 알고리즘을 이긴다 #3"
+description: "구글 실적 발표 전, Efficient Frontier가 방대한 검색 광고 데이터로 구글의 수익 성장률을 정확히 예측한 사례로 더 많은 데이터의 힘을 보여주는 글을 번역했습니다."
 date:   2015-10-30 21:14:00
 image: /assets/images/bigdata-landing.png
 categories: machine-learning

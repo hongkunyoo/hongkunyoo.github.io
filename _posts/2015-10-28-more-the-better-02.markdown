@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역] 더 많은 데이터가 더 좋은 알고리즘을 이긴다 #2"
+description: "'더 많은 데이터가 더 좋은 알고리즘을 이긴다'에 쏟아진 질문에 대한 답변을 번역했습니다. 한정된 자원에서의 선택과 큰 데이터에서 선형 시간 알고리즘이 유리한 이유를 설명합니다."
 date:   2015-10-29 20:00:00
 image: /assets/images/bigdata-landing.png
 categories: machine-learning

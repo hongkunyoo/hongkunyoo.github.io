@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "k8s 인증 완벽이해 #2 - HTTP Authentication"
+description: "HTTP Authorization 헤더의 Basic, Bearer 방식과 JWT, Service Account Token으로 쿠버네티스 API 서버에 인증하는 방법을 실습하는 인증 시리즈 2편입니다."
 date:   2020-05-03 00:00:00
 image: /assets/images/k8s-auth/landing-02.jpg
 categories: kubernetes authentication

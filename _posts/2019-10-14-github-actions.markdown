@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "GitHub Actions & Package Registry 사용기"
+description: "GitHub Actions의 핵심 개념과 workflow 작성법, 나만의 action 만들기, GitHub Package Registry에 빌드 결과물을 저장하는 방법까지 직접 사용해 본 후기입니다."
 date:   2019-10-14 00:00:00
 image: /assets/images/github-action/landing.png
 categories: gitops

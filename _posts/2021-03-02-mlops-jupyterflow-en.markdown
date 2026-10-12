@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "JupyterFlow - Better way to scale your ML job"
+description: "Introducing JupyterFlow, a tool that lets data scientists run ML jobs on Kubernetes straight from JupyterHub, without containerizing code or writing manifests."
 date:   2021-03-02 00:00:00
 image: /assets/images/jupyterflow/landing.png
 categories: kubernetes mlops

@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "쿠버네티스 Argo workflow 소개"
+description: "쿠버네티스 위에서 컨테이너 단위로 Job을 실행하는 워크플로우 엔진 Argo workflow를 Airflow와 비교하고, 장단점과 설치·사용 방법을 소개합니다."
 date:   2020-02-14 00:00:00
 image: /assets/images/argo_wf/landing.png
 categories: kubernetes mlops

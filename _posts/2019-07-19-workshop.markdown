@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Kubernetes와 MLOps #4 (핸즈온)"
+description: "OpenInfra & Cloud Native Days Korea 2019에서 진행한 'How to scale your ML job with Kubernetes' 핸즈온 워크숍 내용과 실습 저장소를 소개합니다."
 date:   2019-07-19 00:00:00
 categories: kubernetes mlops
 tags: hands-on

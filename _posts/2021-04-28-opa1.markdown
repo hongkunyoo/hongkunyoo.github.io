@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "쿠버네티스 Admission Control #1"
+description: "쿠버네티스 접근 제어 3단계 중 Admission Control의 개념과 Admission Controller 플러그인을 알아보고, Dynamic Admission Controller용 custom webhook을 직접 구현합니다."
 date:   2021-04-28 00:00:00
 image: /assets/images/opa/landing-ac01.png
 categories: kubernetes security

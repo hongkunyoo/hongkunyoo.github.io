@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Helm Operator (Helm Controller) 소개"
+description: "Helm chart를 쿠버네티스 Operator 패턴으로 관리하는 Flux Helm Operator를 소개하고, HelmRelease 리소스로 패키지를 설치하고 업데이트하는 방법을 알아봅니다."
 date:   2020-05-13 00:00:00
 image: /assets/images/helm-op/landing.jpg
 categories: kubernetes gitops

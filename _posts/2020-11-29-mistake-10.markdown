@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역] 쿠버네티스에서 쉽게 저지르는 10가지 실수"
+description: "리소스 requests·limits, liveness·readiness probe, PodDisruptionBudget, Anti Affinity 등 쿠버네티스 운영에서 흔히 저지르는 10가지 실수와 해결 방법을 번역했습니다."
 date:   2020-11-29 00:00:00
 image: /assets/images/landing/dockerlego.png
 categories: kubernetes

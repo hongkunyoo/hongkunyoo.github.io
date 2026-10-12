@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Google Certified Cloud Engineer Associate 취득 후기"
+description: "GCP Cloud Engineer Associate 자격증 취득 후기입니다. GCP의 특징과 강점에 대한 생각과 시험 준비 경험을 2019년 6월 기준으로 공유합니다."
 date:   2019-07-07 00:00:00
 image: /assets/images/certificates/landing-gcp.png
 categories: certificate cloud

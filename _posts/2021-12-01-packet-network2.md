@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역]쿠버네티스 패킷의 삶 - #2"
+description: "Calico CNI의 구성 요소(Felix, BIRD, ConfD)와 IP-in-IP, NoEncap, VXLAN 라우팅 모드를 설명하는 쿠버네티스 패킷의 삶 시리즈 2편 번역입니다."
 date:   2021-12-01 00:00:00
 image: /assets/images/packet-life/landing02.png
 permalink: /:title

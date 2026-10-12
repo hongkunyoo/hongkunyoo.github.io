@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역] 쿠버네티스 네트워킹 이해하기#3: Ingress"
+description: "NodePort, LoadBalancer Service, Ingress, HostPort로 클러스터 외부 트래픽이 Pod까지 전달되는 방식을 설명하는 쿠버네티스 네트워킹 시리즈 마지막 편 번역입니다."
 date:   2019-05-30 00:00:00
 image: /assets/images/k8s_network/landing03.png
 categories: kubernetes network

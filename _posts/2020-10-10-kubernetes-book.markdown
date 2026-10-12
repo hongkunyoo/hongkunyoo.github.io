@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "쿠버네티스 첫 시작을 위한 최고의 선택 - \"핵심만 콕! 쿠버네티스\""
+description: "쿠버네티스를 처음 시작하는 분을 위해 기본 개념부터 설치까지 담은 책 『핵심만 콕! 쿠버네티스』의 소개와 구성, 예제 코드 저장소를 안내합니다."
 date:   2020-10-10 00:00:00
 image: /assets/images/landing-book.png
 categories: kubernetes essay

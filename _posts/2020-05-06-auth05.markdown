@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "k8s 인증 완벽이해 #5 - Proxy 인증"
+description: "NGINX 프록시 서버가 쿠버네티스 대신 사용자를 인증하는 Proxy 인증의 원리와 Webhook 방식과의 차이, 설정 방법을 다루는 인증 시리즈 마지막 편입니다."
 date:   2020-05-06 00:00:00
 image: /assets/images/k8s-auth/landing-05.jpg
 categories: kubernetes authentication

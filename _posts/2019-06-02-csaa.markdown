@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "AWS Solutions Architect - Associate 취득 후기"
+description: "2018년 개정된 AWS Solutions Architect - Associate 시험의 특징과 준비 방법을 정리한 취득 후기입니다. 세부 수치 암기보다 사례 중심의 이해가 중요합니다."
 date:   2019-06-02 00:00:00
 image: /assets/images/certificates/landing-aws.png
 categories: certificate cloud

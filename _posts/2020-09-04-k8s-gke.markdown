@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "나만의 k8s 클러스터 구축하기 - #3 GCP GKE편"
+description: "GCP Cloud Shell에서 GKE 클러스터를 생성하고 Cluster AutoScaler를 설정한 뒤 삭제하는 과정까지, GCP로 나만의 쿠버네티스 클러스터를 구축하는 방법입니다."
 date:   2020-09-04 00:00:00
 image: /assets/images/k8s-cluster/landing03.png
 image_width: 946

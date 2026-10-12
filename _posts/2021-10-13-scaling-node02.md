@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역] 쿠버네티스 7,500개 노드 운영하기"
+description: "OpenAI가 GPT-3, CLIP, DALL·E 학습을 위해 쿠버네티스를 7,500대 노드로 확장하며 겪은 네트워킹, API 서버, 모니터링, 상태점검, Gang 스케줄링 경험을 번역했습니다."
 date:   2021-10-13 00:00:00
 image: /assets/images/scalenode/landing02.png
 permalink: /:title

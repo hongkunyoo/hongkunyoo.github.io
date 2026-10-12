@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "[번역] 선형 회귀 모델 Bayesians vs Frequentists"
+description: "선형 회귀를 빈도주의와 베이지안 관점에서 비교하며, 잔차 최소화와 우도 최대화, MAP 추정치와 Ridge 회귀의 관계를 설명하는 글을 번역했습니다."
 date:   2019-10-19 00:00:00
 image: /assets/images/bayesian_linear/landing.png
 categories: machine-learning

@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Kubernetes-NGINX Ingress 인증 - Basic Auth"
+description: "인증 기능이 없는 서비스도 보호할 수 있도록 NGINX Ingress Controller에 HTTP Basic Authentication을 설정하는 방법을 Static User와 External Basic Auth로 나눠 알아봅니다."
 date:   2020-03-21 00:00:00
 image: /assets/images/basic_auth/landing.png
 categories: kubernetes authentication
