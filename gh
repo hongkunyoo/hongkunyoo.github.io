@@ -1,3 +1,0 @@
-#echo $CREDENTIAL | openssl enc -aes-256-cbc -a -e
-echo "U2FsdGVkX19xONmqH6ShmBj1vDXmCjlbJuIRgei9bHydhYI7ewoaWjppSniD3IS2
-hbix/CQi+0xEOTjgHGh5+w==" | openssl enc -aes-256-cbc -a -d
