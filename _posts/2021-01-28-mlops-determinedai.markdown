@@ -3,6 +3,8 @@ layout: post
 title:  "[번역] 데이터 과학자들은 쿠버네티스에 관심이 없습니다 - MLOps"
 date:   2021-01-28 00:00:00
 image: /assets/images/mlops/unicorns.png
+image_width: 1200
+image_height: 627
 categories: kubernetes mlops
 tags: determined-ai
 permalink: /kubernetes/mlops/2021/01/28/mlops-determinedai/

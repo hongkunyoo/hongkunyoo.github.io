@@ -1,0 +1,21 @@
+{%- comment -%}
+  WebP 변환본(같은 경로의 .webp, 썸네일은 -600.webp)이 있으면 <picture>로 제공하고,
+  width/height로 공간을 미리 확보해 레이아웃 이동(CLS)을 막습니다.
+  WebP 생성: scripts/make-webp.sh
+  params: src, alt, class, width, height, sizes, loading, fetchpriority
+{%- endcomment -%}
+{%- assign img_ext = include.src | split: "." | last -%}
+{%- assign img_base_len = include.src | size | minus: img_ext.size | minus: 1 -%}
+{%- assign img_base = include.src | slice: 0, img_base_len -%}
+{%- assign webp_full = img_base | append: ".webp" -%}
+{%- assign webp_thumb = img_base | append: "-600.webp" -%}
+{%- assign has_full = site.static_files | where: "path", webp_full | first -%}
+{%- assign has_thumb = site.static_files | where: "path", webp_thumb | first -%}
+<picture>
+  {%- if has_full and has_thumb %}
+  <source type="image/webp" srcset="{{ site.baseurl }}{{ webp_thumb }} 600w, {{ site.baseurl }}{{ webp_full }} 1200w" sizes="{{ include.sizes | default: '100vw' }}">
+  {%- elsif has_full %}
+  <source type="image/webp" srcset="{{ site.baseurl }}{{ webp_full }}">
+  {%- endif %}
+  <img class="{{ include.class }}" src="{{ site.baseurl }}{{ include.src }}" alt="{{ include.alt | escape }}" width="{{ include.width | default: 1200 }}" height="{{ include.height | default: 675 }}" decoding="async"{% if include.loading %} loading="{{ include.loading }}"{% endif %}{% if include.fetchpriority %} fetchpriority="{{ include.fetchpriority }}"{% endif %}>
+</picture>

@@ -3,6 +3,8 @@ layout: post
 title:  "나만의 k8s 클러스터 구축하기 - #3 GCP GKE편"
 date:   2020-09-04 00:00:00
 image: /assets/images/k8s-cluster/landing03.png
+image_width: 946
+image_height: 415
 categories: kubernetes cloud
 tags: cluster gke gcp
 permalink: /kubernetes/cluster/gke/2020/09/04/k8s-gke/

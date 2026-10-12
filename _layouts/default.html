@@ -12,7 +12,13 @@
 
 <!-- custom CSS - Remove this if you don't use it or choose to customize the stylesheet with sass-->
 <link href="{{ site.baseurl }}/assets/css/custom.css" rel="stylesheet">
-<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css" rel="stylesheet">
+<link rel="preconnect" href="https://hangeul.pstatic.net" crossorigin>
+<style>
+/* 나눔스퀘어라운드: 외부 CSS(렌더링 차단) 대신 인라인 선언 + font-display: swap 으로 글자가 즉시 보이도록 */
+@font-face { font-family: 'NanumSquareRound'; font-display: swap; src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundR.woff2) format("woff2"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundR.woff) format("woff"); }
+@font-face { font-family: 'NanumSquareRoundB'; font-display: swap; src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundB.woff2) format("woff2"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundB.woff) format("woff"); }
+@font-face { font-family: 'NanumSquareRoundEB'; font-display: swap; src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundEB.woff2) format("woff2"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareRound/NanumSquareRoundEB.woff) format("woff"); }
+</style>
 
 <!-- custom CSS end-->
     

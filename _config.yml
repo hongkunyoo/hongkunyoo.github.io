@@ -55,6 +55,16 @@ defaults:
       path: "naver3964f9de700c9aeb5b75c825d67ffa3a.html"
     values:
       sitemap: false
+# 빌드 제외 (exclude를 지정하면 Jekyll 기본 제외 목록이 덮어써지므로 기본값도 함께 명시)
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - scripts
 sass:
   sass_dir: _sass
   style: :compressed

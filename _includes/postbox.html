@@ -8,7 +8,11 @@
     <div class="row no-gutters m-2 hvr-grow">
         <div class="col-sm-5 p-2">
             <a href="{{ post.url | absolute_url }}">
-                {% if post.image %} <img class="rounded" src="{{ site.baseurl }}{{ post.image }}" alt="{{ post.title | escape }}" loading="lazy"> {% endif %}
+                {% if post.image %}
+                {%- comment -%} 첫 두 카드는 LCP 후보라 즉시 로드, 나머지는 lazy {%- endcomment -%}
+                {% if forloop.index > 2 %}{% assign card_loading = "lazy" %}{% else %}{% assign card_loading = nil %}{% endif %}
+                {% include responsive-image.html src=post.image alt=post.title class="rounded img-fluid" width=post.image_width height=post.image_height sizes="(min-width: 1200px) 230px, (min-width: 576px) 40vw, 100vw" loading=card_loading %}
+                {% endif %}
             </a>
         </div>
         <!-- <div class="col-sm-1">

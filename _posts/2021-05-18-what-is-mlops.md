@@ -3,6 +3,8 @@ layout: post
 title:  "커피고래가 생각하는 MLOps"
 date:   2021-05-18 00:00:00
 image: /assets/images/mlops/mlops-cycle.png
+image_width: 1973
+image_height: 1002
 permalink: /:title
 categories: mlops
 ---
