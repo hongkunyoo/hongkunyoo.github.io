@@ -16,6 +16,8 @@ post_class: post-template
         <div class="col-xl-3">
         </div>
         <div class="col-xl-5 col-lg-8">
+            <!-- AdSense 자동 광고 제외 영역(#post-header): 대표 이미지~시리즈 목차 사이에 광고가 끼어 본문이 밀리지 않도록 -->
+            <div id="post-header">
             <!-- Post Featured Image -->
 			{% if page.image %}{% include responsive-image.html src=page.image alt=page.title class="featured-image img-fluid rounded" width=page.image_width height=page.image_height sizes="(min-width: 1200px) 570px, (min-width: 992px) 66vw, 100vw" fetchpriority="high" %}{% endif %}
 			<!-- End Featured Image -->
@@ -67,6 +69,8 @@ post_class: post-template
                 </ol>
             </nav>
             {% endif %}
+            </div>
+            <!-- End #post-header -->
 
 			<!-- Post Content -->
 			<div class="article-post nanum-font">

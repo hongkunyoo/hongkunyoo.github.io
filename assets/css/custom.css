@@ -61,11 +61,11 @@ qq {
  font-family: 'NanumSquareRoundEB';
 }
 
-.language-plaintext {
+/* 언어 미지정 코드 블록 래퍼: 배경·여백만 유지 (인라인 코드는 아래 Design refinements) */
+div.language-plaintext {
     background-color: rgba(0, 0, 0, 0.04);
     padding: 0.3em;
     border-radius: 0.3em;
-    color: #e83e8c;
 }
 
 .hvr-grow {
@@ -172,4 +172,144 @@ qq {
     margin: 1rem 0;
     font-size: 1rem;
     line-height: 1.75em;
+}
+/* ==================================================
+   Design refinements (2026-10)
+   브랜드 남색 헤더·고래 로고는 유지하고, 가독성·접근성·내비게이션을 다듬음
+================================================== */
+:root {
+    --brand-navy: #314c6d;   /* 헤더, 브랜드 */
+    --whale-blue: #3f6f9f;   /* 로고의 고래색: 링크·포커스·강조 */
+    --ink-muted: #5f6b7a;    /* 메타 정보, 사이드바 (흰 배경 대비 5.4:1) */
+    --mist: #f3f6f9;         /* 옅은 배경 */
+    --rule: #e6ebf0;         /* 구분선 */
+}
+
+/* 한국어 줄바꿈: 단어 중간에서 끊지 않고, 긴 URL·코드 토큰만 강제로 줄바꿈 */
+body {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
+.article-post pre, .article-post code {
+    word-break: normal;
+}
+h1, h2, h3, .posttitle, .card-title {
+    text-wrap: balance;
+}
+.article-post {
+    line-height: 1.8;
+}
+
+/* 본문 링크: 보라색 대신 브랜드 계열 색 */
+.article-post a {
+    box-shadow: inset 0 -1px 0 var(--whale-blue), 0 1px 0 var(--whale-blue);
+}
+.article-post a:hover {
+    box-shadow: inset 0 -1.2em 0 rgba(63, 111, 159, 0.16), 0 1px 0 var(--whale-blue);
+}
+
+/* 키보드 포커스: 클릭 시에는 숨기고 탭 이동 시에만 표시 */
+a:focus, button:focus { outline: none; }
+a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 3px solid var(--whale-blue);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+.navigation-wrap a:focus-visible { outline-color: #fff; }
+
+/* 본문으로 건너뛰기 링크 */
+.skip-link {
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    transform: translateY(-120%);
+    z-index: 10000;
+    padding: .5rem 1rem;
+    background: #fff;
+    color: var(--brand-navy);
+    font-weight: 700;
+    border-radius: 4px;
+    transition: transform .15s;
+}
+.skip-link:focus { transform: translateY(1rem); }
+#main-content:focus { outline: none; }
+
+/* 상단 메뉴: 모든 화면 크기에서 표시 (모바일은 제목 아래 줄로) */
+.site-nav { margin-left: auto; }
+.site-nav-list {
+    display: flex;
+    gap: .25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.site-nav-link {
+    display: block;
+    padding: .4rem .75rem;
+    color: #dee2e6;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 4px;
+}
+.site-nav-link:hover, .site-nav-link[aria-current="page"] {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+}
+@media (max-width: 575.98px) {
+    .start-header { padding: 20px 0; }
+    .site-nav { width: 100%; margin: .75rem 0 0; }
+    .site-nav-list { justify-content: flex-start; }
+    .site-nav-link { padding: .35rem .6rem; font-size: .95rem; }
+}
+
+/* 목록 카드: 카드 전체 10% 확대 대신 제목 색으로 반응 */
+.hvr-grow, .hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
+    transform: none;
+}
+.card .card-title { transition: color .15s; }
+.card a:hover .card-title, .card a:focus-visible .card-title { color: var(--whale-blue); }
+.card .post-date { color: var(--ink-muted); }
+
+/* 사이드바: 연한 회색(#999, 대비 2.8:1) → AA 대비, 제목 크기 정리 */
+.sidebar ul li a { color: var(--ink-muted); border-bottom-color: var(--rule); }
+.sidebar ul li a:hover { color: var(--brand-navy); }
+.sidebar-section h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: .75rem;
+}
+.sidebar-section { box-shadow: 0 0 0 1px var(--rule); border-radius: 6px; }
+
+/* 시리즈 목차·태그 */
+.series-toc { background: var(--mist) !important; border-left: 3px solid var(--whale-blue) !important; border-radius: 4px; }
+.series-toc a { color: var(--brand-navy); }
+.series-toc a:hover { color: var(--whale-blue); text-decoration: underline; }
+ul.tags li a { background: var(--mist); color: var(--brand-navy); box-shadow: none; }
+ul.tags li a:hover { background: #e3eaf2; }
+
+/* 인라인 코드: Bootstrap 기본 분홍 대신 브랜드 남색 계열, 코드 블록(pre) 안은 제외 */
+.article-post :not(pre) > code,
+.card-text code {
+    color: #24364d;
+    background: rgba(63, 111, 159, 0.08);
+    padding: .15em .4em;
+    border-radius: 6px;
+}
+
+/* 앵커 이동 시 제목이 화면 맨 위에 붙지 않도록 */
+.article-post h2, .article-post h3, .article-post h4, section[id] { scroll-margin-top: 1.5rem; }
+
+/* 관련 글 */
+.related-posts ul { padding-left: 1.2rem; }
+.related-posts a { color: var(--brand-navy); }
+.related-posts a:hover { color: var(--whale-blue); text-decoration: underline; }
+
+/* 동작 줄이기 설정 존중 */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
 }

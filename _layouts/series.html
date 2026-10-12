@@ -16,7 +16,7 @@ layout: default
 		<p class="nanum-font">{{ series_info.description }}</p>
 		<p class="small text-muted">총 {{ series_posts.size }}편 · {{ series_posts.first.date | date: "%Y-%m-%d" }} ~ {{ series_posts.last.date | date: "%Y-%m-%d" }}</p>
 
-		<ol class="list-unstyled mt-5">
+		<ol class="list-unstyled mt-5" id="post-list">
 		{% for post in series_posts %}
 			<li class="mb-4 pb-3 border-bottom">
 				<span class="small text-muted">#{{ forloop.index }} · {{ post.date | date: "%Y-%m-%d" }}</span>

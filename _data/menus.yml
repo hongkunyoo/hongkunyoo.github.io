@@ -1,6 +1,15 @@
 # Top Menu
 topmenu:
 
+- title: 카테고리
+  url: "categories/"
+
+- title: 시리즈
+  url: "series/"
+
+- title: About
+  url: "about/"
+
 # - title: Home
 #   url: ""
 #   class: "white"

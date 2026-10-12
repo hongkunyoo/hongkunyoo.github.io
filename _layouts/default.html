@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="theme-color" content="#314c6d">
 <link rel="icon" href="{{ site.baseurl }}/{{site.favicon}}">
 
 {% seo %}
@@ -38,6 +39,7 @@ gtag('config', '{{site.ganalytics}}');
     
 {% capture layout %}{% if page.layout %}layout-{{ page.layout }}{% endif %}{% endcapture %}
 <body class="{{ layout }}">
+<a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
 
     
 <!-- Menu Navigation
@@ -92,15 +94,15 @@ gtag('config', '{{site.ganalytics}}');
             </svg>
           </button> -->
           
-          <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ml-auto font-weight-bold d-flex align-items-center">
+          <nav class="site-nav" aria-label="주 메뉴">
+            <ul class="site-nav-list">
               {% for item in site.data.menus.topmenu %}
-              <li class="nav-item">
-                <a class="nav-link px-3 {% if item.class %}{{item.class}}{% endif %}" href="{% unless item.external %}{{site.baseurl}}/{% endunless %}{{item.url}}" title="{{item.title}}">{{item.title}}</a>
+              <li>
+                <a class="site-nav-link" href="{% unless item.external %}{{site.baseurl}}/{% endunless %}{{item.url}}"{% assign item_path = "/" | append: item.url %}{% if page.url == item_path %} aria-current="page"{% endif %}>{{item.title}}</a>
               </li>
               {% endfor %}
             </ul>
-          </div>
+          </nav>
 
         </div>
       </nav>
@@ -111,7 +113,7 @@ gtag('config', '{{site.ganalytics}}');
     
 <!-- Container
 ================================================== -->    
-<main class="container-fluid" style="margin-top: 40px">
+<main id="main-content" class="container-fluid" style="margin-top: 40px">
       {{ content }}  
 </main>
 

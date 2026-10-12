@@ -22,7 +22,6 @@ html {
 body {
     background:#fff;
     font-size:17px;
-    transition: all 200ms linear;
     font-family: "PT Sans",sans-serif;
     line-height:1.7;
     color: #333;
@@ -75,11 +74,11 @@ h4, .h4, h5, .h5 {
 a {
     color:inherit;
     text-decoration:none;
-    transition: all .4s;
+    transition: color .2s, box-shadow .2s;
     &:hover {
         text-decoration:none;
         color:inherit;
-        transition: all .4s;
+        transition: color .2s, box-shadow .2s;
     }
 }
 img, video {max-width:100%;}
@@ -111,27 +110,27 @@ small, .small {
 	opacity: 1;
 	transform: translateY(0);
 	padding: 40px 0;	
-	-webkit-transition : all 0.3s ease-out;
-	transition : all 0.3s ease-out;
+	-webkit-transition: padding 0.3s ease-out, box-shadow 0.3s ease-out;
+	transition: padding 0.3s ease-out, box-shadow 0.3s ease-out;
    
 }
 .start-header.scroll-on {	
 	padding: 5px 0;
-	-webkit-transition : all 0.3s ease-out;
-	transition : all 0.3s ease-out;
+	-webkit-transition: padding 0.3s ease-out, box-shadow 0.3s ease-out;
+	transition: padding 0.3s ease-out, box-shadow 0.3s ease-out;
     box-shadow: 0px 10px 40px 0px rgba(0,0,0,0.05);
 }
 .start-header.scroll-on .navbar-brand img {	
-	-webkit-transition : all 0.3s ease-out;
-	transition : all 0.3s ease-out;
+	-webkit-transition: padding 0.3s ease-out, box-shadow 0.3s ease-out;
+	transition: padding 0.3s ease-out, box-shadow 0.3s ease-out;
 }
 .navigation-wrap {	
 	width: 100%;
 	top: 0;
 	left: 0;
 	z-index: 9999;
-	-webkit-transition : all 0.3s ease-out;
-	transition : all 0.3s ease-out;
+	-webkit-transition: padding 0.3s ease-out, box-shadow 0.3s ease-out;
+	transition: padding 0.3s ease-out, box-shadow 0.3s ease-out;
     
     background:#fff;
 }
@@ -648,6 +647,6 @@ span.navigation:before {
 }
 
 .hover-opacity:hover {
-    transition: all.3s;
+    transition: opacity .3s, transform .3s;
     opacity:.8;
 }
