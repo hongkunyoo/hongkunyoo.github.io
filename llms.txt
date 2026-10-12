@@ -1,0 +1,34 @@
+---
+layout: null
+permalink: /llms.txt
+sitemap: false
+---
+{%- comment -%} AI 검색/에이전트용 사이트 안내(llmstxt.org 형식). 포스트·시리즈·카테고리 데이터로 자동 생성됩니다. {%- endcomment -%}
+# {{ site.title }}
+
+> {{ site.description }}입니다. 저자({{ site.author }}, 별명 커피고래)가 한국어로 쓰는 개인 기술 블로그로, 쿠버네티스 인증·네트워킹·Admission Control, MLOps, GitOps, 클라우드(AWS·GCP)를 다룹니다. 일부 글은 해외 글의 번역이며 제목에 [번역]으로 표시되어 있습니다.
+
+- 저자 소개: {{ "/about/" | absolute_url }}
+- 전체 글 피드(Atom): {{ "/feed.xml" | absolute_url }}
+- 사이트맵: {{ "/sitemap.xml" | absolute_url }}
+
+## 연재 시리즈
+
+{% for s in site.data.series -%}
+{%- assign series_posts = site.posts | where: "series", s.slug -%}
+{%- if series_posts.size > 0 -%}
+- [{{ s.title }} ({{ series_posts.size }}편)]({{ "/series/" | append: s.slug | append: "/" | absolute_url }}): {{ s.description }}
+{% endif -%}
+{%- endfor %}
+## 카테고리
+
+{% for c in site.data.categories -%}
+{%- if site.categories[c.slug] -%}
+- [{{ c.title }} ({{ site.categories[c.slug].size }}편)]({{ "/categories/" | absolute_url }}#{{ c.slug }}): {{ c.description }}
+{% endif -%}
+{%- endfor %}
+## 전체 글 (최신순)
+
+{% for post in site.posts -%}
+- [{{ post.title }}]({{ post.url | absolute_url }}) ({{ post.date | date: "%Y-%m-%d" }}): {{ post.description | default: post.excerpt | strip_html | strip_newlines | normalize_whitespace | truncate: 160 }}
+{% endfor %}

@@ -1,0 +1,5 @@
+# jekyll-seo-tag가 BlogPosting JSON-LD의 author 정보로 사용합니다.
+hongkunyoo:
+  name: hongkunyoo
+  url: https://coffeewhale.com/about/
+  picture: /assets/images/profile.png

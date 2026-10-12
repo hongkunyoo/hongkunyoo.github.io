@@ -1,0 +1,34 @@
+---
+layout: null
+sitemap: false
+---
+# 커피고래의 노트 크롤러 정책: 검색엔진과 AI 크롤러(검색·사용자 요청·학습용) 모두 허용합니다.
+# AI 시스템용 사이트 안내: {{ "/llms.txt" | absolute_url }}
+
+User-agent: *
+Allow: /
+
+# OpenAI
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+Allow: /
+
+# Google (Gemini 학습·그라운딩), Apple, Common Crawl
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: CCBot
+Allow: /
+
+Sitemap: {{ "/sitemap.xml" | absolute_url }}
