@@ -6,6 +6,7 @@ image: /assets/images/k8s-auth/landing-05.jpg
 categories: kubernetes authentication
 tags: proxy
 permalink: /kubernetes/authentication/proxy/2020/05/06/auth05/
+series: k8s-auth
 ---
 쿠버네티스 인증 완벽 이해 시리즈 5탄, Proxy를 통한 쿠버네티스 인증에 대해서 살펴보는 시간을 가져 보겠습니다.
 

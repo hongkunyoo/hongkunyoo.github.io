@@ -7,6 +7,7 @@ image: /assets/images/aws_batch/landing.png
 categories: machine-learning cloud
 tags: deep-learning aws aws-batch docker
 permalink: /deep-learning/aws/batch/docker/2018/09/30/deeplearning-aws-batch3/
+series: aws-batch
 ---
 개별 host에서 학습한 모델 파일을 통합적으로 관리할 수 있는 방법에 대해 알아보겠습니다.
 

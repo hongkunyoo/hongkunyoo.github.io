@@ -6,6 +6,7 @@ image: /assets/images/k8s-cluster/landing.png
 categories: kubernetes
 tags: cluster virtualbox
 permalink: /kubernetes/cluster/virtualbox/2020/08/31/k8s-virtualbox/
+series: k8s-cluster
 ---
 쿠버네티스 클러스터를 만드는 방법은 다양합니다. Minikube을 이용하는 방법, 클라우드 플랫폼의 VM을 이용하여 구축하는 방법, 라즈베리파이 보드를 구매하여 클러스터를 만드는 방법 등 다양한 방법들이 있습니다. "나만의 k8s 클러스터 구축하기" 시리즈에서 이러한 방법들을 하나씩 살펴 볼까합니다. 첫 포스트에서는 원도우 PC위에 VirtualBox를 이용하여 나만의 쿠버네티스 클러스터를 구축하는 방법에 대해서 살펴보겠습니다.
 

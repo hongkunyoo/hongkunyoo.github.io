@@ -1,0 +1,32 @@
+# 연재 시리즈 정의. 포스트 front matter에 `series: <slug>`를 넣으면 허브 페이지(/series/<slug>/)와
+# 포스트 상단 시리즈 목차에 자동으로 포함됩니다(날짜순). 새 시리즈는 여기에 추가하고 series/<slug>.html을 만드세요.
+- slug: k8s-auth
+  title: k8s 인증 완벽이해
+  description: X.509 클라이언트 인증서부터 HTTP 인증, OpenID Connect, Webhook, Proxy 인증까지 쿠버네티스 사용자 인증 방식을 하나씩 살펴보는 5편 시리즈입니다.
+- slug: ingress-auth
+  title: Kubernetes-NGINX Ingress 인증
+  description: NGINX Ingress Controller에 Basic Auth와 OAuth 인증을 붙여 쿠버네티스 서비스를 보호하는 방법을 다룹니다.
+- slug: k8s-network
+  title: 쿠버네티스 네트워킹 이해하기
+  description: Pod, Service, Ingress 순서로 쿠버네티스 네트워크가 어떻게 동작하는지 설명하는 번역 시리즈입니다.
+- slug: packet-life
+  title: 쿠버네티스 패킷의 삶
+  description: 컨테이너 네트워킹과 CNI, Calico CNI, Service, Ingress 순서로 쿠버네티스 안에서 패킷이 흘러가는 과정을 따라가 보는 4편 번역 시리즈입니다.
+- slug: admission-control
+  title: 쿠버네티스 Admission Control
+  description: Admission Controller의 개념부터 Open Policy Agent(OPA)와 Rego로 클러스터 정책을 적용하는 방법까지 다룹니다.
+- slug: k8s-cluster
+  title: 나만의 k8s 클러스터 구축하기
+  description: VirtualBox 로컬 환경, Amazon EKS, GCP GKE에서 각각 쿠버네티스 클러스터를 직접 구축하는 방법을 소개합니다.
+- slug: k8s-mlops
+  title: Kubernetes와 MLOps
+  description: 쿠버네티스를 머신러닝 학습 환경으로 활용하는 방법을 소개하고 여러 모델을 직접 훈련해 본 뒤, EKS Cluster Autoscaler 설정과 OpenInfra Days Korea 2019 핸즈온 워크숍으로 이어지는 시리즈입니다.
+- slug: aws-batch
+  title: AWS Batch를 이용한 분산 병렬 딥러닝 학습
+  description: AWS Batch로 분산 병렬 딥러닝 학습 환경을 구축하고 학습한 모델 파일을 관리하는 방법을 다룹니다.
+- slug: scaling-k8s
+  title: 대규모 쿠버네티스 클러스터 운영
+  description: OpenAI가 쿠버네티스 클러스터를 2,500대, 7,500대 노드 규모로 확장하며 겪은 문제와 해결 방법을 번역한 글입니다.
+- slug: more-data
+  title: 더 많은 데이터가 더 좋은 알고리즘을 이긴다
+  description: 알고리즘보다 데이터의 양과 질이 성능을 좌우한다는 주장을 다룬 3편 번역 시리즈입니다.

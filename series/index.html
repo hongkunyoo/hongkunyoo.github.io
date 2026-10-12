@@ -1,0 +1,33 @@
+---
+layout: default
+title: 연재 시리즈
+description: "k8s 인증, 쿠버네티스 네트워킹, 패킷의 삶, Admission Control, MLOps 등 커피고래의 노트에서 연재한 시리즈를 처음부터 순서대로 읽어보세요."
+permalink: /series/
+---
+<div class="row">
+	<div class="col-xl-3">
+	</div>
+	<div class="col-xl-5 col-lg-8">
+		<h1 class="posttitle nanumEB-font">{{ page.title }}</h1>
+		<p class="nanum-font">여러 편에 걸쳐 연재한 글을 주제별로 모았습니다. 각 시리즈는 1편부터 순서대로 읽는 것을 추천합니다.</p>
+		{% for s in site.data.series %}
+		{% assign series_posts = site.posts | where: "series", s.slug | reverse %}
+		{% if series_posts.size > 0 %}
+		<section class="mt-5 pb-3 border-bottom">
+			<h2 class="h4 nanumB-font"><a href="{{ site.baseurl }}/series/{{ s.slug }}/">{{ s.title }}</a> <span class="small text-muted">({{ series_posts.size }}편)</span></h2>
+			<p class="small nanum-font">{{ s.description }}</p>
+			<ol class="small">
+			{% for post in series_posts %}
+				<li><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
+			{% endfor %}
+			</ol>
+		</section>
+		{% endif %}
+		{% endfor %}
+	</div>
+	<div class="col-xl-2 col-lg-4">
+		{% include sidebar.html %}
+	</div>
+	<div class="col-xl-2">
+	</div>
+</div>

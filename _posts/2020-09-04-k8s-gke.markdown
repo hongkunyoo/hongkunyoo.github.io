@@ -8,6 +8,7 @@ image_height: 415
 categories: kubernetes cloud
 tags: cluster gke gcp
 permalink: /kubernetes/cluster/gke/2020/09/04/k8s-gke/
+series: k8s-cluster
 ---
 이번 포스트에서는 GCP GKE를 이용하여 나만의 클러스터를 구축하는 방법에 대해 살펴보겠습니다.
 

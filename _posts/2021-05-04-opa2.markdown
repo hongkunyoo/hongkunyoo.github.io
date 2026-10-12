@@ -6,6 +6,7 @@ image: /assets/images/opa/landing-ac02.png
 categories: kubernetes security
 tags: admission-control opa
 permalink: /kubernetes/admission-control/2021/05/04/opa2/
+series: admission-control
 ---
 [지난 쿠버네티스 Admission Control #1](https://coffeewhale.com/kubernetes/admission-control/2021/04/28/opa1/)에서는 Admission Control의 개념에 대해 알아보았고 직접 Custom Admission Controller을 만들어 봤습니다. 이번 시간에는 General Policy Controller인 Open Policy Agent(OPA)에 대해서 알아보고 OPA Policy를 이용하여 사용자의 세부 사용성을 관리해 보겠습니다.
 

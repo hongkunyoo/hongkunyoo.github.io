@@ -8,6 +8,7 @@ image: /assets/images/aws_batch/landing.png
 categories: machine-learning cloud
 tags: deep-learning aws aws-batch docker
 permalink: /deep-learning/aws/batch/docker/2018/05/21/deeplearning-aws-batch2/
+series: aws-batch
 ---
 
 [지난 포스트]({% post_url 2018-05-18-deeplearning-aws-batch1 %})에서 AWS Batch가 어떤 서비스인지에 대해 알아봤습니다. 이번에는 실제 코드와 함께 어떻게 분산 병렬 학습을 할 수 있을지에 대해 알아봅시다.

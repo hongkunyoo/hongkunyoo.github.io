@@ -6,6 +6,7 @@ image: /assets/images/packet-life/landing03.png
 permalink: /:title
 categories: kubernetes network
 tags: packet
+series: packet-life
 ---
 쿠버네티스 패킷의 삶 #3에서는 Service 네트워크가 동작하는 방법에 대해 심층적으로 알아 봅니다.
 

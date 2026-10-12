@@ -6,6 +6,7 @@ image: /assets/images/packet-life/landing04.png
 permalink: /:title
 categories: kubernetes network
 tags: packet
+series: packet-life
 ---
 쿠버네티스 패킷의 삶 마지막 편, #4에서는 Ingress 리소스에 대해서 살펴 봅니다.
 

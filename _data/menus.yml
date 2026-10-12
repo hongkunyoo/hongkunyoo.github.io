@@ -27,6 +27,12 @@ footermenu:
 - title: About
   url: "about/"
 
+- title: Categories
+  url: "categories/"
+
+- title: Series
+  url: "series/"
+
 # - title: Contact
 #   url: "contact/"
 

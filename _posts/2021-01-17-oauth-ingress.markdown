@@ -6,6 +6,7 @@ image: /assets/images/landing/nginx-oauth2.png
 categories: kubernetes authentication
 tags: nginx-ingress oauth
 permalink: /kubernetes/authentication/2021/01/17/oauth-ingress/
+series: ingress-auth
 ---
 Kubernetes-NGINX Ingress 사용 시, 간편하게 OAuth 인증을 설정하는 방법에 대해 정리한 내용입니다. 
 

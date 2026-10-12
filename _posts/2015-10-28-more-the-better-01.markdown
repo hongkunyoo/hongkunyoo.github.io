@@ -6,6 +6,7 @@ image: /assets/images/bigdata-landing.png
 categories: machine-learning
 tags: bigdata
 permalink: /bigdata/2015/10/28/more-the-better-01/
+series: more-data
 ---
 이 글은 데이터 마이닝을 공부하던 중, The Mining of Massive Datasets의 저자인 Datawocky의 블로그 글([More data usually beats better algorithms](http://anand.typepad.com/datawocky/2008/03/more-data-usual.html))을 읽고 인상 깊어서 번역한 글입니다. 해당 글은 원 저자에게 허락을 맡고 게시하였습니다.
 

@@ -5,6 +5,7 @@ date:   2019-07-19 00:00:00
 categories: kubernetes mlops
 tags: hands-on
 permalink: /k8s/ml/2019/07/19/workshop/
+series: k8s-mlops
 ---
 안녕하세요. 이번 ["Open Infrastructure & Cloud Native Days Korea 2019"](https://openinfradays.kr/)에서 "How to scale your ML job with Kubernetes"라는 주제로 핸즈온 워크샵을 진행하였습니다.
 

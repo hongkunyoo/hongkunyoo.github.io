@@ -54,6 +54,20 @@ post_class: post-template
                     {{ word_msg }} min read</span>
             </p>
 
+            <!-- Series TOC: 연재물이면 전체 목차와 허브 링크 표시 -->
+            {% if page.series %}
+            {% assign series_info = site.data.series | where: "slug", page.series | first %}
+            {% assign series_posts = site.posts | where: "series", page.series | reverse %}
+            <nav class="series-toc card bg-light border-0 p-3 mb-4" aria-label="시리즈 목차">
+                <p class="mb-2 font-weight-bold"><a href="{{ site.baseurl }}/series/{{ page.series }}/">{{ series_info.title }}</a> <span class="small text-muted">시리즈 ({{ series_posts.size }}편)</span></p>
+                <ol class="small mb-0 pl-4">
+                {% for post in series_posts %}
+                    {% if post.url == page.url %}<li><strong aria-current="page">{{ post.title }}</strong></li>{% else %}<li><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>{% endif %}
+                {% endfor %}
+                </ol>
+            </nav>
+            {% endif %}
+
 			<!-- Post Content -->
 			<div class="article-post nanum-font">
 				{{ content | replace: '<img src=', '<img loading="lazy" decoding="async" src=' }}

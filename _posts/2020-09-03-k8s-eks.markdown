@@ -8,6 +8,7 @@ image_height: 600
 categories: kubernetes cloud
 tags: cluster eks aws
 permalink: /kubernetes/cluster/eks/2020/09/03/k8s-eks/
+series: k8s-cluster
 ---
 지난 포스트에서는 VirtualBox를 이용하여 쿠버네티스 클러스터를 구축하는 방법에 대해서 살펴봤습니다. 이번 포스트에서는 Amazon EKS를 이용하여 나만의 클러스터를 구축하는 방법에 대해 살펴보겠습니다.
 
