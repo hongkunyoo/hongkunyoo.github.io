@@ -17,6 +17,16 @@
               {% endif %}
            {% endfor %}
         </ul>
-
+    </div>
+    <div class="sidebar-section">
+        <h2>Categories</h2>
+        <ul>
+           {% for cat in site.data.categories %}
+              {% assign cat_posts = site.categories[cat.slug] %}
+              {% if cat_posts %}
+              <li class="subitem"><a href="{{ site.baseurl }}/categories/#{{ cat.slug }}" title="{{ cat.description }}">{{ cat.title }} ({{ cat_posts.size }})</a></li>
+              {% endif %}
+           {% endfor %}
+        </ul>
     </div>
 </div>

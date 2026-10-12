@@ -2,8 +2,9 @@
 layout: post
 title:  "helm subchart 파헤치기"
 date:   2019-06-05 00:00:00
-categories: k8s helm
-tags: k8s kubernetes helm subchart
+categories: kubernetes
+tags: helm subchart
+permalink: /k8s/helm/2019/06/05/helm-chart/
 ---
 이번 포스트에서는 여러 `chart`를 하나의 패키지로 관리할 수 있는 `helm subchart`라는 것에 대해서 알아보고 그설명 드리고 사용법에 대해서 알아보겠습니다.
 

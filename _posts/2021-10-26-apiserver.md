@@ -2,9 +2,10 @@
 layout: post
 title:  "쿠버네티스 API서버는 정말 그냥 API서버라구욧"
 date:   2021-10-26 00:00:00
-categories: kubernetes
 image: /assets/images/apiserver/landing.png
 permalink: /:title
+categories: kubernetes
+tags: api-server
 ---
 쿠버네티스 API서버에 대해서 한층 더 가까워지는 시간을 가져봅시다.
 

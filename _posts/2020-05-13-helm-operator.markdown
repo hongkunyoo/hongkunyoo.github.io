@@ -2,8 +2,10 @@
 layout: post
 title:  "Helm Operator (Helm Controller) 소개"
 date:   2020-05-13 00:00:00
-categories: kubernetes gitops helm
 image: /assets/images/helm-op/landing.jpg
+categories: kubernetes gitops
+tags: helm
+permalink: /kubernetes/gitops/helm/2020/05/13/helm-operator/
 ---
 [helm](https://helm.sh/)은 가장 많이 쓰이는 쿠버네티스 패키지 매니저 중 하나죠. 복잡한 어플리케이션도 helm chart 하나면은 뚝딱 쿠버네티스 위에 설치할 수 있습니다. 이 helm chart를 쿠버네티스 Operator 패턴으로 조금 더 편리하게 패키지를 관리해주는 방법은 없을까요? 바로 이번 시간에 알아볼 Helm Operator를 소개합니다.
 

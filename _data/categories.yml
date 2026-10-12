@@ -1,0 +1,31 @@
+# 카테고리 정의: 포스트 front matter의 categories 값(slug)과 일치해야 합니다.
+- slug: kubernetes
+  title: Kubernetes
+  description: 쿠버네티스 핵심 개념, 클러스터 구축과 운영 노하우
+- slug: mlops
+  title: MLOps
+  description: 쿠버네티스 위에서 머신러닝 파이프라인과 플랫폼 운영하기
+- slug: machine-learning
+  title: Machine Learning
+  description: 딥러닝 학습 환경 구축과 머신러닝 이론
+- slug: network
+  title: Network
+  description: 쿠버네티스 네트워킹, 패킷의 흐름과 CNI
+- slug: authentication
+  title: AuthN
+  description: 쿠버네티스 인증 방식과 Ingress 인증
+- slug: security
+  title: Security
+  description: Admission Control, OPA, Secret 관리
+- slug: gitops
+  title: GitOps & CI/CD
+  description: ArgoCD, Helm Operator, GitHub Actions
+- slug: cloud
+  title: Cloud
+  description: AWS, GCP 클라우드 서비스 활용
+- slug: certificate
+  title: Certificate
+  description: CKA, AWS, GCP 자격증 취득 후기
+- slug: essay
+  title: Essay
+  description: 책, 커리어, 블로그 이야기

@@ -3,7 +3,9 @@ layout: post
 title:  "[Tensorflow] r0.12 ver 기준 설치 가이드 Best Practice"
 description: "Ubuntu에 tensorflow 설치 방법"
 date:   2017-01-22 21:10:00
-categories: machine-learning ml tensorflow
+categories: machine-learning
+tags: tensorflow
+permalink: /machine-learning/ml/tensorflow/2017/01/23/tensorflow-install-guide/
 ---
 
 작성날짜: 2017년 1월 기준 tensorflow 설치방법

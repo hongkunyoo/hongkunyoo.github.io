@@ -26,8 +26,9 @@ post_class: post-template
                     <ul class="tags">
                         {% assign sortedCategories = page.categories | sort %}
                         {% for category in sortedCategories %}
+                        {% assign cat = site.data.categories | where: "slug", category | first %}
                         <li>
-                         <a href="{{ site.baseurl }}/categories#{{ category | slugify }}">{{ category }}</a>
+                         <a href="{{ site.baseurl }}/categories/#{{ category | slugify }}">{% if cat %}{{ cat.title }}{% else %}{{ category }}{% endif %}</a>
                         </li>
                         {% endfor %}
                     </ul>
@@ -76,6 +77,27 @@ post_class: post-template
               {% endif %}
             </div>
             <!-- End Prev/Next -->
+
+            <!-- Related Posts: 가장 구체적인 카테고리(마지막 값)를 공유하는 글로 내부 링크 강화 -->
+            {% assign related_key = page.categories | last %}
+            {% assign related_count = 0 %}
+            {% capture related_items %}
+            {% for post in site.posts %}
+              {% if post.url != page.url and post.categories contains related_key %}
+                <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
+                {% assign related_count = related_count | plus: 1 %}
+                {% if related_count >= 5 %}{% break %}{% endif %}
+              {% endif %}
+            {% endfor %}
+            {% endcapture %}
+            {% if related_count > 0 %}
+            {% assign related_cat = site.data.categories | where: "slug", related_key | first %}
+            <nav class="related-posts mt-5" aria-label="관련 글">
+                <h2 class="h5 font-weight-bold">{% if related_cat %}{{ related_cat.title }} {% endif %}관련 글</h2>
+                <ul>{{ related_items }}</ul>
+            </nav>
+            {% endif %}
+            <!-- End Related Posts -->
             
             
              <!-- Author Box -->
@@ -130,3 +152,17 @@ post_class: post-template
 
 <!-- End Article
 ================================================== -->
+
+{% assign crumb_key = page.categories | first %}
+{% assign crumb_cat = site.data.categories | where: "slug", crumb_key | first %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": {{ site.title | jsonify }}, "item": {{ "/" | absolute_url | jsonify }}}{% if crumb_cat %},
+    {"@type": "ListItem", "position": 2, "name": {{ crumb_cat.title | jsonify }}, "item": {{ "/categories/" | append: "#" | append: crumb_cat.slug | absolute_url | jsonify }}}{% endif %},
+    {"@type": "ListItem", "position": {% if crumb_cat %}3{% else %}2{% endif %}, "name": {{ page.title | jsonify }}, "item": {{ page.url | absolute_url | jsonify }}}
+  ]
+}
+</script>

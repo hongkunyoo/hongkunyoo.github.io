@@ -1,12 +1,11 @@
 ---
-title: Home
 layout: default
-background: '/img/bg-index.jpg'
 ---
 
 <!-- Home Intro
 ================================================== -->
-<!-- {% if page.url == "/" %} 
+{% comment %}
+{% if page.url == "/" %}
 <div class="rounded mb-5 _hero" style="background-image: url(/assets/images/blog_bg3.png) ">
   <div class="row align-items-center justify-content-between">
     <div class="col-md-12">
@@ -19,7 +18,8 @@ background: '/img/bg-index.jpg'
     </div>
   </div>
 </div>
-{% endif %} -->
+{% endif %}
+{% endcomment %}
 
 <!-- Featured
 ================================================== -->
@@ -31,7 +31,6 @@ background: '/img/bg-index.jpg'
           </div>
       {% endif %}
   {% endfor %}
-  </div>
 </section>
 
 <!-- Posts List with Sidebar (except featured)

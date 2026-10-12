@@ -2,8 +2,10 @@
 layout: post
 title:  "쿠버네티스 첫 시작을 위한 최고의 선택 - \"핵심만 콕! 쿠버네티스\""
 date:   2020-10-10 00:00:00
-categories: kubernetes book
 image: /assets/images/landing-book.png
+categories: kubernetes essay
+tags: book
+permalink: /kubernetes/book/2020/10/10/kubernetes-book/
 ---
 쿠버네티스를 처음 시작하시는 분들을 위해 준비했습니다. 컨테이너, 쿠버네티스 기술에 대해 잘 모르더라도 이 책의 예제를 따라하다보면 어느새 쿠버네티스의 매력에 푹 빠질 것입니다. 여러분도 쿠버네티스라는 거인의 어깨 위에 올라서서 클라우드 네이티브가 꿈꾸는 세상을 바라보시기 바랍니다.
 

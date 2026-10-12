@@ -2,8 +2,10 @@
 layout: post
 title:  "나만의 k8s 클러스터 구축하기 - #2 Amazon EKS편"
 date:   2020-09-03 00:00:00
-categories: kubernetes cluster eks
 image: /assets/images/k8s-cluster/landing02.png
+categories: kubernetes cloud
+tags: cluster eks aws
+permalink: /kubernetes/cluster/eks/2020/09/03/k8s-eks/
 ---
 지난 포스트에서는 VirtualBox를 이용하여 쿠버네티스 클러스터를 구축하는 방법에 대해서 살펴봤습니다. 이번 포스트에서는 Amazon EKS를 이용하여 나만의 클러스터를 구축하는 방법에 대해 살펴보겠습니다.
 

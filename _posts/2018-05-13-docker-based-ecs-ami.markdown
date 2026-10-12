@@ -3,7 +3,9 @@ layout: post
 title:  "딥러닝 학습을 위한 AWS ECS용 GPU AMI 만들기"
 description: "AWS ECS용 GPU instance AMI 만들기"
 date:   2018-05-13 20:41:00
-categories: deep-learning docker AWS ECS AMI
+categories: machine-learning cloud
+tags: deep-learning docker aws ecs ami
+permalink: /deep-learning/docker/aws/ecs/ami/2018/05/14/docker-based-ecs-ami/
 ---
 
 AWS ECS용 GPU instance AMI를 만들어 AWS 컨테이너 서비스에서 (ECS, Batch) 딥러닝 학습을 해 봅시다.

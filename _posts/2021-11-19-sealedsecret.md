@@ -2,9 +2,10 @@
 layout: post
 title:  "GitOps Secret 관리"
 date:   2021-11-19 00:00:00
-categories: kubernetes security
 image: /assets/images/sealedsecret/landing.png
 permalink: /:title
+categories: kubernetes gitops security
+tags: sealed-secrets
 ---
 GitOps에서 Secret 관리가 고민이시라구요? 그래서 준비했습니다, [SealedSecret](https://github.com/bitnami-labs/sealed-secrets)!
 

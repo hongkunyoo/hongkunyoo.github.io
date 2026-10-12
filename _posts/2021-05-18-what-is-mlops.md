@@ -2,9 +2,9 @@
 layout: post
 title:  "커피고래가 생각하는 MLOps"
 date:   2021-05-18 00:00:00
-categories: kubernetes mlops
 image: /assets/images/mlops/mlops-cycle.png
 permalink: /:title
+categories: mlops
 ---
 기계학습 프로젝트를 경험하면서 느낀 점과 어떻게 하면 더 나은 구조로 나아갈 수 있을지에 대해 개인적인 생각을 정리해 보았습니다. 정답을 말하기 보다는 개인적인 희망을 적어 봅니다.
 

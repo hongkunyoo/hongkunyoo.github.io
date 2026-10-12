@@ -2,9 +2,10 @@
 layout: post
 title:  "[번역]쿠버네티스는 단순히 컨테이너를 관리하는 툴이 아닙니다."
 date:   2022-03-14 00:00:00
-categories: kubernetes network
 image: /assets/images/k8s-api.jpeg
 permalink: /:title
+categories: kubernetes
+tags: api-server
 ---
 나름 조회수가 잘 나왔던 저의 블로그 글 중 하나인 [쿠버네티스 API서버는 정말 그냥 API서버라구욧](https://coffeewhale.com/apiserver)에서 쿠버네티스 API 서버가 일반적인 API 서버와 크게 다르지 않다는 점을 강조한 내용으로 글을 작성하였었습니다. 이와 연관되어 쿠버네티스의 API가 가지는 중요성에 대해 [잘 소개한 글](https://blog.joshgav.com/posts/kubernetes-isnt-about-containers)이 있어서 번역해 보았습니다.
 

@@ -2,8 +2,12 @@
 layout: post
 title:  "JupyterFlow - Better way to scale your ML job"
 date:   2021-03-02 00:00:00
-categories: kubernetes mlops
 image: /assets/images/jupyterflow/landing.png
+categories: kubernetes mlops
+tags: jupyterflow
+permalink: /kubernetes/mlops/2021/03/02/mlops-jupyterflow-en/
+lang: en
+locale: en_US
 ---
 Introducing JupyterFlow, a better way to scale your ML job on Kubernetes.
 

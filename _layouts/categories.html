@@ -1,31 +1,31 @@
 ---
-title: "Categories"
 layout: default
-permalink: "/categories.html"
 ---
 
 <div class="row">
 	<div class="col-md-3">
 	</div>
 	<div class="col-md-5">
-	{% for category in site.categories %}
-		
-		<h4 class="mt-5 mb-4 pb-2 border-bottom" id="{{ category[0] | replace: " ","-" }}"><span class="text-capitalize small font-weight-bold">In "{{ category[0] }}"</span></h4>
+		<h1 class="posttitle nanumEB-font">{{ page.title }}</h1>
+		{% if page.description %}<p class="text-muted">{{ page.description }}</p>{% endif %}
+
+	{% for cat in site.data.categories %}
+		{% assign pages_list = site.categories[cat.slug] %}
+		{% if pages_list %}
+		<section id="{{ cat.slug }}">
+		<h2 class="mt-5 mb-2 pb-2 border-bottom"><span class="small font-weight-bold">{{ cat.title }}</span> <span class="small text-muted">({{ pages_list.size }})</span></h2>
+		<p class="small text-muted mb-4">{{ cat.description }}</p>
 		<div class="row">
-			
-			{% assign pages_list = category[1] %}
 			{% for post in pages_list %}
 				{% if post.title != null %}
-					{% if group == null or group == post.group %}
 						<div class="col-md-12 mb-5">
-							{% include postbox.html %}
+							{% include postbox.html heading="h3" %}
 						</div>
-					{% endif %}
 				{% endif %}
 			{% endfor %}
-			{% assign pages_list = nil %}
-			{% assign group = nil %}
 		</div>
+		</section>
+		{% endif %}
 	{% endfor %}
 	</div>
 	<div class="col-md-2">
@@ -34,17 +34,9 @@ permalink: "/categories.html"
 	        <h2>Categories</h2>
 	        <ul>
 	        	<li><a href="/">Go back to Home</a></li>
-	           {% for item in site.data.navigation.docs %}
-	              {% if item["subitems"] %}
-	                <li>
-	                   <ul>
-	                     <a href="#">{{ item["title"] }}</a>
-	                     {% for subitem in item["subitems"] %}
-	                        <li class="subitem"><a href="{{ subitem.url }}">{{ subitem.title }}</a></li>
-	                     {% endfor %}
-	                   </ul>
-	                </li>
-	              
+	           {% for cat in site.data.categories %}
+	              {% if site.categories[cat.slug] %}
+	                <li class="subitem"><a href="#{{ cat.slug }}">{{ cat.title }}</a></li>
 	              {% endif %}
 	           {% endfor %}
 	        </ul>

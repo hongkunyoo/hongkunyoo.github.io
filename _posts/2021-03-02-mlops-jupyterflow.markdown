@@ -2,8 +2,10 @@
 layout: post
 title:  "데이터 과학자를 위한 ML툴 - JupyterFlow"
 date:   2021-03-02 00:00:00
-categories: kubernetes mlops
 image: /assets/images/jupyterflow/landing.png
+categories: kubernetes mlops
+tags: jupyterflow
+permalink: /kubernetes/mlops/2021/03/02/mlops-jupyterflow/
 ---
 지난 포스트 ["데이터 과학자들은 쿠버네티스에 관심이 없습니다"](https://coffeewhale.com/kubernetes/mlops/2021/01/28/mlops-determinedai)에 이어 제가 생각하는 좋은 툴은 어떤 것인지에 대해 살펴 보도록 하겠습니다.
 

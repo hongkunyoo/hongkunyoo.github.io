@@ -3,8 +3,10 @@ layout: post
 title:  "AWS Batch를 이용한 분산 병렬 딥러닝 학습 #1"
 description: "AWS Batch 서비스를 이용하여 쉽고 빠르게 분산 병렬 딥러닝 학습 환경을 구축해 봅시다."
 date:   2018-05-18 16:21:00
-categories: deep-learning AWS Batch docker
 image: /assets/images/aws_batch/landing.png
+categories: machine-learning cloud
+tags: deep-learning aws aws-batch docker
+permalink: /deep-learning/aws/batch/docker/2018/05/19/deeplearning-aws-batch1/
 ---
 
 AWS Batch 서비스를 이용하여 쉽고 빠르게 분산 병렬 딥러닝 학습 환경을 구축해 봅시다.

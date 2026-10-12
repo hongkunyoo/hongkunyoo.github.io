@@ -2,8 +2,10 @@
 layout: post
 title:  "Git-sync와 사이드카 패턴"
 date:   2020-02-22 00:00:00
-categories: kubernetes git-sync
 image: /assets/images/git-sync/01.png
+categories: kubernetes
+tags: git-sync sidecar
+permalink: /kubernetes/git-sync/2020/02/22/git-sync/
 ---
 이번 포스트에서는 사이드카 패턴 중 하나인 git-sync에 대해서 알아보고 어떤 경우에 유용하게 사용할 수 있는 알아보도록 하겠습니다.
 

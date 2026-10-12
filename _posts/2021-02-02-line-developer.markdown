@@ -2,8 +2,10 @@
 layout: post
 title:  "나도 LINE 개발자입니다."
 date:   2021-02-02 00:00:00
-categories: LINE career
 image: /assets/images/line-developer/landing.jpg
+categories: essay
+tags: line career
+permalink: /line/career/2021/02/02/line-developer/
 ---
 4년 간의 LG전자 MLOps 엔지니어로서의 업무를 마치고 처음으로 이직을 도전한 경험을 공유합니다.
 

@@ -2,9 +2,10 @@
 layout: post
 title:  "[번역]쿠버네티스 패킷의 삶 - #4"
 date:   2022-03-03 00:00:00
-categories: kubernetes network
 image: /assets/images/packet-life/landing04.png
 permalink: /:title
+categories: kubernetes network
+tags: packet
 ---
 쿠버네티스 패킷의 삶 마지막 편, #4에서는 Ingress 리소스에 대해서 살펴 봅니다.
 

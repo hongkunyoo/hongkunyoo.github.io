@@ -1,8 +1,9 @@
 name: "커피고래의 노트"
 title: "커피고래의 노트"
-description: "술 좋아하면 술고래, 커피 좋아하면 커피고래"
+description: "쿠버네티스, MLOps, 컨테이너 네트워크와 인증까지 직접 공부하고 운영하며 정리한 커피고래의 기술 블로그"
+tagline: "쿠버네티스 · MLOps 기술 블로그"
 repository: hongkunyoo/hongkunyoo.github.io
-meta_description: "술 좋아하면 술고래, 커피 좋아하면 커피고래"
+meta_description: "쿠버네티스, MLOps, 컨테이너 네트워크와 인증까지 직접 공부하고 운영하며 정리한 커피고래의 기술 블로그"
 email: hongkunyoo@gmail.com
 timezone: Asia/Seoul
 # baseurl: 
@@ -14,8 +15,8 @@ favicon: 'assets/images/favicon.png'
 author: hongkunyoo
 paginate: 12
 encoding: utf-8
-locale: en_us
-lang: en_us
+locale: ko_KR
+lang: ko
 feed_items: 5
 future: true
 # feed_update_period: daily
@@ -41,10 +42,23 @@ defaults:
       path: "about/item.html"
     values:
       sitemap: false
+  # 유틸리티/인증용 파일은 검색 색인에서 제외
+  - scope:
+      path: "line.html"
+    values:
+      sitemap: false
+  - scope:
+      path: "rate.html"
+    values:
+      sitemap: false
+  - scope:
+      path: "naver3964f9de700c9aeb5b75c825d67ffa3a.html"
+    values:
+      sitemap: false
 sass:
   sass_dir: _sass
   style: :compressed
-ganalytics: UA-63572991-1
+ganalytics: G-09CC3KT77V
 
 # Authors
 authors:
@@ -55,7 +69,12 @@ authors:
     web: https://coffeewhale.com
     description: "커피고래"
 
-# Social
+# Social (jekyll-seo-tag JSON-LD)
+social:
+  name: 커피고래의 노트
+  links:
+    - https://github.com/hongkunyoo
+
 # social:
 #   instagram: https://www.instagram.com/bootstrapstarter/
 #   facebook: https://www.facebook.com/bootstrapstartercom-346329609045284

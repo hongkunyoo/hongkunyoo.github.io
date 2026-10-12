@@ -2,9 +2,10 @@
 layout: post
 title:  "[번역]Calico 라우팅 모드"
 date:   2022-03-29 00:00:00
-categories: network calico
 image: /assets/images/calico-routing-mode/landing.png
 permalink: /:title
+categories: kubernetes network
+tags: calico
 ---
 Calico는 간단하면서도 다양한 네트워킹 모드들을 제공하기 때문에 쿠버네티스 네트워킹에서 단골 소재로 나오는 CNI입니다. 이번 포스트는 컨테이너 네트워크 namespace나 CNI의 인터페이스가 동작하는 방법(서버 내에서 컨테이너 레벨의 네트워크)보다는 리눅스 네트워크 레벨(리눅스 서버간 패킷을 주고 받는 과정)에서 패킷이 어떻게 라우팅되는지를 집중적으로 소개하는 글입니다.
 

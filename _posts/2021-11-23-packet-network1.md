@@ -2,9 +2,10 @@
 layout: post
 title:  "[번역]쿠버네티스 패킷의 삶 - #1"
 date:   2021-11-23 00:00:00
-categories: kubernetes network
 image: /assets/images/packet-life/landing01.png
 permalink: /:title
+categories: kubernetes network
+tags: packet
 ---
 쿠버네티스 네트워킹은 언제나 맘 한구석의 숙제 같은 녀석입니다. 제대로 공부해야지 하면서도 그 방대한 양과 내용에 쉽게 시작하질 못합니다. 이번 [번역 포스트](https://dramasamy.medium.com/life-of-a-packet-in-kubernetes-part-1-f9bc0909e051)는 예전 글, [쿠버네티스 네트워킹 이해하기 시리즈](/k8s/network/2019/04/19/k8s-network-01)와는 조금 다르게 직접 예제를 따라해 볼 수 있는 방법으로 진행이 됩니다. 혹시나 쿠버네티스 네트워킹, CNI에 대해서 처음 공부하시는 단계라면 먼저 예전 네트워킹 이해하기 시리즈부터 보시기를 추천드립니다. 내용이 어느 정도 겹치긴 하나, 예전 글이 조금 더 큰 그림에서의 개괄론적인 내용이 주로 있고 이번 포스트는 조금 더 상세한 방법에 대해 소개합니다.
 

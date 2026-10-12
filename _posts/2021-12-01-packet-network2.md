@@ -2,9 +2,10 @@
 layout: post
 title:  "[번역]쿠버네티스 패킷의 삶 - #2"
 date:   2021-12-01 00:00:00
-categories: kubernetes network
 image: /assets/images/packet-life/landing02.png
 permalink: /:title
+categories: kubernetes network
+tags: packet
 ---
 [쿠버네티스 패킷의 삶 #1](/packet-network1)에서 살펴 봤듯이, CNI plugin은 쿠버네티스 네트워킹에서 중요한 역할을 차지합니다. 현재 많은 CNI plugin 구현체들이 존재합니다. 그 중 Calico를 소개합니다. 많은 엔지니어들은 Calico를 선호합니다. 그 이유는 Calico는 네트워크 구성을 간단하게 만들어 주기 때문입니다.
 

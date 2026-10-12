@@ -2,8 +2,10 @@
 layout: post
 title:  "Google Certified Cloud Engineer Associate 취득 후기"
 date:   2019-07-07 00:00:00
-categories: certificate gcp
 image: /assets/images/certificates/landing-gcp.png
+categories: certificate cloud
+tags: gcp
+permalink: /certificate/gcp/2019/07/07/gcp-cea/
 ---
 구글 클라우드 자격증 취득 후기에 대해 공유 드립니다. [GCP Cloud Engineer Associate 자격증](https://cloud.google.com/certification/cloud-engineer)취득에 관심있으신 분이라면 꼭 한번 읽어주세요! (19년 6월 기준)
 
