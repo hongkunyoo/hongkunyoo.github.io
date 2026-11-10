@@ -8,3 +8,4 @@ term = xterm-256color
 
 font-family = "JetBrains Mono"
 # font-family = "D2Coding"
+# brew install --cask font-d2coding
