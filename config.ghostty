@@ -5,3 +5,6 @@ window-save-state = never
 # background = #101014
 background = #141418
 term = xterm-256color
+
+font-family = "JetBrains Mono"
+# font-family = "D2Coding"
