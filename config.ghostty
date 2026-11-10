@@ -4,3 +4,4 @@ window-height = 1000
 window-save-state = never
 # background = #101014
 background = #141418
+term = xterm-256color
