@@ -1,19 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Line Checker</title>
     <style>
-      .verticalLine {
-        border-left: 4px solid #4b42f5;
-        height: 20000px;
+      #guides {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        color: #334155;
+        font: 11px ui-monospace, monospace;
+      }
+
+      .center-line,
+      .width-guide {
         position: absolute;
+        inset-block: 0;
         left: 50%;
-        margin-left: -3px;
-        top: 0;
+        transform: translateX(-50%);
+      }
+
+      .center-line {
+        width: 4px;
+        background: #4b42f5;
+      }
+
+      .width-guide {
+        box-sizing: border-box;
+        border-inline: 1px dashed #94a3b8;
+      }
+
+      .width-guide span {
+        position: absolute;
+        top: 12px;
+        white-space: nowrap;
+      }
+
+      .left-label {
+        left: 2px;
+      }
+
+      .right-label {
+        right: 2px;
       }
     </style>
   </head>
   <body>
-    <div class="verticalLine"></div>
+    <main id="guides" aria-label="Centered width guides in CSS pixels">
+      <div class="center-line" aria-hidden="true"></div>
+      <div id="width-guides"></div>
+    </main>
+    <script>
+      const guides = document.querySelector('#guides');
+      const widthGuides = document.querySelector('#width-guides');
+      const widthStep = 100;
+
+      function updateGuides() {
+        const fragment = document.createDocumentFragment();
+
+        for (let width = 200; width <= guides.clientWidth; width += widthStep) {
+          const guide = document.createElement('div');
+          guide.className = 'width-guide';
+          guide.style.width = `${width}px`;
+
+          const leftLabel = document.createElement('span');
+          leftLabel.className = 'left-label';
+          leftLabel.textContent = `${width}px`;
+
+          const rightLabel = leftLabel.cloneNode(true);
+          rightLabel.className = 'right-label';
+          rightLabel.setAttribute('aria-hidden', 'true');
+
+          guide.append(leftLabel, rightLabel);
+          fragment.append(guide);
+        }
+
+        widthGuides.replaceChildren(fragment);
+      }
+
+      updateGuides();
+      window.addEventListener('resize', updateGuides);
+    </script>
   </body>
 </html>
